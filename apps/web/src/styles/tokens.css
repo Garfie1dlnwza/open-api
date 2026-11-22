@@ -1,0 +1,74 @@
+/* Design tokens. Colours are defined once here; components use the Tailwind names below. */
+:root {
+  /* Brand */
+  --brand-900: #142d4e;
+  --brand-800: #1d426c;
+  --brand-700: #245b91;
+  --brand-500: #347cb8;
+  --brand-100: #dceaf6;
+
+  /* Accent (decorative; text uses accent-800) */
+  --accent-800: #0f766e;
+  --accent-600: #0d9488;
+  --accent-100: #ccfbf1;
+  --accent-50: #f0fdfa;
+
+  /* Neutral */
+  --canvas: #f8fafc;
+  --surface: #ffffff;
+  --subtle: #f1f5f9;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  /* Borders of inputs and buttons must reach 3:1 (WCAG 1.4.11); --line is decorative only. */
+  --control-border: #7b8aa0;
+  --ink: #172b45;
+  --ink-2: #55657a;
+  --ink-3: #5f6e84;
+  --on-brand: #ffffff;
+
+  /* Semantic: *-dot for icons and borders, fg/bg pairs for text */
+  --success-dot: #16a34a;
+  --warning-dot: #d97706;
+  --error-dot: #dc2626;
+  --info-dot: #2563eb;
+  --success-fg: #166534;
+  --success-bg: #dcfce7;
+  --warning-fg: #92400e;
+  --warning-bg: #fef3c7;
+  --error-fg: #991b1b;
+  --error-bg: #fee2e2;
+  --info-fg: #1e40af;
+  --info-bg: #dbeafe;
+  --neutral-fg: #475569;
+  --neutral-bg: #f1f5f9;
+
+  /* Code surfaces */
+  --code-bg: #0f1d33;
+  --code-fg: #e6edf6;
+  --code-muted: #9db0c7;
+
+  /* Typography */
+  --font-sans: "IBM Plex Sans Thai", "Noto Sans Thai", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Layout */
+  --header-height: 64px;
+  --sidebar-width: 248px;
+  --content-max: 1200px;
+  --detail-max: 760px;
+  --playground-width: 420px;
+  --control-height: 40px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 4%);
+  --shadow-pop: 0 8px 24px rgb(15 23 42 / 10%);
+
+  /* Motion */
+  --motion: 160ms ease;
+}
