@@ -140,6 +140,18 @@ body {
 [data-in="true"] .chart-arc { animation: arc-in var(--dur-chart) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms); }
 [data-in="true"] .chart-fade { animation: fade var(--dur-chart) var(--ease-out) both; animation-delay: 300ms; }
 
+/* Small links get a real hit area without changing their type size: 32 px with a mouse, 44 px on touch. */
+.tap {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+}
+@media (pointer: coarse) {
+  .tap {
+    min-height: 44px;
+  }
+}
+
 /* Touch screens get 44 px targets; mouse layouts keep their denser sizes. */
 @media (pointer: coarse) {
   button,

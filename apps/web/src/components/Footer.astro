@@ -14,10 +14,10 @@ const { status, now } = getCatalog();
 const hasStatus = Object.keys(status.apis).length > 0;
 ---
 
-<footer class="mt-20 border-t border-line bg-surface">
-  <div class="mx-auto grid max-w-[var(--content-max)] gap-8 px-5 py-10 sm:px-8 md:grid-cols-[auto_1fr] md:items-start md:gap-16">
+<footer class="mt-10 border-t border-line bg-surface">
+  <div class="mx-auto grid max-w-[var(--content-max)] gap-8 px-5 py-8 sm:px-8 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
     <a href={ROUTES.home(locale)} aria-label={t("site.name")}>
-      <img src="/brand/logo.png" alt="" width="160" height="57" class="h-14 w-auto" loading="lazy" />
+      <img src="/brand/logo.png" alt="" width="160" height="57" class="h-10 w-auto" loading="lazy" />
     </a>
     <div class="flex flex-col gap-3 text-small text-ink-2">
       <p class="max-w-2xl">{t("footer.built")}</p>
