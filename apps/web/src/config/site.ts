@@ -45,6 +45,10 @@ export const UI = {
   homeListSize: 6,
   copiedResetMs: 1_600,
   responsePreviewChars: 200_000,
+  /** A response slower than this is flagged on the status board (the probe has its own, higher, limit). */
+  slowLatencyMs: 2_000,
+  /** Status data older than this is shown as stale on the home page. The probe runs every 6 hours. */
+  statusStaleWarnHours: 24,
   playgroundClientTimeoutMs: 20_000,
 } as const;
 

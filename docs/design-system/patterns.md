@@ -1,8 +1,14 @@
 # Patterns
 
-- **Home:** copy and a search box (a plain GET form, so it works without JS) beside a live status
-  board built from the latest probe, then a category strip with counts, featured APIs as ruled rows,
-  a "recently reviewed" timeline and a one-line contribute row.
+- **Home:** copy, a search box (a plain GET form, so it works without JS) and three real filter
+  shortcuts with counts, beside a live status board. The board leads with a summary ("5 of 8
+  operational"), the number of problems and when the probe ran, and warns when that data is older than
+  24 hours. Each row shows an icon and a latency, and a latency over 2 s gets an hourglass and a warning
+  colour. With no health data it explains where status comes from instead of showing nothing. Below:
+  a one-line category row, featured APIs as ruled rows (names may wrap to two lines, never an
+  ellipsis), a "recently reviewed" timeline only when review dates differ, and a one-line contribute row.
+- **Header:** the one-row menu appears from 1024 px; below that it is a second, scrollable row, so
+  nothing is pushed off-screen at 768 px.
 - **Dashboard:** hero availability figure, four KPI tiles, then seven charts that each answer one
   question (see [charts.md](charts.md)). Filters would sit in a single row above the charts; with a
   history this short there is no date filter yet.
