@@ -75,3 +75,24 @@ describe("explorer filters", () => {
     expect(parseFilters(new URLSearchParams("status=auth_required")).status).toBe("auth_required");
   });
 });
+
+import { NATURAL_DIR, effectiveDir, nextSort } from "./filters.ts";
+
+describe("sorting and direction", () => {
+  it("uses each sort's natural direction and flips it on a second click of the same column", () => {
+    expect(NATURAL_DIR).toEqual({ name: "asc", trust: "desc", verified: "desc" });
+    expect(effectiveDir({ q: "" })).toBe("asc");
+    expect(effectiveDir({ q: "x" })).toBeNull();
+    expect(nextSort({ q: "" }, "trust")).toEqual({ sort: "trust", dir: undefined });
+    expect(nextSort({ q: "", sort: "trust" }, "trust")).toEqual({ sort: "trust", dir: "asc" });
+    expect(nextSort({ q: "", sort: "trust", dir: "asc" }, "trust")).toEqual({ sort: "trust", dir: "desc" });
+  });
+
+  it("applies the flipped direction to the list and round-trips through the URL", () => {
+    const names = (f: Parameters<typeof applyFilters>[1]) => applyFilters(all, f, "th").map((a) => a.id);
+    expect(names({ q: "", sort: "trust" })).toEqual(["bot-fx", "air4thai", "oil"]);
+    expect(names({ q: "", sort: "trust", dir: "asc" })).toEqual(["oil", "air4thai", "bot-fx"]);
+    expect(parseFilters(serializeFilters({ q: "", sort: "verified", dir: "asc" }))).toMatchObject({ sort: "verified", dir: "asc" });
+    expect(parseFilters(new URLSearchParams("dir=sideways")).dir).toBeUndefined();
+  });
+});

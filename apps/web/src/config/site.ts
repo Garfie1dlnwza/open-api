@@ -40,6 +40,7 @@ export const QUERY = {
   auth: "auth",
   status: "status",
   sort: "sort",
+  dir: "dir",
 } as const;
 
 export const STORAGE = {
@@ -75,6 +76,8 @@ export const UI = {
   playgroundClientTimeoutMs: 20_000,
 } as const;
 
+export const DIRECTIONS = ["asc", "desc"] as const;
+export type Direction = (typeof DIRECTIONS)[number];
 export const SORTS = ["relevance", "name", "trust", "verified"] as const;
 export type Sort = (typeof SORTS)[number];
 export const DEFAULT_SORT: Sort = "name";
