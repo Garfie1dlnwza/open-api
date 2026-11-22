@@ -8,7 +8,7 @@ A catalog of Thailand's public APIs with live status, a playground and a dashboa
 
 - `npm run check` runs catalog validation, typecheck (including `astro check`), ESLint, the hardcoded-values
   check, the duplication check and all tests. **Run it before finishing any task.**
-- `npm run build` builds the site. `npm run health` probes every API and writes `data/status.json`.
+- `npm run dev` starts the playground Worker (8788) and the site (4321) together; `npm run build` builds the site. `npm run health` probes every API and writes `data/status.json`.
 - Astro 7 needs **Node 22.23.4 or newer** (`.nvmrc`). Older Node fails at startup.
 
 ## Conventions

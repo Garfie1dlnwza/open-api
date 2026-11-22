@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UI } from "../config/site.ts";
-import { prettyBody, prettyXml } from "./playground.ts";
+import { isPreviewClipped, prettyBody, prettyXml } from "./playground.ts";
 
 describe("prettyXml", () => {
   it("indents nested elements and keeps short text elements on one line", () => {
@@ -39,5 +39,21 @@ describe("prettyBody", () => {
     expect(prettyBody("{broken", "application/json")).toBe("{broken");
     expect(prettyBody("<a><b>x</b></a>", "text/xml; charset=utf-8")).toBe("<a>\n  <b>x</b>\n</a>");
     expect(prettyBody("plain", "text/plain")).toBe("plain");
+  });
+});
+
+describe("isPreviewClipped", () => {
+  const cap = UI.responsePreviewChars;
+  it("reports a cut XML body even when the formatted text came out shorter than the cap", () => {
+    // Whitespace-heavy XML collapses when formatted, so "shown" can be well under the cap.
+    const body = `<r>${"<i>x</i>\n        ".repeat(40_000)}</r>`;
+    const shown = prettyXml(body);
+    expect(body.length).toBeGreaterThan(cap);
+    expect(isPreviewClipped(body, shown, "application/xml", "pretty")).toBe(true);
+  });
+  it("is false for small bodies and judges raw mode by what is shown", () => {
+    expect(isPreviewClipped("<a/>", "<a/>", "application/xml", "pretty")).toBe(false);
+    expect(isPreviewClipped("x".repeat(cap + 1), "x".repeat(cap + 1), "text/plain", "raw")).toBe(true);
+    expect(isPreviewClipped("x".repeat(cap + 1), "short", "application/xml", "raw")).toBe(false);
   });
 });

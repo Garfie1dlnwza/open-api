@@ -8,7 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @thai-open-api/web",
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "npm run dev -w @thai-open-api/web",
+    "dev:worker": "npm run dev -w @thai-open-api/worker",
     "build": "npm run catalog:build && npm run build -w @thai-open-api/web",
     "catalog:validate": "tsx scripts/validate-catalog.ts",
     "catalog:build": "tsx scripts/build-worker-catalog.ts",

@@ -2,6 +2,12 @@ name = "thai-open-api-playground"
 main = "src/index.ts"
 compatibility_date = "2026-11-01"
 
+# Local dev port. Not wrangler's default 8787, which many other tools already use. If you change it,
+# change DEV_PORTS in scripts/dev.mjs and PUBLIC_PLAYGROUND_URL in apps/web/.env to match.
+[dev]
+ip = "127.0.0.1"
+port = 8788
+
 # Browser origins allowed to call the playground, comma separated. Empty = no browser origin.
 # Production value is passed by the deploy workflow (--var ALLOWED_ORIGINS:...).
 [vars]
