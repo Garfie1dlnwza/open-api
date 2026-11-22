@@ -52,7 +52,9 @@ jobs:
         env:
           BASE: ${{ github.base_ref }}
         run: |
-          if git diff --quiet "origin/${BASE}...HEAD" -- package.json package-lock.json; then
+          # Every manifest npm reads: the root and each workspace package.json (the * crosses
+          # directories in a plain pathspec), the lockfile and .npmrc.
+          if git diff --quiet "origin/${BASE}...HEAD" -- '*package.json' package-lock.json .npmrc; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"

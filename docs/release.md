@@ -34,7 +34,7 @@ trigger CI on the release PR; use a fine-grained token in `release.yml` if you w
 
 ## Dependency audits
 
-Pull requests that change `package.json` or `package-lock.json` must pass `npm audit --audit-level=high`.
+Pull requests that change any `package.json` (root or workspace), `package-lock.json` or `.npmrc` must pass `npm audit --audit-level=high`.
 PRs that do not touch dependencies skip it, so a new advisory never blocks unrelated work. The weekly
 **Dependency audit** workflow re-checks `main` and tells you about advisories published later.
 
