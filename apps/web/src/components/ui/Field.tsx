@@ -1,4 +1,4 @@
-import { cloneElement, useId, type InputHTMLAttributes, type ReactElement, type SelectHTMLAttributes } from "react";
+import { cloneElement, useId, type InputHTMLAttributes, type ReactElement } from "react";
 import { cx } from "./cx.ts";
 
 export const controlClass =
@@ -31,4 +31,3 @@ export function Field({ label, hint, error, htmlFor, children }: { label: string
 }
 
 export const Input = ({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) => <input className={cx(controlClass, className)} {...rest} />;
-export const Select = ({ className, ...rest }: SelectHTMLAttributes<HTMLSelectElement>) => <select className={cx(controlClass, className)} {...rest} />;
