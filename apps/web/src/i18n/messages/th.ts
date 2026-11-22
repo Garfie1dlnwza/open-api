@@ -17,11 +17,9 @@ export const th = {
   home: {
     heroTitle: "API สาธารณะของไทย",
     heroAccent: "ใช้งานได้ในไม่กี่นาที",
-    tryTitle: "ลองยิงจริงได้ใน 1 บรรทัด",
-    tryOpen: "เปิดใน Playground",
-    tryResponse: "Response (ตัดตอน)",
+    tryOpen: "เปิด Playground",
     uptimeLabel: "ตรวจ {up} จาก {total} รอบล่าสุดใช้งานได้",
-    heroSubtitle: "รวม API ภาครัฐและ Open Data พร้อมตัวอย่างโค้ด และ Playground ที่ลองยิงจริงได้ในหน้าเว็บ",
+    heroSubtitle: "รวม API ภาครัฐและ Open Data ลองยิงจริงได้ในหน้าเว็บ",
     searchLabel: "ค้นหา API",
     searchPlaceholder: "ชื่อ API หรือหน่วยงาน...",
     searchSubmit: "ค้นหา",

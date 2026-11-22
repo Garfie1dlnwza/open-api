@@ -47,7 +47,7 @@ export function ApiTable({ apis, locale, sort, dir, onSort }: { apis: ApiSummary
         scope="col"
         aria-sort={sorted ? (dir === "asc" ? "ascending" : "descending") : undefined}
         className={cx(
-          "sticky top-[var(--header-height)] z-10 whitespace-nowrap border-b-2 border-line-strong bg-subtle py-3 text-left text-small font-semibold text-ink first:rounded-tl-lg last:rounded-tr-lg",
+          "sticky top-[var(--header-height)] z-10 whitespace-nowrap border-b border-line-strong bg-subtle/80 py-3 backdrop-blur text-left text-small font-semibold text-ink first:rounded-tl-2xl last:rounded-tr-2xl",
           column.className,
         )}
       >
@@ -69,7 +69,7 @@ export function ApiTable({ apis, locale, sort, dir, onSort }: { apis: ApiSummary
   };
 
   return (
-    <div className="rounded-lg border border-line bg-surface">
+    <div className="glass rounded-2xl">
       <table className="w-full border-separate border-spacing-0 text-left">
         <caption className="sr-only">{t("explorer.tableCaption")}</caption>
         <thead>
@@ -90,7 +90,7 @@ const STAGGER_CAP = 8;
 function TableRow({ api, locale, index }: { api: ApiSummary; locale: Locale; index: number }) {
   const t = createT(locale);
   const href = ROUTES.api(locale, api.id);
-  const cell = "border-b border-line px-2 py-3 align-top group-last/row:border-b-0";
+  const cell = "border-b border-line/70 px-2 py-3 align-top group-last/row:border-b-0";
   const open = (event: React.MouseEvent) => {
     // Links and buttons inside the row keep their own behaviour; anywhere else on the row opens the API.
     if ((event.target as Element).closest("a,button")) return;

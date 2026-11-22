@@ -1,13 +1,14 @@
 import type { Locale } from "@thai-open-api/schema";
 import { Check, Copy } from "lucide-react";
 import { createT } from "../../i18n/index.ts";
+import { cx } from "../ui/cx.ts";
 import { useCopy } from "../ui/useCopy.ts";
 
-export function CodeBlock({ code, label, locale }: { code: string; label?: string; locale: Locale }) {
+export function CodeBlock({ code, label, locale, className }: { code: string; label?: string; locale: Locale; className?: string }) {
   const t = createT(locale);
   const { copied, copy } = useCopy();
   return (
-    <div className="min-w-0 overflow-hidden rounded-lg bg-code-bg">
+    <div className={cx("min-w-0 overflow-hidden bg-code-bg", className ?? "rounded-lg")}>
       <div className="flex items-center justify-between gap-3 px-4 pt-2 text-caption text-code-muted">
         <span>{label}</span>
         <button

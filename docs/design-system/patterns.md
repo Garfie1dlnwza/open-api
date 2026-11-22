@@ -37,3 +37,13 @@
   keys live in the tab unless "remember" is ticked.
 - **Responsive:** ≥ 1280 three columns, 1024 two, 768 collapsible sidebar, ≤ 767 single column with
   Request/Response tabs in the playground.
+
+## Glass and window chrome
+
+The home hero and the header share one macOS-inspired language, built only from tokens so both themes work without extra rules.
+
+- `.hero-bg`: a faint engineering grid that fades toward the edges, plus two soft glows from the logo (blue, red). Decoration only; it never carries information.
+- `.glass` / `.glass-bar`: a translucent surface with background blur, a hairline and the shared popover shadow. Without `backdrop-filter` support it falls back to the solid surface.
+- `WindowChrome.astro`: a glass window with a title bar. The three dots are decorative (`aria-hidden`), stay quiet and take their colours on hover or focus. The title is the section's accessible name.
+- Navigation uses segmented controls: the current page is a raised pill on a quiet track (`aria-current="page"` drives the style). The language switch and theme toggle follow the same shape.
+- Hero copy stays short: a two-line title, one sentence, search, three shortcut chips. The sample request and the live status are windows, not paragraphs.

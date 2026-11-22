@@ -17,7 +17,7 @@ export function FacetOption({ label, count, countLabel, selected, onToggle, icon
       aria-label={`${label}, ${countLabel}`}
       onClick={onToggle}
       className={cx(
-        "group flex min-h-9 w-full items-center gap-2.5 rounded-md px-2 text-left text-small transition-colors duration-150 disabled:cursor-not-allowed",
+        "group flex min-h-9 w-full items-center gap-2.5 rounded-lg px-2 text-left text-small transition-colors duration-150 disabled:cursor-not-allowed",
         selected ? "bg-brand-50 font-semibold text-brand-fg" : "text-ink enabled:hover:bg-subtle",
         unavailable && "text-ink-3",
       )}

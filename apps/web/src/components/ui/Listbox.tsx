@@ -19,7 +19,7 @@ const EDGE_GAP = 8;
  * and the keyboard works as in a native select (arrows, Home/End, Enter/Space, Escape, type-ahead).
  * `id` goes on the button, so a <label htmlFor> focuses it.
  */
-export function Listbox({ id, value, options, onChange, placeholder, disabled, className, "aria-describedby": describedBy, "aria-invalid": invalid }: {
+export function Listbox({ id, value, options, onChange, placeholder, disabled, className, triggerClassName, "aria-describedby": describedBy, "aria-invalid": invalid }: {
   id: string;
   value: string;
   options: ListboxOption[];
@@ -27,6 +27,8 @@ export function Listbox({ id, value, options, onChange, placeholder, disabled, c
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  /** Extra classes for the button itself (the root takes `className`). */
+  triggerClassName?: string;
   "aria-describedby"?: string;
   "aria-invalid"?: boolean;
 }) {
@@ -122,7 +124,7 @@ export function Listbox({ id, value, options, onChange, placeholder, disabled, c
         disabled={disabled}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
-        className={cx(controlClass, "flex items-center justify-between gap-2 text-left", open && "border-link")}
+        className={cx(controlClass, "flex items-center justify-between gap-2 text-left", open && "border-link", triggerClassName)}
       >
         <span className={cx("truncate", !current && "text-ink-3")}>{current?.label ?? placeholder ?? ""}</span>
         <ChevronDown aria-hidden size={16} className={cx("shrink-0 text-ink-3 transition-transform duration-150", open && "rotate-180")} />

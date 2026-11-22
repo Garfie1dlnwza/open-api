@@ -15,6 +15,8 @@ const { status, now } = getCatalog();
 const hasStatus = Object.keys(status.apis).length > 0;
 const stale = hasStatus && (now.getTime() - Date.parse(status.generatedAt)) / MS_PER_HOUR > UI.statusStaleWarnHours;
 const checked = formatRelative(status.generatedAt, now, locale);
+// Status, version and commit are quiet pills, the way macOS shows small facts in a status bar.
+const chip = "tap inline-flex items-center rounded-full border border-line/60 bg-subtle/70 px-3 transition-colors duration-150";
 const dot = !hasStatus ? "bg-line-strong" : stale ? "bg-warning-dot" : "bg-success-dot";
 
 // Two groups, kept apart on purpose: who we are (left) and where to go (the three link columns).
@@ -52,7 +54,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
 ];
 ---
 
-<footer class="mt-10 border-t border-line bg-surface">
+<footer class="glass-bar mt-16 border-t border-line/60">
   <div class="mx-auto grid max-w-[var(--content-max)] gap-10 px-5 py-10 sm:px-8 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-8">
     <div class="max-w-sm">
       <a href={ROUTES.home(locale)} class="inline-flex items-center gap-2.5" aria-label={t("site.name")}>
@@ -77,19 +79,19 @@ const columns: { title: string; links: FooterLink[] }[] = [
     ))}
   </div>
 
-  <div class="border-t border-line">
+  <div class="border-t border-line/60">
     <div class="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-4 text-caption text-ink-2 sm:px-8">
       <p class="max-w-2xl">
         <span class="font-medium text-ink">{t("footer.copyright", { year: BUILD.year })}</span>
         <span class="mx-1.5 text-line-strong" aria-hidden="true">·</span>{t("footer.built")}
       </p>
-      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 font-mono">
-        <li class="inline-flex items-center gap-1.5">
+      <ul class="flex flex-wrap items-center gap-2 font-mono">
+        <li class:list={[chip, "gap-1.5"]}>
           <span aria-hidden="true" class:list={["size-2 rounded-full", dot]}></span>
           {hasStatus ? t(stale ? "footer.statusStale" : "footer.statusFresh", { when: checked }) : t("footer.noStatus")}
         </li>
-        <li><a href={repoUrl(REPO_PATHS.releases)} target="_blank" rel="noopener noreferrer" class="tap hover:text-link hover:underline">{t("footer.version", { version: BUILD.version })}</a></li>
-        {BUILD.commit && <li><a href={`${repoUrl(REPO_PATHS.commit)}${BUILD.commit}`} target="_blank" rel="noopener noreferrer" class="tap hover:text-link hover:underline">{BUILD.commit}</a></li>}
+        <li><a href={repoUrl(REPO_PATHS.releases)} target="_blank" rel="noopener noreferrer" class:list={[chip, "hover:text-link"]}>{t("footer.version", { version: BUILD.version })}</a></li>
+        {BUILD.commit && <li><a href={`${repoUrl(REPO_PATHS.commit)}${BUILD.commit}`} target="_blank" rel="noopener noreferrer" class:list={[chip, "hover:text-link"]}>{BUILD.commit}</a></li>}
       </ul>
     </div>
   </div>
