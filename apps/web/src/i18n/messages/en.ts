@@ -19,11 +19,9 @@ export const en: Messages = {
   home: {
     heroTitle: "Thailand's public APIs,",
     heroAccent: "usable in minutes",
-    tryTitle: "Try a real call in one line",
-    tryOpen: "Open in the playground",
-    tryResponse: "Response (excerpt)",
+    tryOpen: "Open playground",
     uptimeLabel: "{up} of the last {total} checks were up",
-    heroSubtitle: "Government and open-data APIs with code samples and a playground that calls them for real, right in the page.",
+    heroSubtitle: "Government and open-data APIs you can call for real, right in the page.",
     searchLabel: "Search APIs",
     searchPlaceholder: "API name or provider...",
     searchSubmit: "Search",

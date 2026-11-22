@@ -1,0 +1,21 @@
+---
+/**
+ * A macOS-style window: frosted glass, a title bar with the three dots, and an optional action on the right.
+ * The dots are decoration only (aria-hidden); the title is the section's accessible name.
+ */
+interface Props {
+  title: string;
+  titleId: string;
+  class?: string;
+}
+const { title, titleId, class: className } = Astro.props;
+---
+
+<section aria-labelledby={titleId} class:list={["glass window overflow-hidden rounded-2xl", className]}>
+  <header class="grid h-11 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-line/70 px-4">
+    <span aria-hidden="true" class="window-dots flex gap-1.5"><i></i><i></i><i></i></span>
+    <h2 id={titleId} class="truncate text-center text-caption font-semibold text-ink-2">{title}</h2>
+    <div class="flex min-w-12 justify-end"><slot name="actions" /></div>
+  </header>
+  <slot />
+</section>

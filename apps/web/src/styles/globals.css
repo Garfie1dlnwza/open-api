@@ -224,3 +224,72 @@ tr:focus-within > .row-accent {
     scroll-behavior: auto !important;
   }
 }
+
+/* Hero surface: a faint engineering grid that fades out toward the edges, with two soft glows taken from
+   the logo (blue, red). Everything derives from tokens, so the dark theme needs no separate rules. */
+.hero-bg {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--canvas);
+}
+.hero-bg::before,
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-bg::before {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 70% 85% at 50% 35%, black 25%, transparent 78%);
+}
+.hero-bg::after {
+  background:
+    radial-gradient(38rem 24rem at 10% -5%, color-mix(in srgb, var(--fill) 24%, transparent), transparent 70%),
+    radial-gradient(30rem 22rem at 95% 8%, color-mix(in srgb, var(--red) 13%, transparent), transparent 70%);
+}
+
+/* Frosted glass, as on macOS: translucent surface, background blur, a hairline and a soft shadow. */
+.glass,
+.glass-bar {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+}
+.glass-bar {
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.glass {
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 70%, transparent),
+    var(--shadow-pop);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-bar {
+    background: var(--surface);
+  }
+}
+
+/* The three window dots start quiet and take their colours when the window is hovered or focused. */
+.window-dots i {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--line-strong);
+  transition: background-color var(--dur-fast);
+}
+.window:hover .window-dots i:nth-child(1),
+.window:focus-within .window-dots i:nth-child(1) { background: var(--error-dot); }
+.window:hover .window-dots i:nth-child(2),
+.window:focus-within .window-dots i:nth-child(2) { background: var(--warning-dot); }
+.window:hover .window-dots i:nth-child(3),
+.window:focus-within .window-dots i:nth-child(3) { background: var(--success-dot); }
