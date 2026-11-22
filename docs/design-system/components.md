@@ -14,6 +14,9 @@
 | ApiPlayground / ResponseViewer | `components/playground/` | Request/response split, mobile tabs, key consent dialog, spinner and skeleton |
 | ChartCard | `components/charts/ChartCard.tsx` | A hairline-topped slot with the question the chart answers and a table view |
 | BarList, DonutChart, LineChart, SegmentedBar, Sparkline, StatTile | `components/charts/` | See [charts.md](charts.md) |
+| ApiTable | `components/api/ApiTable.tsx` | A real `<table>`: tinted sticky header, sortable columns (`aria-sort`), whole row opens the API. Columns drop by width, never squeeze |
+| ApiCells | `components/api/ApiCells.tsx` | Source, licence and reviewed-date cells shared by the table and the home list |
+| Listbox | `components/ui/Listbox.tsx` | Our own select (the native popup cannot be themed): ARIA select-only combobox, keyboard and type-ahead |
 | Button, Field, Tabs, Dialog, EmptyState, Skeleton | `components/ui/` | Primitives |
 
 Astro pages cannot pass JSX as a prop to a React component; pass data, and let the component choose

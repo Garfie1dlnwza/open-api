@@ -24,8 +24,11 @@
   option that would show nothing is disabled but still listed. The sidebar sticks, scrolls on its own on short
   screens, and starts with a skip link and a "clear filters" button. Active filters (including the search text)
   are removable chips. An empty result names its cause ("No results for “zzz” in Finance") and offers clear
-  search, clear filters or clear all. Column labels sit above the list from 1280 px, where rows have four
-  columns; below that the description moves under the name. The key icon appears on a row only when the
+  search, clear filters or clear all. The results are a data table. Its header is a tinted, bold row with a heavy
+  rule, stays in view while scrolling, and sorts: click a column for its natural order (names A-Z, trust and
+  recency best first), click again to flip. Columns appear by width: status, API and source always; licence and
+  reviewed from 768 px; trust from 1024 px; description from 1280 px (below that it sits under the name). The page
+  uses the wide container so the table has room. The key icon appears on a row only when the
   status is not already "authentication required".
 - **Detail:** overview → provider and trust → base URL → authentication → quick start → endpoints
   (parameters and response in tabs) → licence → changelog. Playground sticks to the right at ≥ 1280 px.
