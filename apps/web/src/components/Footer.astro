@@ -1,7 +1,8 @@
 ---
-import type { Locale } from "@thai-open-api/schema";
-import { ROUTES, SITE } from "../config/site.ts";
+import { MS_PER_HOUR, type Locale } from "@thai-open-api/schema";
+import { REPO_PATHS, repoUrl, ROUTES, UI } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
+import { BUILD } from "../lib/build-info.ts";
 import { getCatalog } from "../lib/catalog.ts";
 import { formatRelative } from "../lib/format.ts";
 
@@ -12,20 +13,84 @@ const { locale } = Astro.props;
 const t = createT(locale);
 const { status, now } = getCatalog();
 const hasStatus = Object.keys(status.apis).length > 0;
+const stale = hasStatus && (now.getTime() - Date.parse(status.generatedAt)) / MS_PER_HOUR > UI.statusStaleWarnHours;
+const checked = formatRelative(status.generatedAt, now, locale);
+const dot = !hasStatus ? "bg-line-strong" : stale ? "bg-warning-dot" : "bg-success-dot";
+
+// Two groups, kept apart on purpose: who we are (left) and where to go (the three link columns).
+interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+const columns: { title: string; links: FooterLink[] }[] = [
+  {
+    title: t("footer.platform"),
+    links: [
+      { label: t("nav.explore"), href: ROUTES.explore(locale) },
+      { label: t("nav.dashboard"), href: ROUTES.dashboard(locale) },
+      { label: t("nav.categories"), href: `${ROUTES.home(locale)}#categories` },
+    ],
+  },
+  {
+    title: t("footer.resources"),
+    links: [
+      { label: t("footer.docs"), href: repoUrl(REPO_PATHS.architecture), external: true },
+      { label: t("footer.addApi"), href: ROUTES.contribute(), external: true },
+      { label: t("footer.changelog"), href: repoUrl(REPO_PATHS.changelog), external: true },
+    ],
+  },
+  {
+    title: t("footer.project"),
+    links: [
+      { label: t("footer.about"), href: repoUrl(REPO_PATHS.readme), external: true },
+      { label: t("footer.github"), href: repoUrl(""), external: true },
+      { label: t("footer.releases"), href: repoUrl(REPO_PATHS.releases), external: true },
+      { label: t("footer.contact"), href: repoUrl(REPO_PATHS.issues), external: true },
+    ],
+  },
+];
 ---
 
 <footer class="mt-10 border-t border-line bg-surface">
-  <div class="mx-auto grid max-w-[var(--content-max)] gap-8 px-5 py-8 sm:px-8 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
-    <a href={ROUTES.home(locale)} aria-label={t("site.name")}>
-      <img src="/brand/logo.png" alt="" width="160" height="57" class="h-10 w-auto" loading="lazy" />
-    </a>
-    <div class="flex flex-col gap-3 text-small text-ink-2">
-      <p class="max-w-2xl">{t("footer.built")}</p>
-      <p class="flex flex-wrap gap-x-5 gap-y-1">
-        <span>{hasStatus ? t("footer.status", { when: formatRelative(status.generatedAt, now, locale) }) : t("footer.noStatus")}</span>
-        <a class="text-brand-700 hover:underline" href={ROUTES.dashboard(locale)}>{t("nav.dashboard")}</a>
-        <a class="text-brand-700 hover:underline" href={SITE.repoUrl}>{t("nav.github")}</a>
+  <div class="mx-auto grid max-w-[var(--content-max)] gap-10 px-5 py-10 sm:px-8 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-8">
+    <div class="max-w-sm">
+      <a href={ROUTES.home(locale)} class="inline-flex items-center gap-2.5" aria-label={t("site.name")}>
+        <img src="/brand/mark.png" alt="" width="36" height="33" class="h-9 w-auto" loading="lazy" />
+        <span class="text-[17px] font-bold leading-none tracking-tight">
+          <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-brand-700">API</span>
+        </span>
+      </a>
+      <p class="mt-4 text-small text-ink-2">{t("footer.description")}</p>
+    </div>
+    {columns.map((column) => (
+      <nav aria-label={column.title}>
+        <h2 class="mb-3 text-caption font-semibold uppercase tracking-wide text-ink-2">{column.title}</h2>
+        <ul class="flex flex-col">
+          {column.links.map((link) => (
+            <li>
+              <a href={link.href} {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} class="tap text-small text-ink transition-colors duration-150 hover:text-brand-700 hover:underline">{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+
+  <div class="border-t border-line">
+    <div class="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-4 text-caption text-ink-2 sm:px-8">
+      <p class="max-w-2xl">
+        <span class="font-medium text-ink">{t("footer.copyright", { year: BUILD.year })}</span>
+        <span class="mx-1.5 text-line-strong" aria-hidden="true">·</span>{t("footer.built")}
       </p>
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 font-mono">
+        <li class="inline-flex items-center gap-1.5">
+          <span aria-hidden="true" class:list={["size-2 rounded-full", dot]}></span>
+          {hasStatus ? t(stale ? "footer.statusStale" : "footer.statusFresh", { when: checked }) : t("footer.noStatus")}
+        </li>
+        <li><a href={repoUrl(REPO_PATHS.releases)} target="_blank" rel="noopener noreferrer" class="tap hover:text-brand-700 hover:underline">{t("footer.version", { version: BUILD.version })}</a></li>
+        {BUILD.commit && <li><a href={`${repoUrl(REPO_PATHS.commit)}${BUILD.commit}`} target="_blank" rel="noopener noreferrer" class="tap hover:text-brand-700 hover:underline">{BUILD.commit}</a></li>}
+      </ul>
     </div>
   </div>
 </footer>
