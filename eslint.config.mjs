@@ -12,6 +12,6 @@ export default tseslint.config(
       "no-console": ["error", { allow: ["log", "error"] }],
     },
   },
-  { files: ["**/*.mjs", "scripts/**/*.ts"], languageOptions: { globals: { process: "readonly", console: "readonly", URL: "readonly" } } },
+  { files: ["**/*.mjs", "scripts/**/*.ts"], languageOptions: { globals: { process: "readonly", console: "readonly", URL: "readonly", setTimeout: "readonly" } } },
   { files: ["**/*.test.ts", "**/*.test.tsx"], rules: { "@typescript-eslint/no-non-null-assertion": "off", "@typescript-eslint/no-explicit-any": "off" } },
 );
