@@ -34,8 +34,8 @@
   --color-error-bg: var(--error-bg);
   --color-info-fg: var(--info-fg);
   --color-info-bg: var(--info-bg);
-  --color-neutral-fg: var(--neutral-fg);
-  --color-neutral-bg: var(--neutral-bg);
+  --color-quiet-fg: var(--quiet-fg);
+  --color-quiet-bg: var(--quiet-bg);
   --color-code-bg: var(--code-bg);
   --color-code-fg: var(--code-fg);
   --color-code-muted: var(--code-muted);

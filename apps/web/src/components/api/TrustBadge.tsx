@@ -7,7 +7,7 @@ const SOURCE_ICON: Record<Source, LucideIcon> = { official: BadgeCheck, communit
 const SOURCE_CLASS: Record<Source, string> = {
   official: "bg-brand-100 text-brand-800",
   community: "bg-accent-100 text-accent-800",
-  unofficial: "bg-neutral-bg text-neutral-fg",
+  unofficial: "bg-quiet-bg text-quiet-fg",
 };
 
 /** Where the API comes from. Kept separate from StatusBadge: provenance is not uptime. */

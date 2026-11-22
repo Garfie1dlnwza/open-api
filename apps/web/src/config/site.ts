@@ -50,3 +50,6 @@ export type Sort = (typeof SORTS)[number];
 export const DEFAULT_SORT: Sort = "name";
 
 export const HOTKEY = "k";
+
+/** Each language is always shown in its own script, whatever the page language is. */
+export const LOCALE_NAMES: Record<Locale, string> = { th: "ไทย", en: "English" };

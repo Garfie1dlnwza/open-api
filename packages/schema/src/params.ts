@@ -2,6 +2,8 @@ import type { Param } from "./entry.ts";
 
 const SAFE_PATH_VALUE = /^[A-Za-z0-9._~-]+$/;
 const DATE_VALUE = /^\d{4}-\d{2}-\d{2}$/;
+// Intentional: rejects control characters in user-supplied parameter values.
+// eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
 
 // A quantified group containing a quantifier, e.g. (a+)+ or (\w*)*, is the classic backtracking trap.

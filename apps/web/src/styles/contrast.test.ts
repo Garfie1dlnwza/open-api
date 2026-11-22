@@ -27,7 +27,7 @@ const textPairs: [string, string][] = [
   ["brand-800", "brand-100"], ["on-brand", "brand-800"], ["on-brand", "brand-900"],
   ["accent-800", "surface"], ["accent-800", "accent-50"], ["accent-800", "accent-100"],
   ["success-fg", "success-bg"], ["warning-fg", "warning-bg"], ["error-fg", "error-bg"],
-  ["info-fg", "info-bg"], ["neutral-fg", "neutral-bg"],
+  ["info-fg", "info-bg"], ["quiet-fg", "quiet-bg"],
   ["code-fg", "code-bg"], ["code-muted", "code-bg"],
 ];
 

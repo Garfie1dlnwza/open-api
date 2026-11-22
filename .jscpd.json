@@ -1,0 +1,9 @@
+{
+  "path": ["apps/web/src", "apps/worker/src", "packages/schema/src", "scripts"],
+  "minLines": 8,
+  "minTokens": 70,
+  "threshold": 0,
+  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/messages/**", "**/fixtures.ts", "**/node_modules/**", "**/dist/**", "**/*.generated.json"],
+  "reporters": ["consoleFull"],
+  "silent": true
+}

@@ -39,8 +39,8 @@
   --error-bg: #fee2e2;
   --info-fg: #1e40af;
   --info-bg: #dbeafe;
-  --neutral-fg: #475569;
-  --neutral-bg: #f1f5f9;
+  --quiet-fg: #475569;
+  --quiet-bg: #f1f5f9;
 
   /* Code surfaces */
   --code-bg: #0f1d33;

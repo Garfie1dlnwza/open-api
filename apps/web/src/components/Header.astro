@@ -1,9 +1,9 @@
 ---
 import { LOCALES, type Locale } from "@thai-open-api/schema";
 import { SearchCommand } from "./SearchCommand.tsx";
-import { ROUTES, SITE } from "../config/site.ts";
+import { LOCALE_NAMES, ROUTES, SITE } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
-import { localeName, switchLocalePath } from "../lib/locale.ts";
+import { switchLocalePath } from "../lib/locale.ts";
 
 interface Props {
   locale: Locale;
@@ -39,7 +39,7 @@ const links = [
       <nav aria-label={t("nav.language")} class="flex rounded-md border border-control p-0.5">
         {LOCALES.map((l) => (
           <a href={switchLocalePath(path, l)} hreflang={l} lang={l} aria-current={l === locale ? "true" : undefined} class:list={["grid h-8 min-w-11 place-items-center rounded px-2 text-caption font-medium transition-colors duration-150", l === locale ? "bg-brand-800 text-on-brand" : "text-ink-2 hover:text-ink"]}>
-            {localeName[l]}
+            {LOCALE_NAMES[l]}
           </a>
         ))}
       </nav>

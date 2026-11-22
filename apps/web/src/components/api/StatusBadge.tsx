@@ -8,7 +8,7 @@ const STYLE: Record<Status, { icon: LucideIcon; classes: string }> = {
   operational: { icon: CircleCheck, classes: "bg-success-bg text-success-fg" },
   degraded: { icon: TriangleAlert, classes: "bg-warning-bg text-warning-fg" },
   outage: { icon: CircleX, classes: "bg-error-bg text-error-fg" },
-  unknown: { icon: CircleHelp, classes: "bg-neutral-bg text-neutral-fg" },
+  unknown: { icon: CircleHelp, classes: "bg-quiet-bg text-quiet-fg" },
   auth_required: { icon: KeyRound, classes: "bg-info-bg text-info-fg" },
 };
 
