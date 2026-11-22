@@ -1,10 +1,10 @@
 import { STATUSES, type Locale } from "@thai-open-api/schema";
-import { Clock, KeyRound } from "lucide-react";
+import { Clock, KeyRound, ShieldCheck } from "lucide-react";
 import { createT } from "../../i18n/index.ts";
 import { STATUS_ICON, STATUS_ICON_CLASS } from "./status.ts";
 import { SOURCE_ICON } from "./TrustBadge.tsx";
 
-export type LegendKind = "status" | "source" | "auth" | "date";
+export type LegendKind = "status" | "source" | "auth" | "license" | "date";
 
 /** The icons used on a page, named once in a quiet line, so nobody has to guess what a key or a triangle means. */
 export function IconLegend({ kinds, locale }: { kinds: LegendKind[]; locale: Locale }) {
@@ -23,6 +23,7 @@ export function IconLegend({ kinds, locale }: { kinds: LegendKind[]; locale: Loc
       });
     }
     if (kind === "auth") return [{ key: "auth", label: t("auth.apiKey"), icon: <KeyRound aria-hidden size={14} className="text-ink-3" /> }];
+    if (kind === "license") return [{ key: "license", label: t("license.verified"), icon: <ShieldCheck aria-hidden size={14} className="text-success-fg" /> }];
     return [{ key: "date", label: t("legend.date"), icon: <Clock aria-hidden size={14} className="text-ink-3" /> }];
   });
   return (
