@@ -129,7 +129,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
           )}
         </div>
 
-        <div className="mb-2"><IconLegend kinds={["source", "auth", "date"]} locale={locale} /></div>
+        <div className="mb-2"><IconLegend kinds={["source", "auth", "license", "date"]} locale={locale} /></div>
         {results.length === 0 ? (
           <EmptyState
             icon={<Search aria-hidden size={28} />}

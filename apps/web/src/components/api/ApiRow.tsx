@@ -1,5 +1,5 @@
 import type { Locale } from "@thai-open-api/schema";
-import { ChevronRight, KeyRound } from "lucide-react";
+import { ChevronRight, KeyRound, ShieldCheck } from "lucide-react";
 import { ROUTES } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
 import type { ApiSummary } from "../../lib/summary.ts";
@@ -29,6 +29,11 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
       <span className="col-span-2 col-start-2 row-start-2 line-clamp-2 text-small text-ink-2 md:col-span-1 md:col-start-auto md:row-start-auto">{api.description}</span>
       <span className="flex items-center justify-end gap-3 text-ink-3">
         <TrustBadge source={api.source} locale={locale} />
+        {api.license.verified && (
+          <span role="img" aria-label={t("license.verified")} title={t("license.verified")} className="inline-flex text-success-fg">
+            <ShieldCheck aria-hidden size={16} />
+          </span>
+        )}
         {api.auth === "apiKey" && (
           <span role="img" aria-label={t("auth.apiKey")} title={t("auth.apiKey")} className="inline-flex">
             <KeyRound aria-hidden size={16} />

@@ -55,9 +55,15 @@ const shortcuts = [
   { href: `${explore}?${QUERY.status}=operational`, label: t("status.operational"), count: operational, Icon: STATUS_ICON.operational, tone: STATUS_ICON_CLASS.operational },
 ];
 const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
+// Autocomplete offers real API names, then tags, nothing invented.
+const suggestions = [...new Set([...apis.map((a) => a.name), ...apis.flatMap((a) => a.tags)])].slice(0, UI.heroSuggestions);
 
-// A real request and response from the most trusted keyless API: the page shows what the platform is for.
-const demo = featured.map((f) => getEntry(f.id)).find((e) => e.auth.type === "none" && e.endpoints[0].playground && e.endpoints[0].response.sample);
+// A real request and response from the most trusted API that is healthy, keyless and answers JSON with no
+// credentials in the URL: the page shows what the platform is for, so it must not showcase a slow or broken one.
+const demo = featured
+  .filter((f) => f.status === "operational")
+  .map((f) => getEntry(f.id))
+  .find((e) => e.auth.type === "none" && e.endpoints[0].playground && e.endpoints[0].response.format === "json" && e.endpoints[0].response.sample && !e.endpoints[0].params.some((p) => p.required));
 const demoRequest = demo ? sampleRequest(demo, demo.endpoints[0]) : null;
 const demoCurl = demo && demoRequest ? renderSample("curl", demoRequest) : null;
 const demoLines = demo?.endpoints[0].response.sample?.trim().split("\n") ?? [];
@@ -76,7 +82,8 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
         <label for="hero-search" class="sr-only">{t("home.searchLabel")}</label>
         <div class="relative flex-1">
           <Search aria-hidden size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-700" />
-          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-14 w-full rounded-l-md border-2 border-r-0 border-brand-700 bg-surface pl-12 pr-3 text-body placeholder:text-ink-3 sm:pr-24" />
+          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" list="hero-suggestions" placeholder={t("home.searchPlaceholder")} class="h-14 w-full rounded-l-md border-2 border-r-0 border-brand-700 bg-surface pl-12 pr-3 text-body placeholder:text-ink-3 sm:pr-24" />
+          <datalist id="hero-suggestions">{suggestions.map((s) => <option value={s} />)}</datalist>
           <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-subtle px-1.5 py-0.5 text-caption text-ink-3 sm:block [@media(hover:none)]:hidden">{hint}</kbd>
         </div>
         <button type="submit" class="h-14 rounded-r-md bg-brand-700 px-7 text-small font-semibold text-on-brand transition-colors duration-150 hover:bg-brand-900">{t("home.searchSubmit")}</button>
