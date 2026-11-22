@@ -41,8 +41,39 @@ export async function callPlayground(body: { apiId: string; endpointId: string; 
   }
 }
 
-/** Pretty-prints JSON when possible; anything else is returned as-is. */
+const MARKUP_TOKEN = /(<[^>]+>)/;
+
+/**
+ * Indents well-formed XML, one tag per line, keeping short text elements on one line. A document with
+ * CDATA is returned untouched: its content may contain ">" and cannot be split safely this way.
+ */
+export function prettyXml(xml: string): string {
+  if (xml.includes("<![CDATA[")) return xml;
+  const tokens = xml.replace(/>\s+</g, "><").trim().split(MARKUP_TOKEN).filter(Boolean);
+  const lines: string[] = [];
+  let depth = 0;
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+    const pad = "  ".repeat(depth);
+    if (token.startsWith("</")) {
+      depth = Math.max(depth - 1, 0);
+      lines.push(`${"  ".repeat(depth)}${token}`);
+    } else if (!token.startsWith("<") || token.startsWith("<?") || token.startsWith("<!") || token.endsWith("/>")) {
+      lines.push(`${pad}${token}`);
+    } else if (tokens[i + 1] && !tokens[i + 1].startsWith("<") && tokens[i + 2]?.startsWith("</")) {
+      lines.push(`${pad}${token}${tokens[i + 1]}${tokens[i + 2]}`);
+      i += 2;
+    } else {
+      lines.push(`${pad}${token}`);
+      depth++;
+    }
+  }
+  return lines.join("\n");
+}
+
+/** Pretty-prints JSON or XML when possible; anything else is returned as-is. */
 export function prettyBody(body: string, contentType: string): string {
+  if (/xml/i.test(contentType)) return prettyXml(body);
   if (!/json/i.test(contentType)) return body;
   try {
     return JSON.stringify(JSON.parse(body), null, 2);

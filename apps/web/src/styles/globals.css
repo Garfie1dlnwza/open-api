@@ -140,6 +140,22 @@ body {
 [data-in="true"] .chart-arc { animation: arc-in var(--dur-chart) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms); }
 [data-in="true"] .chart-fade { animation: fade var(--dur-chart) var(--ease-out) both; animation-delay: 300ms; }
 
+/* Touch screens get 44 px targets; mouse layouts keep their denser sizes. */
+@media (pointer: coarse) {
+  button,
+  select,
+  summary,
+  [role="tab"],
+  input:not([type="checkbox"]):not([type="radio"]) {
+    min-height: 44px;
+  }
+  nav a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
