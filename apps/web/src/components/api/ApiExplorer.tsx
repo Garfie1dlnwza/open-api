@@ -111,6 +111,8 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
     </div>
   );
 
+  const resultCount = <p aria-hidden className="text-small font-medium text-ink">{t("explorer.results", { count: results.length })}</p>;
+
   return (
     <div className="grid gap-8 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]">
       <aside className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:max-h-[calc(100vh-var(--header-height)-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1" aria-label={t("explorer.filters")}>
@@ -151,7 +153,8 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
         </div>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <p aria-hidden className="mr-2 text-small text-ink-2">{t("explorer.results", { count: results.length })}</p>
+          {/* With results the count sits on the legend line below; with none there is no legend, so it stays here. */}
+          {results.length === 0 && resultCount}
           {filters.q && (
             <button type="button" onClick={clearQuery} aria-label={t("explorer.clearQuery")} className="chip-filter">
               {t("explorer.queryChip", { query: filters.q })}
@@ -190,7 +193,10 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
             </EmptyState>
           ) : (
             <>
-              <div className="mb-3"><IconLegend kinds={["source", "auth", "license"]} locale={locale} /></div>
+              <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1">
+                {resultCount}
+                <IconLegend kinds={["source", "auth", "license"]} locale={locale} />
+              </div>
               <ApiTable apis={results} locale={locale} sort={sort} dir={dir} onSort={(column) => setFilters((f) => ({ ...f, ...nextSort(f, column) }))} />
             </>
           )}
