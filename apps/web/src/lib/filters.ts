@@ -1,5 +1,5 @@
 import { AUTH_TYPES, CATEGORIES, SOURCES, STATUSES, type AuthType, type Category, type Locale, type Source, type Status } from "@thai-open-api/schema";
-import { DEFAULT_SORT, QUERY, SORTS, type Sort } from "../config/site.ts";
+import { DEFAULT_SORT, DIRECTIONS, QUERY, SORTS, type Direction, type Sort } from "../config/site.ts";
 import { collatorFor } from "./format.ts";
 import { searchApis } from "./search.ts";
 import type { ApiSummary } from "./summary.ts";
@@ -14,6 +14,8 @@ export interface Filters {
   auth?: AuthType;
   status?: Status;
   sort?: Sort;
+  /** Overrides the sort's natural direction; set by clicking a column header twice. */
+  dir?: Direction;
 }
 
 const pick = <T extends string>(allowed: readonly T[], value: string | null): T | undefined =>
@@ -27,6 +29,7 @@ export function parseFilters(params: URLSearchParams): Filters {
     auth: pick(AUTH_TYPES, params.get(QUERY.auth)),
     status: pick(STATUSES, params.get(QUERY.status)),
     sort: pick(SORTS, params.get(QUERY.sort)),
+    dir: pick(DIRECTIONS, params.get(QUERY.dir)),
   };
 }
 
@@ -39,6 +42,7 @@ export function serializeFilters(filters: Filters): URLSearchParams {
     if (value) params.set(QUERY[facet], value);
   }
   if (filters.sort) params.set(QUERY.sort, filters.sort);
+  if (filters.dir) params.set(QUERY.dir, filters.dir);
   return params;
 }
 
@@ -59,6 +63,21 @@ export function emptyReason(filters: Filters): EmptyReason | null {
 
 export const activeFacets = (filters: Filters): Facet[] => FACETS.filter((f) => filters[f] !== undefined);
 
+/** Names read A to Z, trust and recency read best first. */
+export const NATURAL_DIR: Record<Exclude<Sort, "relevance">, Direction> = { name: "asc", trust: "desc", verified: "desc" };
+
+/** The direction in force, or null for relevance (which has no direction to speak of). */
+export function effectiveDir(filters: Filters): Direction | null {
+  const sort = effectiveSort(filters);
+  return sort === "relevance" ? null : (filters.dir ?? NATURAL_DIR[sort]);
+}
+
+/** What a click on a column header does: sort by it, or flip the direction if it is already the sort. */
+export function nextSort(filters: Filters, column: Exclude<Sort, "relevance">): Pick<Filters, "sort" | "dir"> {
+  if (effectiveSort(filters) !== column) return { sort: column, dir: undefined };
+  return { sort: column, dir: effectiveDir(filters) === "asc" ? "desc" : "asc" };
+}
+
 /** Without an explicit sort, a query ranks by relevance and browsing sorts by name. */
 export const effectiveSort = (filters: Filters): Sort => filters.sort ?? (filters.q ? "relevance" : DEFAULT_SORT);
 
@@ -70,10 +89,16 @@ export function applyFilters(apis: ApiSummary[], filters: Filters, locale: Local
   const matched = searchApis(apis, filters.q, locale).filter((api) => matchesFacets(api, filters));
   const sort = effectiveSort(filters);
   if (sort === "relevance") return matched;
-  const sorted = [...matched];
-  if (sort === "name") sorted.sort((a, b) => compare(a.name, b.name));
-  if (sort === "trust") sorted.sort((a, b) => b.trustScore - a.trustScore || compare(a.name, b.name));
-  if (sort === "verified") sorted.sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || compare(a.name, b.name));
+  const natural = NATURAL_DIR[sort];
+  const flip = (effectiveDir(filters) ?? natural) === natural ? 1 : -1;
+  const byName = (x: ApiSummary, y: ApiSummary) => compare(x.name, y.name);
+  // Each comparator is written in the sort's natural direction and negated when the visitor flips it.
+  const comparators: Record<Exclude<Sort, "relevance">, (x: ApiSummary, y: ApiSummary) => number> = {
+    name: byName,
+    trust: (x, y) => y.trustScore - x.trustScore || byName(x, y),
+    verified: (x, y) => y.reviewedAt.localeCompare(x.reviewedAt) || byName(x, y),
+  };
+  const sorted = [...matched].sort((x, y) => flip * comparators[sort](x, y));
   return sorted;
 }
 

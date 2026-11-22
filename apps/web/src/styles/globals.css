@@ -122,6 +122,10 @@ body {
 @keyframes arc-in {
   from { stroke-dasharray: 0 100; }
 }
+@keyframes pop {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -132,6 +136,7 @@ body {
 }
 
 .anim-rise { animation: rise var(--dur) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.anim-pop { animation: pop var(--dur-fast) var(--ease-out) both; }
 .anim-fade { animation: fade var(--dur) var(--ease-out) both; }
 .anim-spin { animation: spin 0.8s linear infinite; }
 
@@ -150,6 +155,16 @@ body {
 [data-in="true"] .chart-line { stroke-dasharray: 1; animation: draw 900ms var(--ease-out) both; }
 [data-in="true"] .chart-arc { animation: arc-in var(--dur-chart) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms); }
 [data-in="true"] .chart-fade { animation: fade var(--dur-chart) var(--ease-out) both; animation-delay: 300ms; }
+
+/* The accent bar at the start of a table row on hover or keyboard focus. */
+.row-accent {
+  box-shadow: inset 3px 0 0 transparent;
+  transition: box-shadow var(--dur-fast);
+}
+tr:hover > .row-accent,
+tr:focus-within > .row-accent {
+  box-shadow: inset 3px 0 0 var(--link);
+}
 
 /* A removable filter, shown above the results. */
 .chip-filter {

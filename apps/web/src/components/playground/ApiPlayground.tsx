@@ -6,7 +6,8 @@ import { createT } from "../../i18n/index.ts";
 import { callPlayground, initialValues, type PlaygroundApi } from "../../lib/playground.ts";
 import { Button } from "../ui/Button.tsx";
 import { Dialog } from "../ui/Dialog.tsx";
-import { Field, Input, Select } from "../ui/Field.tsx";
+import { Field, Input } from "../ui/Field.tsx";
+import { Listbox } from "../ui/Listbox.tsx";
 import { cx } from "../ui/cx.ts";
 import { useCopy } from "../ui/useCopy.ts";
 import { ResponseViewer, type ViewState } from "./ResponseViewer.tsx";
@@ -102,9 +103,12 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
         <h2 id="playground-title" className="text-h4 font-semibold">{t("playground.title")}</h2>
         {api.endpoints.length > 1 && (
           <Field label={t("playground.endpoint")} htmlFor="pg-endpoint">
-            <Select id="pg-endpoint" value={endpoint.id} onChange={(e) => { setEndpointId(e.target.value); setSubmitted(false); setView({ phase: "idle" }); }}>
-              {api.endpoints.map((e) => <option key={e.id} value={e.id}>{localize(e.title, locale)}</option>)}
-            </Select>
+            <Listbox
+              id="pg-endpoint"
+              value={endpoint.id}
+              options={api.endpoints.map((e) => ({ value: e.id, label: localize(e.title, locale) }))}
+              onChange={(next) => { setEndpointId(next); setSubmitted(false); setView({ phase: "idle" }); }}
+            />
           </Field>
         )}
         <div role="tablist" aria-label={t("playground.mobileTabs")} className="flex gap-1 md:hidden">
@@ -130,10 +134,13 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
               return (
                 <Field key={param.name} htmlFor={id} label={`${param.name}${param.required ? " *" : ""}`} hint={localize(param.description, locale)} error={fieldError(param.name)}>
                   {param.enum ? (
-                    <Select id={id} value={values[param.name] ?? ""} onChange={(e) => setValue(param.name, e.target.value)} aria-invalid={Boolean(fieldError(param.name))}>
-                      {!param.required && <option value="" />}
-                      {param.enum.map((v) => <option key={v} value={v}>{v}</option>)}
-                    </Select>
+                    <Listbox
+                      id={id}
+                      value={values[param.name] ?? ""}
+                      options={[...(param.required ? [] : [{ value: "", label: t("common.none") }]), ...param.enum.map((v) => ({ value: v, label: v }))]}
+                      onChange={(next) => setValue(param.name, next)}
+                      aria-invalid={Boolean(fieldError(param.name))}
+                    />
                   ) : (
                     <Input id={id} value={values[param.name] ?? ""} onChange={(e) => setValue(param.name, e.target.value)} placeholder={param.default ?? ""} aria-invalid={Boolean(fieldError(param.name))} autoComplete="off" spellCheck={false} />
                   )}
