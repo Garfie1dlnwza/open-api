@@ -15,7 +15,12 @@ export const th = {
     mainNavigation: "เมนูหลัก",
   },
   home: {
-    heroTitle: "API สาธารณะของไทย ใช้งานได้ในไม่กี่นาที",
+    heroTitle: "API สาธารณะของไทย",
+    heroAccent: "ใช้งานได้ในไม่กี่นาที",
+    tryTitle: "ลองยิงจริงได้ใน 1 บรรทัด",
+    tryOpen: "เปิดใน Playground",
+    tryResponse: "Response (ตัดตอน)",
+    uptimeLabel: "ตรวจ {up} จาก {total} รอบล่าสุดใช้งานได้",
     heroSubtitle: "รวม API ภาครัฐและ Open Data พร้อมตัวอย่างโค้ด และ Playground ที่ลองยิงจริงได้ในหน้าเว็บ",
     searchLabel: "ค้นหา API",
     searchPlaceholder: "ชื่อ API หรือหน่วยงาน...",
@@ -69,6 +74,10 @@ export const th = {
       status: "สถานะ",
     },
   },
+  legend: {
+    title: "ความหมายของไอคอน",
+    date: "วันที่ทบทวนข้อมูลล่าสุด",
+  },
   search: {
     title: "ค้นหา API",
     placeholder: "ค้นหา API, หน่วยงาน, endpoint...",
@@ -79,6 +88,8 @@ export const th = {
     noResults: "ไม่พบผลลัพธ์สำหรับ “{query}”",
     hint: "พิมพ์เพื่อค้นหา · ↑↓ เลือก · Enter เปิด · Esc ปิด",
     viewAll: "ดูผลลัพธ์ทั้งหมด",
+    recent: "เปิดล่าสุด",
+    suggested: "แนะนำ",
   },
   api: {
     overview: "ภาพรวม",

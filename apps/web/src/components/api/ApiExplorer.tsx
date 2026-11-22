@@ -11,6 +11,7 @@ import { Field, Input, Select } from "../ui/Field.tsx";
 import { ApiRow } from "./ApiRow.tsx";
 import { CATEGORY_ICON } from "./categoryIcon.ts";
 import { FacetOption } from "./FacetOption.tsx";
+import { IconLegend } from "./IconLegend.tsx";
 import { STATUS_ICON, STATUS_ICON_CLASS } from "./status.ts";
 import { SOURCE_ICON } from "./TrustBadge.tsx";
 
@@ -128,6 +129,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
           )}
         </div>
 
+        <div className="mb-2"><IconLegend kinds={["source", "auth", "date"]} locale={locale} /></div>
         {results.length === 0 ? (
           <EmptyState
             icon={<Search aria-hidden size={28} />}

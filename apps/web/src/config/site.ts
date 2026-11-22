@@ -34,6 +34,7 @@ export const STORAGE = {
   playgroundKey: "toa:playground-key",
   playgroundConsent: "toa:playground-consent",
   playgroundRemember: "toa:playground-remember",
+  recentApis: "toa:recent-apis",
 } as const;
 
 /** Per-API storage key so a key saved for one provider is never offered to another. */
@@ -43,6 +44,11 @@ export const UI = {
   searchDebounceMs: 200,
   searchResultLimit: 8,
   homeListSize: 6,
+  /** Probe results drawn in a row's uptime strip (one bar per check). */
+  uptimeSlots: 24,
+  recentApisKept: 5,
+  suggestedApis: 4,
+  heroSampleLines: 7,
   copiedResetMs: 1_600,
   responsePreviewChars: 200_000,
   /** A response slower than this is flagged on the status board (the probe has its own, higher, limit). */

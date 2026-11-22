@@ -7,7 +7,7 @@
   --brand-700: #0053b1;
   --brand-500: #2f7bd1;
   --brand-100: #e2edf9;
-  --brand-50: #f1f6fc;
+  --brand-50: #eaf2fc;
 
   /* Logo red: flag stripe, wordmark and one-off emphasis. Text uses red-fg. */
   --red: #f2152d;
@@ -20,14 +20,14 @@
   --accent-50: #eaf6ef;
 
   /* Neutral */
-  --canvas: #f6f7f9;
+  --canvas: #f5f7fa;
   --surface: #ffffff;
   --subtle: #eef0f4;
   --line: #e2e5ec;
   --line-strong: #cdd2dc;
   /* Borders of inputs and buttons must reach 3:1 (WCAG 1.4.11); --line is decorative only. */
   --control-border: #7d869a;
-  --ink: #1a1f36;
+  --ink: #101d35;
   --ink-2: #4f566d;
   --ink-3: #5a617a;
   --on-brand: #ffffff;

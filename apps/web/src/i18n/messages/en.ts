@@ -17,7 +17,12 @@ export const en: Messages = {
     mainNavigation: "Main navigation",
   },
   home: {
-    heroTitle: "Thailand's public APIs, usable in minutes",
+    heroTitle: "Thailand's public APIs,",
+    heroAccent: "usable in minutes",
+    tryTitle: "Try a real call in one line",
+    tryOpen: "Open in the playground",
+    tryResponse: "Response (excerpt)",
+    uptimeLabel: "{up} of the last {total} checks were up",
     heroSubtitle: "Government and open-data APIs with code samples and a playground that calls them for real, right in the page.",
     searchLabel: "Search APIs",
     searchPlaceholder: "API name or provider...",
@@ -71,6 +76,10 @@ export const en: Messages = {
       status: "Status",
     },
   },
+  legend: {
+    title: "What the icons mean",
+    date: "Last reviewed by a maintainer",
+  },
   search: {
     title: "Search APIs",
     placeholder: "Search APIs, providers, endpoints...",
@@ -81,6 +90,8 @@ export const en: Messages = {
     noResults: "No results for “{query}”",
     hint: "Type to search · ↑↓ to move · Enter to open · Esc to close",
     viewAll: "View all results",
+    recent: "Recently opened",
+    suggested: "Suggested",
   },
   api: {
     overview: "Overview",
