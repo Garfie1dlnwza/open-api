@@ -5,6 +5,7 @@ import {
   JSON_VALUE_TYPES,
   LICENSE_TYPES,
   LIMITS,
+  MS_PER_DAY,
   PARAM_LOCATIONS,
   PARAM_TYPES,
   RESPONSE_FORMATS,
@@ -119,7 +120,7 @@ export const ApiEntrySchema = z
     knownIssue: LocalizedText.optional(),
     tags: z.array(z.string().min(1)).default([]),
     featured: z.boolean().default(false),
-    /** Date a human last checked docs, licence and endpoints. */
+    /** Date a human last checked docs, licence and endpoints. Cannot be in the future. */
     reviewedAt: isoDate,
     maxResponseBytes: z
       .number()
@@ -133,6 +134,8 @@ export const ApiEntrySchema = z
   .superRefine((api, ctx) => {
     const issue = (message: string, path: (string | number)[]) =>
       ctx.addIssue({ code: "custom", message, path });
+
+    if (Date.parse(api.reviewedAt) > Date.now() + MS_PER_DAY) issue("reviewedAt cannot be in the future", ["reviewedAt"]);
 
     const base = new URL(api.baseUrl);
     if (base.protocol === "http:" && !api.allowInsecure) issue("http base URL requires allowInsecure: true", ["baseUrl"]);

@@ -50,7 +50,14 @@ export function loadCatalog(dir: string = PATHS.catalog): ApiEntry[] {
   const ids = new Set<string>();
 
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".yaml")).sort()) {
-    const parsed = ApiEntrySchema.safeParse(parse(readFileSync(join(dir, file), "utf8")));
+    let raw: unknown;
+    try {
+      raw = parse(readFileSync(join(dir, file), "utf8"));
+    } catch (error) {
+      problems.push(`${file}: invalid YAML: ${(error as Error).message.split("\n")[0]}`);
+      continue;
+    }
+    const parsed = ApiEntrySchema.safeParse(raw);
     if (!parsed.success) {
       for (const issue of parsed.error.issues) problems.push(`${file}: ${issue.path.join(".") || "(root)"}: ${issue.message}`);
       continue;

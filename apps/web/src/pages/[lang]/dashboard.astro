@@ -1,0 +1,29 @@
+---
+import { LOCALES, localize, type Locale } from "@thai-open-api/schema";
+import type { GetStaticPaths } from "astro";
+import { DashboardView } from "../../components/charts/DashboardView.tsx";
+import DashboardSkeleton from "../../components/charts/DashboardSkeleton.astro";
+import { createT } from "../../i18n/index.ts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCatalog } from "../../lib/catalog.ts";
+import { computeDashboard } from "../../lib/dashboard.ts";
+
+export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
+
+const locale = Astro.params.lang as Locale;
+const t = createT(locale);
+const { entries, status, now } = getCatalog();
+const data = computeDashboard(entries, status, now);
+const names = Object.fromEntries(entries.map((e) => [e.id, localize(e.name, locale)]));
+---
+
+<BaseLayout locale={locale} title={t("dashboard.title")} description={t("dashboard.subtitle")}>
+  <div class="mx-auto max-w-[var(--content-max)] px-5 py-10 sm:px-8">
+    <h1 class="text-h1 font-bold tracking-tight">{t("dashboard.title")}</h1>
+    <p class="mb-8 mt-2 max-w-2xl text-ink-2">{t("dashboard.subtitle")}</p>
+    <DashboardView client:only="react" data={data} names={names} locale={locale}>
+      <Fragment slot="fallback"><DashboardSkeleton label={t("dashboard.loading")} /></Fragment>
+    </DashboardView>
+    <noscript><p class="text-small text-ink-2">{t("dashboard.noscript")}</p></noscript>
+  </div>
+</BaseLayout>

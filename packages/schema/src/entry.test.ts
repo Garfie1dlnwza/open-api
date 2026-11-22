@@ -28,6 +28,10 @@ describe("ApiEntrySchema", () => {
     expect(parse({ endpoints: [{ ...endpoint, example: { currency: "USD", limit: "500" } }] }).success).toBe(false);
   });
 
+  it("rejects a review date in the future", () => {
+    expect(parse({ reviewedAt: "2999-01-01" }).success).toBe(false);
+  });
+
   it("rejects duplicate endpoint ids", () => {
     expect(parse({ endpoints: [base.endpoints[0], base.endpoints[0]] }).success).toBe(false);
   });

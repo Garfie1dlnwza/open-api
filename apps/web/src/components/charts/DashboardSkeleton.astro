@@ -1,0 +1,80 @@
+---
+/** Mirrors DashboardView's layout so the page does not jump when the charts arrive. Each block is chart-shaped. */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+const bars = [92, 64, 48, 30, 18];
+const chartSections = [
+  { span: "xl:col-span-2", kind: "line" },
+  { span: "", kind: "segment" },
+  { span: "xl:col-span-2", kind: "line" },
+  { span: "", kind: "donut" },
+  { span: "", kind: "bars" },
+  { span: "", kind: "bars" },
+  { span: "", kind: "segment" },
+];
+---
+
+<div role="status" aria-label={label} class="flex flex-col gap-12">
+  <div class="skeleton h-4 w-56"></div>
+  <section class="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+    <div class="flex flex-col gap-3">
+      <div class="skeleton h-4 w-24"></div>
+      <div class="skeleton h-14 w-52"></div>
+      <div class="skeleton h-3 w-64"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-x-8 gap-y-8 sm:gap-x-12">
+      {[0, 1, 2, 3].map(() => (
+        <div class="flex flex-col gap-3">
+          <div class="skeleton h-4 w-20"></div>
+          <div class="skeleton h-8 w-28"></div>
+        </div>
+      ))}
+    </div>
+  </section>
+  <div class="grid gap-x-12 gap-y-12 xl:grid-cols-3">
+    {chartSections.map((section) => (
+      <div class={`flex flex-col gap-4 border-t border-line pt-5 ${section.span}`}>
+        <div class="flex flex-col gap-2">
+          <div class="skeleton h-4 w-40"></div>
+          <div class="skeleton h-3 w-64 max-w-full"></div>
+        </div>
+        {section.kind === "bars" && (
+          <div class="flex flex-col gap-3.5 pt-1">
+            {bars.map((w) => <div class="skeleton h-2.5" style={`width:${w}%`}></div>)}
+          </div>
+        )}
+        {section.kind === "line" && (
+          <svg viewBox="0 0 400 140" class="h-56 w-full" preserveAspectRatio="none" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((i) => <line x1="0" x2="400" y1={i * 34 + 2} y2={i * 34 + 2} stroke="var(--gridline)" />)}
+            <path d="M0,100 C40,90 70,110 110,80 C150,50 190,86 230,60 C270,36 320,70 400,30" fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round" class="skeleton-stroke" />
+          </svg>
+        )}
+        {section.kind === "donut" && (
+          <div class="flex items-center gap-8">
+            <div class="size-36 shrink-0 rounded-full border-[12px] border-subtle"></div>
+            <div class="flex flex-1 flex-col gap-3">
+              {[0, 1, 2].map(() => <div class="skeleton h-3 w-full"></div>)}
+            </div>
+          </div>
+        )}
+        {section.kind === "segment" && (
+          <div class="flex flex-col gap-4">
+            <div class="skeleton h-7 w-full"></div>
+            <div class="skeleton h-3 w-3/4"></div>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  @keyframes skeleton-pulse {
+    50% { opacity: 0.45; }
+  }
+  .skeleton-stroke {
+    animation: skeleton-pulse var(--shimmer) ease-in-out infinite;
+  }
+</style>

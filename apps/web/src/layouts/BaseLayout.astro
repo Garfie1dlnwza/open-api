@@ -11,12 +11,15 @@ interface Props {
   locale: Locale;
   title?: string;
   description?: string;
+  /** Use the wider detail-page container so the header lines up with a three-column page. */
+  wide?: boolean;
 }
-const { locale, title, description } = Astro.props;
+const { locale, title, description, wide } = Astro.props;
 const t = createT(locale);
 const pageTitle = title ? `${title} · ${t("site.name")}` : `${t("site.name")} · ${t("site.tagline")}`;
 const pageDescription = description ?? t("site.description");
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
+const image = new URL("/brand/og.png", SITE.url).href;
 ---
 
 <!doctype html>
@@ -26,18 +29,25 @@ const canonical = new URL(Astro.url.pathname, SITE.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/brand/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
     <link rel="canonical" href={canonical} />
     {LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(switchLocalePath(Astro.url.pathname, l), SITE.url).href} />)}
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content={t("site.name")} />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body class="flex min-h-screen flex-col">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-800 focus:px-4 focus:py-2 focus:text-on-brand">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-on-brand">
       {t("nav.skipToContent")}
     </a>
-    <Header locale={locale} />
+    <Header locale={locale} wide={wide} />
     <main id="main" class="flex-1">
       <slot />
     </main>

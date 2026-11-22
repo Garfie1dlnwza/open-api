@@ -15,10 +15,11 @@ export function Tabs({ items, label, className }: { items: TabItem[]; label: str
 
   const onKeyDown = (event: KeyboardEvent) => {
     const index = items.findIndex((i) => i.id === active);
+    const jump = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : null;
     const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-    if (!step) return;
+    if (!step && jump === null) return;
     event.preventDefault();
-    const next = items[(index + step + items.length) % items.length];
+    const next = items[jump ?? (index + step + items.length) % items.length];
     setActive(next.id);
     refs.current[next.id]?.focus();
   };

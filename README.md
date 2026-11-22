@@ -9,11 +9,13 @@ verified docs, ready-to-copy code, live status and a playground that calls the r
 - **Trust score** – source, docs, licence, last review, historical stability and tested examples,
   shown as a breakdown rather than a bare number.
 - **Playground** – a Cloudflare Worker that accepts catalog IDs only (never URLs).
+- **Dashboard** with charts computed from the catalog and real probe history (no sample data).
 - **Thai and English** from the start.
 
 ## Layout
 
 ```
+brand/              source logo (images are derived from it)
 catalog/            API entries (the single source of truth)
 packages/schema/    Zod schema, request builder, health + trust logic (shared by everything)
 apps/web/           Astro site (static) with React islands
@@ -27,12 +29,13 @@ and copy code; only "Send request" stops working.
 
 ## Develop
 
-Needs **Node 22.23.4 or newer** (`nvm use`), because Astro 7 requires it.
+Needs **Node 22.23.4 or newer** (`nvm install && nvm use` reads `.nvmrc`), because Astro 7 requires it.
 
 ```bash
 npm install
 npm run health          # optional: writes data/status.json for real status badges
 npm run catalog:build   # generates the Worker's catalog from catalog/*.yaml
+npm run brand:build     # regenerates logo/favicon/OG images from brand/logo-source.png (optional)
 cp .env.example apps/web/.env
 
 npm run dev -w @thai-open-api/worker   # playground proxy on http://127.0.0.1:8787 (or --port)
@@ -42,7 +45,7 @@ npm run dev                            # site on http://localhost:4321
 If port 8787 is taken, run the Worker with `npx wrangler dev --port 8788` in `apps/worker` and
 point `PUBLIC_PLAYGROUND_URL` at it.
 
-Useful URLs: `/th/`, `/en/`, `/th/apis/`, `/th/apis/<id>/`, e.g. `?q=ฝุ่น` or `?category=finance&status=auth_required`.
+Useful URLs: `/th/`, `/en/`, `/th/apis/`, `/th/apis/<id>/`, `/th/dashboard/`, e.g. `?q=ฝุ่น` or `?category=finance&status=auth_required`.
 
 ## Checks
 

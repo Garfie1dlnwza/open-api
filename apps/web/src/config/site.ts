@@ -6,11 +6,14 @@ export const SITE = {
   url: import.meta.env.PUBLIC_SITE_URL ?? "http://localhost:4321",
   repoUrl: import.meta.env.PUBLIC_REPO_URL ?? "https://github.com/Garfie1dlnwza/open-api",
   playgroundUrl: import.meta.env.PUBLIC_PLAYGROUND_URL ?? "",
+  /** Browser chrome colour. Mirrors --brand-700 in tokens.css (a <meta> tag cannot read CSS variables). */
+  themeColor: "#0053b1",
 } as const;
 
 export const ROUTES = {
   home: (l: Locale) => `/${l}/`,
   explore: (l: Locale) => `/${l}/apis/`,
+  dashboard: (l: Locale) => `/${l}/dashboard/`,
   api: (l: Locale, id: string) => `/${l}/apis/${id}/`,
   searchIndex: (l: Locale) => `/${l}/search-index.json`,
   contribute: () => `${SITE.repoUrl}/blob/main/CONTRIBUTING.md`,
@@ -50,6 +53,7 @@ export type Sort = (typeof SORTS)[number];
 export const DEFAULT_SORT: Sort = "name";
 
 export const HOTKEY = "k";
+export const HOTKEY_LABEL = { mac: "⌘K", other: "Ctrl K" } as const;
 
 /** Each language is always shown in its own script, whatever the page language is. */
 export const LOCALE_NAMES: Record<Locale, string> = { th: "ไทย", en: "English" };

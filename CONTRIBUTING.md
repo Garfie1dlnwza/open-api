@@ -65,6 +65,29 @@ satisfy their own parameter rules. A parameter `pattern` may only use literals, 
 `?` `*` `+` `{n,m}` on single atoms (for example `^[A-Z]{3}$`); groups and alternation are rejected on
 purpose.
 
+### Parameter fields
+
+| Field | Meaning |
+|---|---|
+| `name`, `in` | Name and where it goes: `query` or `path` (path params must be `required` and appear as `{name}`) |
+| `type` | `string` (default), `integer`, `number`, `boolean`, `date` (YYYY-MM-DD) |
+| `required` | Defaults to false. A required param needs a `default` or an `example` value |
+| `enum` | The only allowed values; the playground shows a dropdown |
+| `pattern` | A small regex subset, fully anchored for you (`[A-Z]{3}`) |
+| `min`, `max` | Numeric range, or length for strings |
+| `default` | Used when the caller leaves it empty |
+| `description` | Thai and English |
+
+### Other endpoint and API fields
+
+- `example`: values for the "Use example values" button, the code samples **and the health check**.
+- `playground: false` hides the playground for an endpoint (or for the whole API if all are off).
+- `knownIssue` (API level): a provider-side problem shown prominently, e.g. a broken certificate chain.
+- `rateLimit`: free text, shown under the licence.
+- `maxResponseBytes`: raise it (up to 2,000,000) only for genuinely large responses; bigger bodies are cut off.
+- `health.slowMs`: the point where a slow endpoint is reported as Degraded (default 3000 ms).
+- `reviewedAt` must be a past date (YYYY-MM-DD).
+
 Be honest in the metadata:
 
 - Set `license.verified: true` only after you read the licence or terms.
@@ -73,6 +96,12 @@ Be honest in the metadata:
 - Never put real credentials in the catalog. Keyed APIs are probed without a key and shown as
   "Authentication required".
 - Use `knownIssue` for provider-side problems users should know about up front.
+
+## Design
+
+Read [docs/design-system](docs/design-system) before changing the UI. Short version: tokens only (no
+literal colours), status/source as icons with accessible names, ruled lists instead of card grids,
+charts that answer one question each, and motion that respects `prefers-reduced-motion`.
 
 ## Where things live
 

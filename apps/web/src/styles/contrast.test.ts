@@ -23,9 +23,13 @@ const textPairs: [string, string][] = [
   ["ink", "canvas"], ["ink", "surface"], ["ink", "subtle"],
   ["ink-2", "canvas"], ["ink-2", "surface"], ["ink-2", "subtle"],
   ["ink-3", "canvas"], ["ink-3", "surface"], ["ink-3", "subtle"],
-  ["brand-700", "surface"], ["brand-700", "canvas"], ["brand-700", "brand-100"],
-  ["brand-800", "brand-100"], ["on-brand", "brand-800"], ["on-brand", "brand-900"],
+  ["brand-700", "surface"], ["brand-700", "canvas"], ["brand-700", "brand-100"], ["brand-700", "brand-50"],
+  ["brand-800", "brand-100"], ["on-brand", "brand-700"], ["on-brand", "brand-800"], ["on-brand", "brand-900"],
   ["accent-800", "surface"], ["accent-800", "accent-50"], ["accent-800", "accent-100"],
+  ["red-fg", "surface"], ["red-fg", "canvas"],
+  ["chart-label", "surface"], ["chart-label", "canvas"],
+  ["on-series", "series-1"], ["on-dark", "series-2"], ["on-dark", "series-3"], ["on-dark", "series-other"], ["on-dark", "series-1-light"],
+  ["on-dark", "status-warning"], ["on-dark", "status-good"], ["on-series", "status-critical"], ["on-series", "status-info"], ["on-dark", "status-unknown"],
   ["success-fg", "success-bg"], ["warning-fg", "warning-bg"], ["error-fg", "error-bg"],
   ["info-fg", "info-bg"], ["quiet-fg", "quiet-bg"],
   ["code-fg", "code-bg"], ["code-muted", "code-bg"],
@@ -36,7 +40,7 @@ describe("design tokens meet WCAG AA", () => {
     expect(ratio(fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(AA_TEXT);
   });
 
-  it.each([["brand-500", "canvas"], ["brand-500", "surface"], ["success-dot", "surface"], ["warning-dot", "surface"], ["error-dot", "surface"], ["info-dot", "surface"], ["control-border", "surface"], ["control-border", "canvas"]])(
+  it.each([["brand-500", "canvas"], ["brand-500", "surface"], ["success-dot", "surface"], ["warning-dot", "surface"], ["error-dot", "surface"], ["info-dot", "surface"], ["control-border", "surface"], ["control-border", "canvas"], ["series-1", "surface"], ["series-2", "surface"], ["status-good", "surface"], ["status-critical", "surface"], ["status-info", "surface"]])(
     "UI colour %s on %s is at least 3:1",
     (fg, bg) => {
       expect(ratio(fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(AA_UI);
