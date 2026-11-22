@@ -10,13 +10,25 @@ export const SITE = {
   themeColor: "#0053b1",
 } as const;
 
+/** Paths under the repository URL. The footer and the contribute link both build on these. */
+export const REPO_PATHS = {
+  releases: "/releases",
+  issues: "/issues",
+  readme: "#readme",
+  architecture: "/blob/main/docs/architecture.md",
+  contributing: "/blob/main/CONTRIBUTING.md",
+  changelog: "/blob/main/CHANGELOG.md",
+  commit: "/commit/",
+} as const;
+export const repoUrl = (path: string): string => `${SITE.repoUrl}${path}`;
+
 export const ROUTES = {
   home: (l: Locale) => `/${l}/`,
   explore: (l: Locale) => `/${l}/apis/`,
   dashboard: (l: Locale) => `/${l}/dashboard/`,
   api: (l: Locale, id: string) => `/${l}/apis/${id}/`,
   searchIndex: (l: Locale) => `/${l}/search-index.json`,
-  contribute: () => `${SITE.repoUrl}/blob/main/CONTRIBUTING.md`,
+  contribute: () => repoUrl(REPO_PATHS.contributing),
   root: "/",
 } as const;
 
@@ -35,6 +47,7 @@ export const STORAGE = {
   playgroundConsent: "toa:playground-consent",
   playgroundRemember: "toa:playground-remember",
   recentApis: "toa:recent-apis",
+  recentQueries: "toa:recent-queries",
 } as const;
 
 /** Per-API storage key so a key saved for one provider is never offered to another. */
@@ -47,6 +60,9 @@ export const UI = {
   /** Probe results drawn in a row's uptime strip (one bar per check). */
   uptimeSlots: 24,
   recentApisKept: 5,
+  recentQueriesKept: 5,
+  /** Names and tags offered by the hero search box as native autocomplete. */
+  heroSuggestions: 60,
   suggestedApis: 4,
   heroSampleLines: 7,
   copiedResetMs: 1_600,
