@@ -15,6 +15,9 @@ license: { type: terms, verified: false }
 rateLimit:
   th: ค่า uid/ukey เริ่มต้นเป็นค่าทดลองในเอกสาร ควรสมัครของตัวเองเมื่อใช้งานจริง
   en: The default uid/ukey are the documentation's demo values; register your own for real use.
+knownIssue:
+  th: ตอบช้า (ราว 5 วินาที) เพราะเป็นไฟล์ XML ขนาดเกือบ 1 MB ที่สร้างใหม่ทุกครั้ง จึงถูกนับเป็น “ช้าหรือมีปัญหาบางส่วน” โดยตั้งใจ ควรแคชผลฝั่งคุณ
+  en: Slow (about 5 seconds) because it is an XML document of nearly 1 MB built on every request, so it is counted as Degraded on purpose. Cache the result on your side.
 tags: [earthquake, แผ่นดินไหว, seismic, xml]
 reviewedAt: 2026-11-22
 maxResponseBytes: 2000000
@@ -42,6 +45,5 @@ endpoints:
       sample: |
         <DailySeismicEvents version="1.0"><header><title>Daily Seismic (Earthquake) Events</title></header>...</DailySeismicEvents>
     health:
-      slowMs: 8000
       checks:
         - { kind: text, contains: "<DailySeismicEvents" }
