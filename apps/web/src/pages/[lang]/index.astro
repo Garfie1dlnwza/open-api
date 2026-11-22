@@ -1,8 +1,11 @@
 ---
-import { CATEGORIES, LOCALES, MS_PER_HOUR, type Locale } from "@thai-open-api/schema";
+import { CATEGORIES, LOCALES, MS_PER_HOUR, renderSample, sampleRequest, type Locale } from "@thai-open-api/schema";
 import type { GetStaticPaths } from "astro";
 import { ArrowRight, Clock, Hourglass, Info, LockOpen, Search, TriangleAlert } from "lucide-react";
 import { ApiRow } from "../../components/api/ApiRow.tsx";
+import { IconLegend } from "../../components/api/IconLegend.tsx";
+import { UptimeStrip } from "../../components/api/UptimeStrip.tsx";
+import { CodeBlock } from "../../components/playground/CodeBlock.tsx";
 import { CATEGORY_ICON } from "../../components/api/categoryIcon.ts";
 import { STATUS_ICON, STATUS_ICON_CLASS } from "../../components/api/status.ts";
 import { StatusBadge } from "../../components/api/StatusBadge.tsx";
@@ -10,7 +13,7 @@ import { SOURCE_ICON } from "../../components/api/TrustBadge.tsx";
 import { HOTKEY_LABEL, QUERY, ROUTES, UI } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCatalog, getHealth, getSummaries } from "../../lib/catalog.ts";
+import { getCatalog, getEntry, getHealth, getSummaries } from "../../lib/catalog.ts";
 import { collatorFor, formatRelative } from "../../lib/format.ts";
 
 export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
@@ -29,7 +32,14 @@ const counts = Object.fromEntries(CATEGORIES.map((c) => [c, apis.filter((a) => a
 
 const SEVERITY = { outage: 0, degraded: 1, auth_required: 2, unknown: 3, operational: 4 } as const;
 const live = apis
-  .map((a) => ({ ...a, latency: getHealth(a.id)?.latencyMs }))
+  .map((a) => {
+    const history = getHealth(a.id)?.history.map((h) => h.status) ?? [];
+    const counted = history.filter((s) => s !== "unknown" && s !== "auth_required");
+    const up = counted.filter((s) => s !== "outage").length;
+    // Key-gated APIs never have countable checks; say what they are instead of "0 of 0".
+    const uptimeLabel = counted.length > 0 ? t("home.uptimeLabel", { up, total: counted.length }) : t(`status.${a.status}`);
+    return { ...a, latency: getHealth(a.id)?.latencyMs, history, uptimeLabel };
+  })
   .sort((a, b) => SEVERITY[a.status] - SEVERITY[b.status] || compare(a.name, b.name));
 const hasHealth = apis.some((a) => a.status !== "unknown");
 const operational = apis.filter((a) => a.status === "operational").length;
@@ -45,39 +55,59 @@ const shortcuts = [
   { href: `${explore}?${QUERY.status}=operational`, label: t("status.operational"), count: operational, Icon: STATUS_ICON.operational, tone: STATUS_ICON_CLASS.operational },
 ];
 const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
+
+// A real request and response from the most trusted keyless API: the page shows what the platform is for.
+const demo = featured.map((f) => getEntry(f.id)).find((e) => e.auth.type === "none" && e.endpoints[0].playground && e.endpoints[0].response.sample);
+const demoRequest = demo ? sampleRequest(demo, demo.endpoints[0]) : null;
+const demoCurl = demo && demoRequest ? renderSample("curl", demoRequest) : null;
+const demoLines = demo?.endpoints[0].response.sample?.trim().split("\n") ?? [];
+const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLines.length > UI.heroSampleLines ? "\n…" : "");
 ---
 
 <BaseLayout locale={locale}>
-  <section class="mx-auto grid max-w-[var(--content-max)] gap-12 px-5 pb-12 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-16 lg:pt-20">
-    <div>
-      <h1 class="max-w-xl text-[38px] font-bold leading-[1.18] tracking-tight sm:text-[46px]">{t("home.heroTitle")}</h1>
+  <div class="border-b border-line bg-brand-50">
+  <section class="mx-auto grid max-w-[var(--content-max)] grid-cols-[minmax(0,1fr)] gap-12 px-5 pb-14 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-16 lg:pt-16">
+    <div class="min-w-0">
+      <h1 class="max-w-xl text-[38px] font-bold leading-[1.16] tracking-tight sm:text-[48px]">
+        {t("home.heroTitle")}<br /><span class="text-brand-700">{t("home.heroAccent")}</span>
+      </h1>
       <p class="mt-5 max-w-xl text-body text-ink-2">{t("home.heroSubtitle")}</p>
-      <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-9 flex max-w-xl">
+      <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-8 flex max-w-xl">
         <label for="hero-search" class="sr-only">{t("home.searchLabel")}</label>
         <div class="relative flex-1">
-          <Search aria-hidden size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" />
-          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-12 w-full rounded-l-md border border-r-0 border-control bg-surface pl-10 pr-3 text-body placeholder:text-ink-3 transition-colors duration-150 hover:border-ink-3" />
+          <Search aria-hidden size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-700" />
+          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-14 w-full rounded-l-md border-2 border-r-0 border-brand-700 bg-surface pl-12 pr-3 text-body placeholder:text-ink-3 sm:pr-24" />
+          <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-subtle px-1.5 py-0.5 text-caption text-ink-3 sm:block [@media(hover:none)]:hidden">{hint}</kbd>
         </div>
-        <button type="submit" class="h-12 rounded-r-md bg-brand-700 px-6 text-small font-medium text-on-brand transition-colors duration-150 hover:bg-brand-800">{t("home.searchSubmit")}</button>
+        <button type="submit" class="h-14 rounded-r-md bg-brand-700 px-7 text-small font-semibold text-on-brand transition-colors duration-150 hover:bg-brand-900">{t("home.searchSubmit")}</button>
       </form>
-      <nav aria-label={t("home.shortcuts")} class="mt-4 max-w-xl">
+      <nav aria-label={t("home.shortcuts")} class="mt-3 max-w-xl">
         <ul class="flex flex-wrap gap-x-5">
           {shortcuts.map(({ href, label, count, Icon, tone }) => (
             <li>
               <a {href} class="tap group gap-1.5 text-small text-ink-2 transition-colors duration-150 hover:text-brand-700">
                 <Icon aria-hidden size={16} className={tone} />
                 {label}
-                <span class="text-caption tabular-nums text-ink-3">{count}</span>
+                <span class="font-mono text-caption tabular-nums text-ink-3">{count}</span>
               </a>
             </li>
           ))}
         </ul>
       </nav>
-      <!-- Keyboard shortcut hint only makes sense where there is a keyboard. -->
-      <p class="mt-1 text-caption text-ink-3 [@media(hover:none)]:hidden"><kbd class="rounded border border-line bg-surface px-1.5 py-0.5">{hint}</kbd></p>
+      {demoCurl && demo && (
+        <section aria-labelledby="try" class="mt-7 max-w-xl">
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <h2 id="try" class="text-small font-semibold">{t("home.tryTitle")}</h2>
+            <a href={`${ROUTES.api(locale, demo.id)}#playground`} class="tap gap-1 text-caption font-medium text-brand-700 hover:underline">{t("home.tryOpen")}<ArrowRight aria-hidden size={13} /></a>
+          </div>
+          <CodeBlock client:visible code={demoCurl} label={demo.name[locale]} locale={locale} />
+          <pre class="mt-0.5 overflow-x-auto rounded-b-lg rounded-t-sm bg-code-bg px-4 py-3 text-code text-code-fg"><code>{demoExcerpt}</code></pre>
+          <p class="mt-1 text-caption text-ink-3">{t("home.tryResponse")}</p>
+        </section>
+      )}
     </div>
 
-    <section aria-labelledby="live" class="overflow-hidden rounded-lg border border-line bg-surface">
+    <section aria-labelledby="live" class="overflow-hidden rounded-lg border border-line bg-surface shadow-[0_1px_0_rgb(16_29_53/4%)]">
       <header class="flex items-center justify-between gap-3 border-b border-line pl-4 pr-2">
         <h2 id="live" class="py-3 text-small font-semibold">{t("home.liveTitle")}</h2>
         <a href={ROUTES.dashboard(locale)} class="tap gap-1 px-2 text-caption font-medium text-brand-700 hover:underline">{t("home.openDashboard")}<ArrowRight aria-hidden size={13} /></a>
@@ -98,13 +128,14 @@ const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
               const slow = a.latency !== undefined && a.latency >= UI.slowLatencyMs;
               return (
                 <li>
-                  <a href={ROUTES.api(locale, a.id)} class="anim-rise grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition-colors duration-150 hover:bg-subtle" style={`--i:${i}`}>
+                  <a href={ROUTES.api(locale, a.id)} class="anim-rise grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition-colors duration-150 hover:bg-brand-50 focus-visible:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500 sm:grid-cols-[auto_minmax(0,1fr)_auto_4.75rem]" style={`--i:${i}`}>
                     <StatusBadge status={a.status} locale={locale} />
                     <span class="text-small leading-snug">{a.name}</span>
+                    <UptimeStrip history={a.history} slots={UI.uptimeSlots} label={a.uptimeLabel} />
                     {a.latency === undefined ? (
-                      <span class="text-caption text-ink-3">{t("common.none")}</span>
+                      <span class="text-right text-caption text-ink-3">{t("common.none")}</span>
                     ) : (
-                      <span class:list={["inline-flex items-center gap-1 text-caption tabular-nums", slow ? "font-semibold text-warning-fg" : "text-ink-2"]} title={slow ? t("home.slowTip", { ms: UI.slowLatencyMs }) : undefined}>
+                      <span class:list={["inline-flex items-center justify-end gap-1 font-mono text-caption tabular-nums", slow ? "font-semibold text-warning-fg" : "text-ink-2"]} title={slow ? t("home.slowTip", { ms: UI.slowLatencyMs }) : undefined}>
                         {slow && <Hourglass aria-hidden size={12} />}
                         {t("common.ms", { n: Math.round(a.latency) })}
                         {slow && <span class="sr-only">{t("home.slowTip", { ms: UI.slowLatencyMs })}</span>}
@@ -115,6 +146,7 @@ const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
               );
             })}
           </ul>
+          <div class="border-t border-line bg-subtle px-4 py-2.5"><IconLegend kinds={["status"]} locale={locale} /></div>
         </>
       ) : (
         <div class="px-4 py-8">
@@ -124,8 +156,9 @@ const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
       )}
     </section>
   </section>
+  </div>
 
-  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-12 px-5 sm:px-8">
+  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-12 px-5 pt-12 sm:px-8">
     <section id="categories" aria-labelledby="categories-title" class="scroll-mt-24">
       <h2 id="categories-title" class="sr-only">{t("home.categories")}</h2>
       <ul class="flex flex-wrap gap-x-7 border-y border-line">

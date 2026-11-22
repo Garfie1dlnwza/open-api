@@ -7,6 +7,9 @@
   colour. With no health data it explains where status comes from instead of showing nothing. Below:
   a one-line category row, featured APIs as ruled rows (names may wrap to two lines, never an
   ellipsis), a "recently reviewed" timeline only when review dates differ, and a one-line contribute row.
+- **Legend and history:** icons are named once, in a one-line legend (under the status board, above the
+  explorer list). Each status row has an uptime strip of recent probes. Rows lift on hover and focus.
+  The command palette shows recent and suggested APIs while empty. Reasons: [decisions.md](decisions.md).
 - **Header:** the one-row menu appears from 1024 px; below that it is a second, scrollable row, so
   nothing is pushed off-screen at 768 px.
 - **Dashboard:** hero availability figure, four KPI tiles, then seven charts that each answer one
