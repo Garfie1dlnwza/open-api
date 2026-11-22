@@ -5,7 +5,7 @@ import { cx } from "./cx.ts";
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: "bg-brand-800 text-on-brand hover:bg-brand-900",
+  primary: "bg-fill text-on-brand hover:bg-fill-hover",
   secondary: "border border-control bg-surface text-ink hover:bg-subtle",
   ghost: "text-ink-2 hover:bg-subtle hover:text-ink",
   destructive: "bg-error-fg text-on-brand hover:opacity-90",

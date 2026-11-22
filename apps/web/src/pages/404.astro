@@ -16,7 +16,7 @@ const t = createT(DEFAULT_LOCALE);
         <section lang={l} class="flex flex-col items-start gap-3">
           <h1 class="text-h1 font-bold tracking-tight">{tl("notFound.title")}</h1>
           <p class="text-ink-2">{tl("notFound.body")}</p>
-          <a href={ROUTES.home(l)} class="text-small font-medium text-brand-700 hover:underline">{tl("notFound.home")}</a>
+          <a href={ROUTES.home(l)} class="text-small font-medium text-link hover:underline">{tl("notFound.home")}</a>
         </section>
       );
     })}

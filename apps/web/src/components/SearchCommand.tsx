@@ -215,7 +215,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
             {t("search.hint")}
           </span>
           {query && (
-            <a className="text-brand-700 hover:underline" onClick={() => rememberQuery(query)} href={`${ROUTES.explore(locale)}?${QUERY.search}=${encodeURIComponent(query)}`}>
+            <a className="text-link hover:underline" onClick={() => rememberQuery(query)} href={`${ROUTES.explore(locale)}?${QUERY.search}=${encodeURIComponent(query)}`}>
               {t("search.viewAll")}
             </a>
           )}

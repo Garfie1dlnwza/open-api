@@ -58,7 +58,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
       <a href={ROUTES.home(locale)} class="inline-flex items-center gap-2.5" aria-label={t("site.name")}>
         <img src="/brand/mark.png" alt="" width="36" height="33" class="h-9 w-auto" loading="lazy" />
         <span class="text-[17px] font-bold leading-none tracking-tight">
-          <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-brand-700">API</span>
+          <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-link">API</span>
         </span>
       </a>
       <p class="mt-4 text-small text-ink-2">{t("footer.description")}</p>
@@ -69,7 +69,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
         <ul class="flex flex-col">
           {column.links.map((link) => (
             <li>
-              <a href={link.href} {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} class="tap text-small text-ink transition-colors duration-150 hover:text-brand-700 hover:underline">{link.label}</a>
+              <a href={link.href} {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})} class="tap text-small text-ink transition-colors duration-150 hover:text-link hover:underline">{link.label}</a>
             </li>
           ))}
         </ul>
@@ -88,8 +88,8 @@ const columns: { title: string; links: FooterLink[] }[] = [
           <span aria-hidden="true" class:list={["size-2 rounded-full", dot]}></span>
           {hasStatus ? t(stale ? "footer.statusStale" : "footer.statusFresh", { when: checked }) : t("footer.noStatus")}
         </li>
-        <li><a href={repoUrl(REPO_PATHS.releases)} target="_blank" rel="noopener noreferrer" class="tap hover:text-brand-700 hover:underline">{t("footer.version", { version: BUILD.version })}</a></li>
-        {BUILD.commit && <li><a href={`${repoUrl(REPO_PATHS.commit)}${BUILD.commit}`} target="_blank" rel="noopener noreferrer" class="tap hover:text-brand-700 hover:underline">{BUILD.commit}</a></li>}
+        <li><a href={repoUrl(REPO_PATHS.releases)} target="_blank" rel="noopener noreferrer" class="tap hover:text-link hover:underline">{t("footer.version", { version: BUILD.version })}</a></li>
+        {BUILD.commit && <li><a href={`${repoUrl(REPO_PATHS.commit)}${BUILD.commit}`} target="_blank" rel="noopener noreferrer" class="tap hover:text-link hover:underline">{BUILD.commit}</a></li>}
       </ul>
     </div>
   </div>

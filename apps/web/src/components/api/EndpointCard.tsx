@@ -37,7 +37,7 @@ export function EndpointCard({ endpoint, locale, status, exampleVerified, sample
     <article id={`endpoint-${endpoint.id}`} className="scroll-mt-24 rounded-lg border border-line bg-surface p-5">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="rounded-md bg-brand-100 px-2 py-0.5 font-mono text-caption font-medium text-brand-800">{endpoint.method}</span>
+          <span className="rounded-md bg-brand-100 px-2 py-0.5 font-mono text-caption font-medium text-brand-fg">{endpoint.method}</span>
           <h3 className="text-h4 font-semibold">{localize(endpoint.title, locale)}</h3>
         </div>
         <StatusBadge status={status} locale={locale} />

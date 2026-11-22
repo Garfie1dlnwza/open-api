@@ -18,12 +18,12 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
   return (
     <a
       href={ROUTES.api(locale, api.id)}
-      className="anim-rise group relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3.5 transition-colors duration-150 before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:origin-top before:scale-y-0 before:bg-brand-700 before:transition-transform before:duration-200 hover:bg-brand-50 hover:before:scale-y-100 focus-visible:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500 focus-visible:before:scale-y-100 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.5fr)_9.5rem]"
+      className="anim-rise group relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3.5 transition-colors duration-150 before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:origin-top before:scale-y-0 before:bg-link before:transition-transform before:duration-200 hover:bg-brand-50 hover:before:scale-y-100 focus-visible:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500 focus-visible:before:scale-y-100 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.5fr)_9.5rem]"
       style={{ "--i": Math.min(index, STAGGER_CAP) } as React.CSSProperties}
     >
       <StatusBadge status={api.status} locale={locale} size={20} />
       <span className="min-w-0">
-        <strong className="line-clamp-2 break-words text-small font-semibold leading-snug transition-colors duration-150 group-hover:text-brand-700">{api.name}</strong>
+        <strong className="line-clamp-2 break-words text-small font-semibold leading-snug transition-colors duration-150 group-hover:text-link">{api.name}</strong>
         <span className="line-clamp-2 break-words text-caption leading-snug text-ink-2">{api.provider}</span>
       </span>
       <span className="col-span-2 col-start-2 row-start-2 line-clamp-2 text-small text-ink-2 md:col-span-1 md:col-start-auto md:row-start-auto">{api.description}</span>
@@ -42,7 +42,7 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
         <time dateTime={api.reviewedAt} title={t("api.lastVerified", { when: api.verifiedLabel })} className="w-12 text-right text-caption tabular-nums">
           {api.verifiedShort}
         </time>
-        <ChevronRight aria-hidden size={16} className="-ml-1 -translate-x-1 text-brand-700 opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100" />
+        <ChevronRight aria-hidden size={16} className="-ml-1 -translate-x-1 text-link opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100" />
       </span>
     </a>
   );

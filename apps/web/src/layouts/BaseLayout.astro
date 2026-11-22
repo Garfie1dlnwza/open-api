@@ -2,7 +2,7 @@
 import { LOCALES, type Locale } from "@thai-open-api/schema";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { SITE } from "../config/site.ts";
+import { SITE, STORAGE } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
 import { switchLocalePath } from "../lib/locale.ts";
 import "../styles/globals.css";
@@ -30,6 +30,20 @@ const image = new URL("/brand/og.png", SITE.url).href;
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Runs before first paint so a dark visitor never sees a flash of light. A saved choice wins over the OS. -->
+    <script is:inline define:vars={{ themeKey: STORAGE.theme }}>
+      (function () {
+        var dark = false;
+        try {
+          var saved = localStorage.getItem(themeKey);
+          dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (e) {
+          try { dark = matchMedia("(prefers-color-scheme: dark)").matches; } catch (e2) {}
+        }
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
     <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/brand/favicon-192.png" />
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
@@ -44,7 +58,7 @@ const image = new URL("/brand/og.png", SITE.url).href;
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body class="flex min-h-screen flex-col">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-on-brand">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-fill focus:px-4 focus:py-2 focus:text-on-brand">
       {t("nav.skipToContent")}
     </a>
     <Header locale={locale} wide={wide} />
