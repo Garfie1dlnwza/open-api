@@ -7,7 +7,7 @@ export function CodeBlock({ code, label, locale }: { code: string; label?: strin
   const t = createT(locale);
   const { copied, copy } = useCopy();
   return (
-    <div className="overflow-hidden rounded-lg bg-code-bg">
+    <div className="min-w-0 overflow-hidden rounded-lg bg-code-bg">
       <div className="flex items-center justify-between gap-3 px-4 pt-2 text-caption text-code-muted">
         <span>{label}</span>
         <button

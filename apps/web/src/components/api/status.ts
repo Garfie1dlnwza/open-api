@@ -26,6 +26,15 @@ export const STATUS_PILL_CLASS: Record<Status, string> = {
   auth_required: "bg-info-bg text-info-fg",
 };
 
+/** One bar of an uptime strip. Unknown and key-gated checks stay quiet so real failures stand out. */
+export const STATUS_BAR_CLASS: Record<Status, string> = {
+  operational: "bg-success-dot",
+  degraded: "bg-warning-dot",
+  outage: "bg-error-dot",
+  auth_required: "bg-info-dot/45",
+  unknown: "bg-line-strong",
+};
+
 /** Fill and label colour of each status inside charts (tokens, validated for contrast). */
 export const STATUS_FILL: Record<Status, { fill: string; ink: string }> = {
   operational: { fill: "var(--status-good)", ink: "var(--on-dark)" },
