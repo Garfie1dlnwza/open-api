@@ -7,9 +7,11 @@ import {
   STATUS_FACET_VALUES,
   activeFacets,
   applyFilters,
+  effectiveDir,
   effectiveSort,
   emptyReason,
   facetCounts,
+  nextSort,
   parseFilters,
   serializeFilters,
   type Facet,
@@ -18,8 +20,9 @@ import {
 import type { ApiSummary } from "../../lib/summary.ts";
 import { Button } from "../ui/Button.tsx";
 import { EmptyState } from "../ui/EmptyState.tsx";
-import { Field, Input, Select } from "../ui/Field.tsx";
-import { ApiRow, ROW_COLUMNS } from "./ApiRow.tsx";
+import { Field, Input } from "../ui/Field.tsx";
+import { Listbox } from "../ui/Listbox.tsx";
+import { ApiTable } from "./ApiTable.tsx";
 import { CATEGORY_ICON } from "./categoryIcon.ts";
 import { FacetOption } from "./FacetOption.tsx";
 import { IconLegend } from "./IconLegend.tsx";
@@ -72,8 +75,10 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
   const labelOf = (facet: Facet, value: string) => t(`${facet}.${value}` as never);
   const facetNames = active.map((f) => labelOf(f, filters[f] as string)).join(", ");
   const sort = effectiveSort(filters);
+  const dir = effectiveDir(filters);
   // Typing a query silently switches the sort to relevance, so the screen reader is told, not just the eye.
-  const announcement = `${t("explorer.results", { count: results.length })} · ${t("explorer.sortedBy", { sort: t(`explorer.sortOptions.${sort}`) })}`;
+  const sortName = sort === "relevance" ? t("explorer.sortOptions.relevance") : t(`explorer.sortDescribe.${sort}.${dir ?? "asc"}`);
+  const announcement = `${t("explorer.results", { count: results.length })} · ${t("explorer.sortedBy", { sort: sortName })}`;
 
   const emptyBody =
     reason === "both" ? t("explorer.emptyQueryIn", { query: filters.q, filters: facetNames })
@@ -136,13 +141,12 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
             </div>
           </Field>
           <Field label={t("explorer.sort")} htmlFor="explorer-sort">
-            <Select id="explorer-sort" value={sort} onChange={(e) => setFilters((f) => ({ ...f, sort: e.target.value as Filters["sort"] }))}>
-              {SORTS.filter((s) => s !== "relevance" || filters.q).map((s) => (
-                <option key={s} value={s}>
-                  {t(`explorer.sortOptions.${s}`)}
-                </option>
-              ))}
-            </Select>
+            <Listbox
+              id="explorer-sort"
+              value={sort}
+              options={SORTS.filter((o) => o !== "relevance" || filters.q).map((o) => ({ value: o, label: t(`explorer.sortOptions.${o}`) }))}
+              onChange={(next) => setFilters((f) => ({ ...f, sort: next as Filters["sort"], dir: undefined }))}
+            />
           </Field>
         </div>
 
@@ -186,20 +190,8 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
             </EmptyState>
           ) : (
             <>
-              <div aria-hidden className={`sticky top-[var(--header-height)] z-10 hidden gap-x-4 border-b border-line bg-canvas/95 px-4 py-2 text-caption font-semibold uppercase tracking-wide text-ink-2 backdrop-blur xl:grid ${ROW_COLUMNS}`}>
-                <span className="text-center">{t("explorer.columns.status")}</span>
-                <span>{t("explorer.columns.api")}</span>
-                <span>{t("explorer.columns.description")}</span>
-                <span className="text-right">{t("explorer.columns.meta")}</span>
-              </div>
-              <div className="mb-2 mt-2"><IconLegend kinds={["source", "auth", "license", "date"]} locale={locale} /></div>
-              <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
-                {results.map((api, i) => (
-                  <li key={api.id}>
-                    <ApiRow api={api} locale={locale} index={i} />
-                  </li>
-                ))}
-              </ul>
+              <div className="mb-3"><IconLegend kinds={["source", "auth", "license"]} locale={locale} /></div>
+              <ApiTable apis={results} locale={locale} sort={sort} dir={dir} onSort={(column) => setFilters((f) => ({ ...f, ...nextSort(f, column) }))} />
             </>
           )}
         </div>
