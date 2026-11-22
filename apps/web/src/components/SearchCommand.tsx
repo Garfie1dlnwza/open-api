@@ -137,7 +137,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center gap-2 rounded-md border border-control bg-surface px-3 text-small text-ink-2 transition-colors duration-150 hover:bg-subtle"
+        className="inline-flex h-10 items-center gap-2 rounded-full border border-line/60 bg-subtle/70 px-3.5 text-small text-ink-2 transition-colors duration-150 hover:text-ink"
       >
         <Search aria-hidden size={16} />
         <span className="hidden sm:inline">{t("search.open")}</span>
@@ -149,7 +149,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
         aria-label={t("search.title")}
         onClose={() => setOpen(false)}
         onClick={(e) => e.target === dialog.current && setOpen(false)}
-        className="mx-auto mt-[12vh] w-[min(92vw,38rem)] overflow-hidden rounded-xl border border-line bg-surface p-0 text-ink shadow-pop backdrop:bg-brand-900/40"
+        className="glass mx-auto mt-[12vh] w-[min(92vw,38rem)] overflow-hidden rounded-2xl p-0 text-ink backdrop:bg-brand-900/40 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-center gap-3 border-b border-line px-4">
           <Search aria-hidden size={18} className="text-ink-3" />
