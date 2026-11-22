@@ -21,12 +21,12 @@ jobs:
     timeout-minutes: 15
     steps:
       # No credentials stay on disk: npm install scripts and the probe run without a write token.
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           persist-credentials: false
       - name: Restore previous results (for history)
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         continue-on-error: true # the branch does not exist before the first run
         with:
           ref: status-data
