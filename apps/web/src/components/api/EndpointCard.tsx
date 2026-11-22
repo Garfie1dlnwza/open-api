@@ -24,7 +24,7 @@ export function EndpointCard({ endpoint, locale, status, exampleVerified, sample
       content: endpoint.response.sample ? (
         <div className="flex flex-col gap-2">
           <CodeBlock code={endpoint.response.sample.trim()} label={t("api.format", { format: endpoint.response.format.toUpperCase() })} locale={locale} />
-          <p className="text-caption text-ink-2">{exampleVerified ? t("api.verifiedExampleYes") : t("api.verifiedExampleNo")}</p>
+          <p className="text-caption text-ink-2">{t("api.sampleExcerpt")} {exampleVerified ? t("api.verifiedExampleYes") : t("api.verifiedExampleNo")}</p>
         </div>
       ) : (
         <p className="text-small text-ink-2">{t("api.noSample")}</p>
@@ -34,7 +34,7 @@ export function EndpointCard({ endpoint, locale, status, exampleVerified, sample
   ];
 
   return (
-    <article id={`endpoint-${endpoint.id}`} className="scroll-mt-24 rounded-lg border border-line bg-surface p-5 shadow-card">
+    <article id={`endpoint-${endpoint.id}`} className="scroll-mt-24 rounded-lg border border-line bg-surface p-5">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="rounded-md bg-brand-100 px-2 py-0.5 font-mono text-caption font-medium text-brand-800">{endpoint.method}</span>

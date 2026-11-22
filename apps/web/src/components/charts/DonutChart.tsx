@@ -47,7 +47,7 @@ export function DonutChart({ slices, locale, centerLabel, format }: { slices: Sl
 
   return (
     <div ref={(el) => { wrap.current = el; rootRef.current = el; measureRef.current = el; }} data-in={inView ? "true" : "false"} className="relative flex flex-wrap items-center gap-x-8 gap-y-4">
-      <div className="relative size-36 shrink-0">
+      <div className="relative size-32 shrink-0">
         <svg viewBox="0 0 100 100" role="img" aria-label={`${centerLabel}: ${format(total)}`} className="size-full -rotate-90">
           {arcs.map(({ slice, length, start }, i) => (
             <circle
@@ -68,7 +68,7 @@ export function DonutChart({ slices, locale, centerLabel, format }: { slices: Sl
           <span className="mt-1 text-caption text-ink-2">{centerLabel}</span>
         </div>
       </div>
-      <ul className="flex min-w-40 flex-1 flex-col">
+      <ul className="flex min-w-44 flex-1 flex-col">
         {slices.map((slice) => {
           const Row = slice.href ? "a" : "div";
           return (
@@ -79,10 +79,10 @@ export function DonutChart({ slices, locale, centerLabel, format }: { slices: Sl
                 onPointerLeave={leave}
                 onFocus={() => setActive(slice.key)}
                 onBlur={leave}
-                className="-mx-2 grid grid-cols-[auto_minmax(0,1fr)_auto_2.75rem] items-center gap-3 rounded-md px-2 py-1.5 text-small transition-colors duration-150 hover:bg-subtle focus-visible:bg-subtle"
+                className="-mx-2 grid grid-cols-[auto_minmax(0,1fr)_auto_2.75rem] items-start gap-2.5 rounded-md px-2 py-1.5 text-small transition-colors duration-150 hover:bg-subtle focus-visible:bg-subtle"
               >
                 <span aria-hidden className="size-3 rounded-[3px]" style={{ background: slice.fill }} />
-                <span className="truncate">{slice.label}</span>
+                <span className="break-words leading-snug">{slice.label}</span>
                 <strong className="font-semibold tabular-nums">{format(slice.value)}</strong>
                 <span className="text-right text-ink-2 tabular-nums">{share(slice)}%</span>
               </Row>

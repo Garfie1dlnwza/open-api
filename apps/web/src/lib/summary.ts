@@ -14,9 +14,12 @@ export interface ApiSummary {
   tags: string[];
   status: Status;
   reviewedAt: string;
+  /** Full date of the last maintainer review, e.g. "22 Nov 2026". */
   verifiedLabel: string;
-  /** Compact relative time for dense rows ("12h ago"). */
+  /** Short date for dense rows, e.g. "22 Nov". */
   verifiedShort: string;
+  /** Names in the other language(s) so a search in one language finds the other. */
+  aliases: string[];
   trustScore: number;
   trustLevel: TrustLevel;
   endpoints: { title: string; path: string }[];

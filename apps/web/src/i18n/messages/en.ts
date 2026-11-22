@@ -114,10 +114,10 @@ export const en: Messages = {
     knownIssue: "Known issue",
     format: "{format} response",
     rateLimit: "Usage limits",
-    endpointCount: "{count} endpoints",
     tabLabel: "Code samples",
-    verifiedExampleYes: "This example passes the automated check.",
-    verifiedExampleNo: "This example has not passed the automated check.",
+    verifiedExampleYes: "This example request passed the latest automated check.",
+    verifiedExampleNo: "This example request has not passed the automated check.",
+    sampleExcerpt: "An excerpt trimmed for readability, not the full response.",
   },
   status: {
     operational: "Operational",
@@ -183,7 +183,7 @@ export const en: Messages = {
       stability: "Historical stability",
       example: "Example passes tests",
     },
-    state: { pass: "Complete", partial: "Partial", fail: "Missing", unknown: "Not enough data yet" },
+    state: { pass: "Complete", partial: "Partial", fail: "Not met", unknown: "Not enough data yet" },
     points: "{points}/{max}",
   },
   playground: {

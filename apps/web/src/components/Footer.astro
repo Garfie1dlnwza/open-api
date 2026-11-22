@@ -1,6 +1,6 @@
 ---
 import type { Locale } from "@thai-open-api/schema";
-import { SITE } from "../config/site.ts";
+import { ROUTES, SITE } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
 import { getCatalog } from "../lib/catalog.ts";
 import { formatRelative } from "../lib/format.ts";
@@ -14,12 +14,18 @@ const { status, now } = getCatalog();
 const hasStatus = Object.keys(status.apis).length > 0;
 ---
 
-<footer class="mt-16 border-t border-line bg-surface">
-  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-3 px-5 py-8 text-small text-ink-2 sm:px-8">
-    <p>{t("footer.built")}</p>
-    <p class="flex flex-wrap gap-x-4 gap-y-1">
-      <span>{hasStatus ? t("footer.status", { when: formatRelative(status.generatedAt, now, locale) }) : t("footer.noStatus")}</span>
-      <a class="text-brand-700 hover:underline" href={SITE.repoUrl}>{t("nav.github")}</a>
-    </p>
+<footer class="mt-20 border-t border-line bg-surface">
+  <div class="mx-auto grid max-w-[var(--content-max)] gap-8 px-5 py-10 sm:px-8 md:grid-cols-[auto_1fr] md:items-start md:gap-16">
+    <a href={ROUTES.home(locale)} aria-label={t("site.name")}>
+      <img src="/brand/logo.png" alt="" width="160" height="57" class="h-14 w-auto" loading="lazy" />
+    </a>
+    <div class="flex flex-col gap-3 text-small text-ink-2">
+      <p class="max-w-2xl">{t("footer.built")}</p>
+      <p class="flex flex-wrap gap-x-5 gap-y-1">
+        <span>{hasStatus ? t("footer.status", { when: formatRelative(status.generatedAt, now, locale) }) : t("footer.noStatus")}</span>
+        <a class="text-brand-700 hover:underline" href={ROUTES.dashboard(locale)}>{t("nav.dashboard")}</a>
+        <a class="text-brand-700 hover:underline" href={SITE.repoUrl}>{t("nav.github")}</a>
+      </p>
+    </div>
   </div>
 </footer>

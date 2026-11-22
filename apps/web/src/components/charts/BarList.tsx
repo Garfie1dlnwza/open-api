@@ -52,9 +52,9 @@ export function BarList({ items, locale, format, fill = "var(--series-1)", total
                 onBlur={() => setTip(null)}
                 className="-mx-2 grid grid-cols-[minmax(5.5rem,10rem)_minmax(0,1fr)_2.5rem] items-center gap-3 rounded-md px-2 py-1.5 transition-colors duration-150 hover:bg-subtle focus-visible:bg-subtle"
               >
-                <span className="flex min-w-0 items-center gap-2 text-small">
+                <span className="flex min-w-0 items-start gap-2 text-small">
                   {item.icon}
-                  <span className="truncate">{item.label}</span>
+                  <span className="line-clamp-2 break-words leading-snug">{item.label}</span>
                 </span>
                 <span className="h-2.5" style={{ width: `${(item.value / max) * PERCENT}%`, minWidth: 4 }}>
                   <span className="chart-grow-x block h-full w-full rounded-r-[4px]" style={{ background: fill, "--i": i } as React.CSSProperties} />

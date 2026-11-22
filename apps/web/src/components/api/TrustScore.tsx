@@ -8,7 +8,7 @@ const STATE_CLASS = { pass: "bg-success-dot", partial: "bg-warning-dot", fail: "
 export function TrustScore({ trust, locale }: { trust: Score; locale: Locale }) {
   const t = createT(locale);
   return (
-    <section aria-labelledby="trust-title" className="rounded-lg border border-line bg-surface p-5 shadow-card">
+    <section aria-labelledby="trust-title" className="border-t border-line pt-5">
       <div className="flex items-baseline justify-between gap-3">
         <h3 id="trust-title" className="text-h4 font-semibold">
           {t("trust.title")}

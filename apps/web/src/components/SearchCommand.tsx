@@ -1,11 +1,12 @@
 import type { Locale } from "@thai-open-api/schema";
 import { CornerDownLeft, Search } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { HOTKEY, QUERY, ROUTES, UI } from "../config/site.ts";
+import { HOTKEY, HOTKEY_LABEL, QUERY, ROUTES, UI } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
 import { searchApis } from "../lib/search.ts";
 import type { ApiSummary } from "../lib/summary.ts";
 import { StatusBadge } from "./api/StatusBadge.tsx";
+import { Skeleton } from "./ui/Skeleton.tsx";
 import { cx } from "./ui/cx.ts";
 
 type Load = { state: "idle" } | { state: "loading" } | { state: "error" } | { state: "ready"; apis: ApiSummary[] };
@@ -20,6 +21,8 @@ export function SearchCommand({ locale }: { locale: Locale }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const listId = useId();
+  const [hotkey, setHotkey] = useState<string>(HOTKEY_LABEL.other);
+  useEffect(() => setHotkey(/Mac|iPhone|iPad/.test(navigator.userAgent) ? HOTKEY_LABEL.mac : HOTKEY_LABEL.other), []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -37,7 +40,10 @@ export function SearchCommand({ locale }: { locale: Locale }) {
     if (!el) return;
     if (open && !el.open) el.showModal();
     if (!open && el.open) el.close();
-    if (open) input.current?.focus();
+    if (open) {
+      input.current?.focus();
+      input.current?.select(); // reopening keeps the last query selected, so typing replaces it
+    }
   }, [open]);
 
   useEffect(() => {
@@ -49,7 +55,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
       .catch(() => setLoad({ state: "error" }));
   }, [open, load.state, locale]);
 
-  const results = useMemo(() => (load.state === "ready" ? searchApis(load.apis, query).slice(0, UI.searchResultLimit) : []), [load, query]);
+  const results = useMemo(() => (load.state === "ready" ? searchApis(load.apis, query, locale).slice(0, UI.searchResultLimit) : []), [load, query, locale]);
   useEffect(() => setCursor(0), [query]);
 
   const go = (api: ApiSummary) => {
@@ -72,7 +78,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
       >
         <Search aria-hidden size={16} />
         <span className="hidden sm:inline">{t("search.open")}</span>
-        <kbd className="hidden rounded border border-line bg-subtle px-1.5 text-caption sm:inline">⌘K</kbd>
+        <kbd className="hidden rounded border border-line bg-subtle px-1.5 text-caption sm:inline">{hotkey}</kbd>
       </button>
 
       <dialog
@@ -99,7 +105,11 @@ export function SearchCommand({ locale }: { locale: Locale }) {
           />
         </div>
         <ul id={listId} role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
-          {load.state === "loading" && <li className="px-3 py-6 text-center text-small text-ink-2">{t("search.loading")}</li>}
+          {load.state === "loading" && (
+            <li role="status" aria-label={t("search.loading")} className="flex flex-col gap-2 p-2">
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-11" />)}
+            </li>
+          )}
           {load.state === "error" && <li className="px-3 py-6 text-center text-small text-error-fg">{t("search.error")}</li>}
           {load.state === "ready" && results.length === 0 && query && <li className="px-3 py-6 text-center text-small text-ink-2">{t("search.noResults", { query })}</li>}
           {results.map((api, i) => (

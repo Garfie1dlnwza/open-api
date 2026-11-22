@@ -6,6 +6,7 @@ import { createT } from "../../i18n/index.ts";
 import { formatBytes } from "../../lib/format.ts";
 import { prettyBody, type PlaygroundResult } from "../../lib/playground.ts";
 import { Button } from "../ui/Button.tsx";
+import { Skeleton } from "../ui/Skeleton.tsx";
 import { EmptyState } from "../ui/EmptyState.tsx";
 import { cx } from "../ui/cx.ts";
 import { useCopy } from "../ui/useCopy.ts";
@@ -30,10 +31,9 @@ export function ResponseViewer({ state, locale, unavailable }: { state: ViewStat
   if (state.phase === "idle") return <EmptyState icon={<Terminal aria-hidden size={26} />} title={t("playground.idleTitle")}>{t("playground.idleBody")}</EmptyState>;
   if (state.phase === "loading") {
     return (
-      <div role="status" aria-label={t("playground.sending")} className="flex flex-col gap-3 rounded-lg bg-subtle p-4">
-        <div className="h-4 w-1/3 animate-pulse rounded bg-line" />
-        <div className="h-3 w-full animate-pulse rounded bg-line" />
-        <div className="h-3 w-5/6 animate-pulse rounded bg-line" />
+      <div role="status" aria-label={t("playground.sending")} className="anim-fade flex flex-col gap-3">
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-52 w-full" />
       </div>
     );
   }
@@ -51,7 +51,7 @@ export function ResponseViewer({ state, locale, unavailable }: { state: ViewStat
   const ok = result.status >= HTTP_OK_MIN && result.status <= HTTP_OK_MAX;
   const clipped = shown.length > UI.responsePreviewChars;
   return (
-    <div className="flex flex-col gap-3">
+    <div className="anim-rise flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-small">
         <span className={cx("inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-caption font-medium", ok ? "bg-success-bg text-success-fg" : "bg-error-bg text-error-fg")}>
           {ok ? <Check aria-hidden size={13} /> : <CircleAlert aria-hidden size={13} />}

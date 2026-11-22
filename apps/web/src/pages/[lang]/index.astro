@@ -2,73 +2,121 @@
 import { CATEGORIES, LOCALES, type Locale } from "@thai-open-api/schema";
 import type { GetStaticPaths } from "astro";
 import { ArrowRight, Search } from "lucide-react";
-import { ApiCard } from "../../components/api/ApiCard.tsx";
-import { CategoryChip } from "../../components/api/CategoryChip.tsx";
-import { LinkButton } from "../../components/ui/Button.tsx";
-import { HOTKEY, QUERY, ROUTES, UI } from "../../config/site.ts";
+import { ApiRow } from "../../components/api/ApiRow.tsx";
+import { CATEGORY_ICON } from "../../components/api/categoryIcon.ts";
+import { StatusBadge } from "../../components/api/StatusBadge.tsx";
+import { HOTKEY_LABEL, QUERY, ROUTES, UI } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getSummaries } from "../../lib/catalog.ts";
+import { getHealth, getSummaries } from "../../lib/catalog.ts";
+import { collatorFor } from "../../lib/format.ts";
 
 export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
 
 const locale = Astro.params.lang as Locale;
 const t = createT(locale);
+const { compare } = collatorFor(locale);
 const apis = getSummaries(locale);
-const byTrust = [...apis].sort((a, b) => b.trustScore - a.trustScore || a.name.localeCompare(b.name));
-const featuredIds = new Set(apis.filter((a) => a.id && a.trustLevel !== "low").map((a) => a.id));
-const featured = byTrust.filter((a) => featuredIds.has(a.id)).slice(0, UI.homeListSize);
-const recent = [...apis].sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || a.name.localeCompare(b.name)).slice(0, UI.homeListSize);
+const featured = apis.filter((a) => a.trustLevel !== "low").sort((a, b) => b.trustScore - a.trustScore || compare(a.name, b.name)).slice(0, UI.homeListSize);
+const recent = [...apis].sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || compare(a.name, b.name)).slice(0, UI.homeListSize);
 const counts = Object.fromEntries(CATEGORIES.map((c) => [c, apis.filter((a) => a.category === c).length]));
+const SEVERITY = { outage: 0, degraded: 1, auth_required: 2, unknown: 3, operational: 4 } as const;
+const live = apis
+  .map((a) => ({ ...a, latency: getHealth(a.id)?.latencyMs }))
+  .sort((a, b) => SEVERITY[a.status] - SEVERITY[b.status] || compare(a.name, b.name));
+const hasHealth = apis.some((a) => a.status !== "unknown");
+const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
 ---
 
 <BaseLayout locale={locale}>
-  <section class="border-b border-line bg-surface">
-    <div class="mx-auto max-w-[var(--content-max)] px-5 py-16 sm:px-8 sm:py-20">
-      <p class="mb-3 text-small font-medium text-accent-800">{t("home.apiCount", { count: apis.length })}</p>
-      <h1 class="max-w-3xl text-h1 font-bold text-brand-900 sm:text-display">{t("home.heroTitle")}</h1>
-      <p class="mt-4 max-w-2xl text-body text-ink-2">{t("home.heroSubtitle")}</p>
-      <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-8 flex max-w-2xl gap-2">
+  <section class="mx-auto grid max-w-[var(--content-max)] gap-12 px-5 pb-14 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-16 lg:pt-20">
+    <div>
+      <h1 class="max-w-xl text-[38px] font-bold leading-[1.18] tracking-tight sm:text-[46px]">{t("home.heroTitle")}</h1>
+      <p class="mt-5 max-w-xl text-body text-ink-2">{t("home.heroSubtitle")}</p>
+      <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-9 flex max-w-xl">
         <label for="hero-search" class="sr-only">{t("home.searchLabel")}</label>
         <div class="relative flex-1">
-          <Search aria-hidden size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3" />
-          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-12 w-full rounded-md border border-control bg-surface pl-10 pr-3 text-body placeholder:text-ink-3 hover:border-ink-3" />
+          <Search aria-hidden size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" />
+          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-12 w-full rounded-l-md border border-r-0 border-control bg-surface pl-10 pr-3 text-body placeholder:text-ink-3 transition-colors duration-150 hover:border-ink-3" />
         </div>
-        <button type="submit" class="h-12 rounded-md bg-brand-800 px-5 text-small font-medium text-on-brand transition-colors duration-150 hover:bg-brand-900">{t("home.searchSubmit")}</button>
+        <button type="submit" class="h-12 rounded-r-md bg-brand-700 px-6 text-small font-medium text-on-brand transition-colors duration-150 hover:bg-brand-800">{t("home.searchSubmit")}</button>
       </form>
-      <p class="mt-3 text-caption text-ink-2"><kbd class="rounded border border-line bg-subtle px-1.5">⌘{HOTKEY.toUpperCase()}</kbd></p>
+      <p class="mt-3 text-caption text-ink-3"><kbd class="rounded border border-line bg-surface px-1.5 py-0.5">{hint}</kbd></p>
     </div>
+
+    <section aria-labelledby="live" class="overflow-hidden rounded-lg border border-line bg-surface">
+      <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+        <h2 id="live" class="text-small font-semibold">{t("home.liveTitle")}</h2>
+        <a href={ROUTES.dashboard(locale)} class="inline-flex items-center gap-1 text-caption font-medium text-brand-700 hover:underline">{t("home.openDashboard")}<ArrowRight aria-hidden size={13} /></a>
+      </header>
+      {hasHealth ? (
+        <ul class="divide-y divide-line">
+          {live.map((a, i) => (
+            <li>
+              <a href={ROUTES.api(locale, a.id)} class="anim-rise grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition-colors duration-150 hover:bg-subtle" style={`--i:${i}`}>
+                <StatusBadge status={a.status} locale={locale} />
+                <span class="truncate text-small">{a.name}</span>
+                <span class="text-caption tabular-nums text-ink-2">{a.latency === undefined ? t("common.none") : t("common.ms", { n: Math.round(a.latency) })}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="px-4 py-8 text-small text-ink-2">{t("home.liveEmpty")}</p>
+      )}
+    </section>
   </section>
 
-  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-14 px-5 py-12 sm:px-8">
-    <section aria-labelledby="featured">
-      <div class="mb-4 flex items-end justify-between gap-3">
-        <h2 id="featured" class="text-h2 font-semibold">{t("home.featured")}</h2>
-        <a href={ROUTES.explore(locale)} class="inline-flex items-center gap-1 text-small font-medium text-brand-700 hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
-      </div>
-      <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {featured.map((api) => <li class="flex"><div class="flex w-full flex-col"><ApiCard api={api} locale={locale} /></div></li>)}
-      </ul>
-    </section>
-
+  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-16 px-5 pb-6 sm:px-8">
     <section id="categories" aria-labelledby="categories-title" class="scroll-mt-24">
-      <h2 id="categories-title" class="mb-4 text-h2 font-semibold">{t("home.categories")}</h2>
-      <div class="flex flex-wrap gap-3">
-        {CATEGORIES.map((c) => <CategoryChip category={c} label={t(`category.${c}`)} count={counts[c]} href={`${ROUTES.explore(locale)}?${QUERY.category}=${c}`} />)}
-      </div>
-    </section>
-
-    <section aria-labelledby="recent">
-      <h2 id="recent" class="mb-4 text-h2 font-semibold">{t("home.recent")}</h2>
-      <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {recent.map((api) => <li class="flex"><div class="flex w-full flex-col"><ApiCard api={api} locale={locale} /></div></li>)}
+      <h2 id="categories-title" class="sr-only">{t("home.categories")}</h2>
+      <ul class="grid grid-cols-2 border-y border-line sm:grid-cols-3 lg:grid-cols-5">
+        {CATEGORIES.map((c) => {
+          const Icon = CATEGORY_ICON[c];
+          return (
+            <li class="border-line [&:not(:first-child)]:border-l max-sm:[&:nth-child(odd)]:border-l-0">
+              <a href={`${ROUTES.explore(locale)}?${QUERY.category}=${c}`} class="group flex h-full flex-col gap-3 px-5 py-5 transition-colors duration-150 hover:bg-subtle">
+                <Icon aria-hidden size={20} className="text-ink-3 transition-colors duration-150 group-hover:text-brand-700" />
+                <span class="text-[28px] font-semibold leading-none tracking-tight">{counts[c]}</span>
+                <span class="text-small text-ink-2">{t(`category.${c}`)}</span>
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </section>
 
-    <section aria-labelledby="contribute" class="flex flex-col items-start gap-3 rounded-xl border border-line bg-surface p-8 shadow-card">
-      <h2 id="contribute" class="text-h3 font-semibold">{t("home.contributeTitle")}</h2>
-      <p class="max-w-2xl text-small text-ink-2">{t("home.contributeBody")}</p>
-      <LinkButton variant="secondary" href={ROUTES.contribute()}>{t("home.contributeCta")}</LinkButton>
+    <div class="grid gap-14 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-16">
+      <section aria-labelledby="featured">
+        <div class="mb-3 flex items-end justify-between gap-3">
+          <h2 id="featured" class="text-h3 font-semibold">{t("home.featured")}</h2>
+          <a href={ROUTES.explore(locale)} class="inline-flex items-center gap-1 text-small font-medium text-brand-700 hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
+        </div>
+        <ul class="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+          {featured.map((api, i) => <li><ApiRow api={api} locale={locale} index={i} /></li>)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="recent">
+        <h2 id="recent" class="mb-3 text-h3 font-semibold">{t("home.recent")}</h2>
+        <ol class="flex flex-col border-l border-line">
+          {recent.map((api) => (
+            <li class="relative pb-4 pl-5 last:pb-0">
+              <span aria-hidden="true" class="absolute -left-[4.5px] top-2 size-2 rounded-full bg-line-strong"></span>
+              <a href={ROUTES.api(locale, api.id)} class="block text-small font-medium transition-colors duration-150 hover:text-brand-700">{api.name}</a>
+              <time datetime={api.reviewedAt} title={t("api.lastVerified", { when: api.verifiedLabel })} class="text-caption text-ink-2">{api.verifiedShort}</time>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+
+    <section aria-labelledby="contribute" class="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
+      <div>
+        <h2 id="contribute" class="text-h4 font-semibold">{t("home.contributeTitle")}</h2>
+        <p class="mt-1 text-small text-ink-2">{t("home.contributeShort")}</p>
+      </div>
+      <a href={ROUTES.contribute()} class="inline-flex items-center gap-1.5 text-small font-medium text-brand-700 hover:underline">{t("home.contributeCta")}<ArrowRight aria-hidden size={14} /></a>
     </section>
   </div>
 </BaseLayout>

@@ -3,6 +3,7 @@ import {
   computeTrust,
   effectiveStatus,
   localize,
+  LOCALES,
   type ApiEntry,
   type ApiHealth,
   type Locale,
@@ -11,7 +12,7 @@ import {
 } from "@thai-open-api/schema";
 import { loadCatalog, loadStatus } from "@thai-open-api/schema/node";
 import { createT } from "../i18n/index.ts";
-import { formatRelative } from "./format.ts";
+import { formatDate, formatShortDate } from "./format.ts";
 import type { ApiSummary } from "./summary.ts";
 
 export interface Catalog {
@@ -55,8 +56,9 @@ export function toSummary(entry: ApiEntry, locale: Locale): ApiSummary {
     tags: entry.tags,
     status: effectiveStatus(getHealth(entry.id), now),
     reviewedAt: entry.reviewedAt,
-    verifiedLabel: formatRelative(entry.reviewedAt, now, locale),
-    verifiedShort: formatRelative(entry.reviewedAt, now, locale, "narrow"),
+    verifiedLabel: formatDate(entry.reviewedAt, locale),
+    verifiedShort: formatShortDate(entry.reviewedAt, locale),
+    aliases: LOCALES.filter((l) => l !== locale).flatMap((l) => [localize(entry.name, l), localize(entry.provider.name, l)]),
     trustScore: trust.score,
     trustLevel: trust.level,
     endpoints: entry.endpoints.map((e) => ({ title: localize(e.title, locale), path: e.path })),

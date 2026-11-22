@@ -1,5 +1,6 @@
-import { AUTH_TYPES, CATEGORIES, SOURCES, STATUSES, type AuthType, type Category, type Source, type Status } from "@thai-open-api/schema";
+import { AUTH_TYPES, CATEGORIES, SOURCES, STATUSES, type AuthType, type Category, type Locale, type Source, type Status } from "@thai-open-api/schema";
 import { DEFAULT_SORT, QUERY, SORTS, type Sort } from "../config/site.ts";
+import { collatorFor } from "./format.ts";
 import { searchApis } from "./search.ts";
 import type { ApiSummary } from "./summary.ts";
 
@@ -49,21 +50,22 @@ export const effectiveSort = (filters: Filters): Sort => filters.sort ?? (filter
 const matchesFacets = (api: ApiSummary, filters: Filters, skip?: Facet) =>
   FACETS.every((facet) => facet === skip || filters[facet] === undefined || api[facet] === filters[facet]);
 
-export function applyFilters(apis: ApiSummary[], filters: Filters): ApiSummary[] {
-  const matched = searchApis(apis, filters.q).filter((api) => matchesFacets(api, filters));
+export function applyFilters(apis: ApiSummary[], filters: Filters, locale: Locale): ApiSummary[] {
+  const { compare } = collatorFor(locale);
+  const matched = searchApis(apis, filters.q, locale).filter((api) => matchesFacets(api, filters));
   const sort = effectiveSort(filters);
   if (sort === "relevance") return matched;
   const sorted = [...matched];
-  if (sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
-  if (sort === "trust") sorted.sort((a, b) => b.trustScore - a.trustScore || a.name.localeCompare(b.name));
-  if (sort === "verified") sorted.sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || a.name.localeCompare(b.name));
+  if (sort === "name") sorted.sort((a, b) => compare(a.name, b.name));
+  if (sort === "trust") sorted.sort((a, b) => b.trustScore - a.trustScore || compare(a.name, b.name));
+  if (sort === "verified") sorted.sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || compare(a.name, b.name));
   return sorted;
 }
 
 /** Counts for one facet given every other active filter, so options never promise results that are not there. */
-export function facetCounts(apis: ApiSummary[], filters: Filters, facet: Facet): Record<string, number> {
+export function facetCounts(apis: ApiSummary[], filters: Filters, facet: Facet, locale: Locale): Record<string, number> {
   const counts: Record<string, number> = {};
-  for (const api of searchApis(apis, filters.q)) {
+  for (const api of searchApis(apis, filters.q, locale)) {
     if (!matchesFacets(api, filters, facet)) continue;
     counts[api[facet]] = (counts[api[facet]] ?? 0) + 1;
   }

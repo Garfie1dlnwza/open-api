@@ -48,7 +48,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
     return () => clearTimeout(timer);
   }, [draft]);
 
-  const results = useMemo(() => applyFilters(apis, filters), [apis, filters]);
+  const results = useMemo(() => applyFilters(apis, filters, locale), [apis, filters, locale]);
   const active = activeFacets(filters);
   const hasAnyFilter = active.length > 0 || filters.q !== "";
   const setFacet = (facet: Facet, value: string | undefined) => setFilters((f) => ({ ...f, [facet]: f[facet] === value ? undefined : value }));
@@ -62,7 +62,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
   const filterPanel = (
     <div className="flex flex-col gap-6">
       {(Object.keys(FACET_VALUES) as Facet[]).map((facet) => {
-        const counts = facetCounts(apis, filters, facet);
+        const counts = facetCounts(apis, filters, facet, locale);
         return (
           <fieldset key={facet} className="flex flex-col gap-0.5">
             <legend className="mb-1.5 px-2.5 text-caption font-semibold uppercase tracking-wide text-ink-2">{t(`explorer.facets.${facet}`)}</legend>
@@ -86,7 +86,9 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
         <div className={`${showFilters ? "mt-4 block" : "hidden"} lg:mt-0 lg:block`}>{filterPanel}</div>
       </aside>
 
-      <section aria-live="polite" className="min-w-0">
+      <section className="min-w-0">
+        {/* One quiet announcement of the result count, instead of making the whole list a live region. */}
+        <p className="sr-only" role="status">{t("explorer.results", { count: results.length })}</p>
         <div className="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem]">
           <Field label={t("explorer.searchLabel")} htmlFor="explorer-search">
             <div className="relative">
@@ -106,7 +108,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
         </div>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <p className="mr-2 text-small text-ink-2">{t("explorer.results", { count: results.length })}</p>
+          <p aria-hidden className="mr-2 text-small text-ink-2">{t("explorer.results", { count: results.length })}</p>
           {active.map((facet) => (
             <button
               key={facet}

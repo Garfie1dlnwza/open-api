@@ -115,6 +115,11 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Thai flag proportions (red, white, blue x2, white, red) as a hairline above the header. */
+.flag-stripe {
+  background: linear-gradient(90deg, var(--red) 0 16.66%, var(--surface) 16.66% 33.33%, var(--brand-900) 33.33% 66.66%, var(--surface) 66.66% 83.33%, var(--red) 83.33% 100%);
+}
+
 .anim-rise { animation: rise var(--dur) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
 .anim-fade { animation: fade var(--dur) var(--ease-out) both; }
 .anim-spin { animation: spin 0.8s linear infinite; }

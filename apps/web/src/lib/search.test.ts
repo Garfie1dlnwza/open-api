@@ -5,7 +5,7 @@ import type { ApiSummary } from "./summary.ts";
 
 const api = (over: Partial<ApiSummary>): ApiSummary => ({
   id: "x", name: "X", provider: "P", description: "D", category: "finance", categoryLabel: "การเงิน", source: "official", auth: "none",
-  license: { type: "unknown", verified: false }, tags: [], status: "operational", reviewedAt: "2026-11-01", verifiedLabel: "", verifiedShort: "",
+  license: { type: "unknown", verified: false }, tags: [], status: "operational", reviewedAt: "2026-11-01", verifiedLabel: "", verifiedShort: "", aliases: [],
   trustScore: 50, trustLevel: "medium", endpoints: [], ...over,
 });
 const fx = api({ id: "bot-fx", name: "อัตราแลกเปลี่ยน", provider: "ธนาคารแห่งประเทศไทย", tags: ["fx"], auth: "apiKey", status: "auth_required", trustScore: 70, endpoints: [{ title: "รายวัน", path: "/DAILY_AVG" }] });
@@ -15,19 +15,27 @@ const all = [fx, air, oil];
 
 describe("search", () => {
   it("matches Thai text by substring in name, provider, tags and endpoints", () => {
-    expect(searchApis(all, "แลกเปลี่ยน").map((a) => a.id)).toEqual(["bot-fx"]);
-    expect(searchApis(all, "ธนาคาร").map((a) => a.id)).toEqual(["bot-fx"]);
-    expect(searchApis(all, "pm2.5").map((a) => a.id)).toEqual(["air4thai"]);
-    expect(searchApis(all, "daily_avg").map((a) => a.id)).toEqual(["bot-fx"]);
+    expect(searchApis(all, "แลกเปลี่ยน", "th").map((a) => a.id)).toEqual(["bot-fx"]);
+    expect(searchApis(all, "ธนาคาร", "th").map((a) => a.id)).toEqual(["bot-fx"]);
+    expect(searchApis(all, "pm2.5", "th").map((a) => a.id)).toEqual(["air4thai"]);
+    expect(searchApis(all, "daily_avg", "th").map((a) => a.id)).toEqual(["bot-fx"]);
   });
   it("requires every term to match and is case-insensitive", () => {
-    expect(searchApis(all, "AIR4THAI อากาศ")).toHaveLength(1);
-    expect(searchApis(all, "air4thai น้ำมัน")).toHaveLength(0);
+    expect(searchApis(all, "AIR4THAI อากาศ", "th")).toHaveLength(1);
+    expect(searchApis(all, "air4thai น้ำมัน", "th")).toHaveLength(0);
+  });
+  it("does not match inside a Latin word, finds across punctuation and across languages", () => {
+    const earth = api({ id: "quake", name: "Daily Earthquakes", description: "fairly large", aliases: ["แผ่นดินไหวรายวัน"] });
+    expect(searchApis([earth], "air", "en")).toEqual([]);
+    expect(searchApis([earth], "quake", "en")).toHaveLength(1);
+    expect(searchApis([earth], "แผ่นดินไหว", "en")).toHaveLength(1);
+    expect(searchApis([air], "pm25", "en").map((a) => a.id)).toEqual(["air4thai"]);
+    expect(searchApis([air], "pm 2.5", "en").map((a) => a.id)).toEqual(["air4thai"]);
   });
   it("ranks name matches above description matches", () => {
     const byDesc = api({ id: "d", name: "Other", description: "about exchange" });
     const byName = api({ id: "n", name: "Exchange" });
-    expect(searchApis([byDesc, byName], "exchange")[0].id).toBe("n");
+    expect(searchApis([byDesc, byName], "exchange", "th")[0].id).toBe("n");
     expect(scoreApi(byDesc, ["nothing"])).toBe(0);
   });
 });
@@ -40,13 +48,13 @@ describe("filters", () => {
     expect(serializeFilters({ q: "" }).toString()).toBe("");
   });
   it("combines facets and sorts", () => {
-    expect(applyFilters(all, { q: "", source: "official" }).map((a) => a.id)).toEqual(["air4thai", "bot-fx"].sort((a, b) => all.find((x) => x.id === a)!.name.localeCompare(all.find((x) => x.id === b)!.name)));
-    expect(applyFilters(all, { q: "", sort: "trust" })[0].id).toBe("bot-fx");
-    expect(applyFilters(all, { q: "", sort: "verified" })[0].id).toBe("air4thai");
-    expect(applyFilters(all, { q: "", auth: "apiKey", status: "outage" })).toEqual([]);
+    expect(applyFilters(all, { q: "", source: "official" }, "th").map((a) => a.id)).toEqual(["air4thai", "bot-fx"].sort((a, b) => new Intl.Collator("th").compare(all.find((x) => x.id === a)!.name, all.find((x) => x.id === b)!.name)));
+    expect(applyFilters(all, { q: "", sort: "trust" }, "th")[0].id).toBe("bot-fx");
+    expect(applyFilters(all, { q: "", sort: "verified" }, "th")[0].id).toBe("air4thai");
+    expect(applyFilters(all, { q: "", auth: "apiKey", status: "outage" }, "th")).toEqual([]);
   });
   it("counts a facet ignoring itself but honouring the others", () => {
-    expect(facetCounts(all, { q: "", source: "official" }, "category")).toEqual({ finance: 1, environment: 1 });
-    expect(facetCounts(all, { q: "", source: "official" }, "source")).toEqual({ official: 2, unofficial: 1 });
+    expect(facetCounts(all, { q: "", source: "official" }, "category", "th")).toEqual({ finance: 1, environment: 1 });
+    expect(facetCounts(all, { q: "", source: "official" }, "source", "th")).toEqual({ official: 2, unofficial: 1 });
   });
 });

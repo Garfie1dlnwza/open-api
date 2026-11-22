@@ -1,5 +1,5 @@
 import { localize, renderSample, resolveParams, sampleRequest, type Locale } from "@thai-open-api/schema";
-import { Check, Copy, Eraser, Play } from "lucide-react";
+import { Check, Copy, Eraser, LoaderCircle, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SITE, STORAGE, storageKey } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
@@ -109,14 +109,14 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
         )}
         <div role="tablist" aria-label={t("playground.mobileTabs")} className="flex gap-1 md:hidden">
           {(["request", "response"] as const).map((name) => (
-            <button key={name} role="tab" type="button" aria-selected={tab === name} onClick={() => setTab(name)} className={cx("h-10 flex-1 rounded-md text-small font-medium", tab === name ? "bg-brand-100 text-brand-800" : "text-ink-2")}>
+            <button key={name} role="tab" type="button" aria-selected={tab === name} aria-controls={`pg-${name}-panel`} tabIndex={tab === name ? 0 : -1} onClick={() => setTab(name)} className={cx("h-10 flex-1 rounded-md text-small font-medium", tab === name ? "bg-brand-100 text-brand-800" : "text-ink-2")}>
               {t(`playground.${name}`)}
             </button>
           ))}
         </div>
       </header>
 
-      <div className={cx("flex flex-col gap-4 p-4", tab === "request" ? "flex" : "hidden md:flex")}>
+      <div id="pg-request-panel" role="tabpanel" className={cx("flex flex-col gap-4 p-4", tab === "request" ? "flex" : "hidden md:flex")}>
         <p className="flex items-center gap-2 rounded-md bg-subtle px-3 py-2 font-mono text-code">
           <span className="rounded bg-brand-100 px-1.5 text-caption font-medium text-brand-800">{endpoint.method}</span>
           <span className="break-all">{endpoint.path}</span>
@@ -155,28 +155,29 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
                 <span className="block text-caption text-ink-2">{t("playground.rememberHint")}</span>
               </span>
             </label>
-            {authValue && (
-              <Button variant="ghost" className="self-start" icon={<Eraser aria-hidden size={14} />} onClick={() => { setAuthValue(""); persistKey("", remember); }}>
-                {t("playground.forget")}
-              </Button>
-            )}
+            {/* Always rendered (disabled when empty) so typing a key never shifts the buttons below it. */}
+            <Button variant="ghost" className="self-start" disabled={!authValue} icon={<Eraser aria-hidden size={14} />} onClick={() => { setAuthValue(""); persistKey("", remember); }}>
+              {t("playground.forget")}
+            </Button>
           </fieldset>
         )}
 
         <div className="flex flex-wrap gap-2">
-          <Button onClick={send} disabled={busy || unavailable} icon={<Play aria-hidden size={16} />}>
+          <Button onClick={send} disabled={busy || unavailable} icon={busy ? <LoaderCircle aria-hidden size={16} className="anim-spin" /> : <Play aria-hidden size={16} />}>
             {busy ? t("playground.sending") : t("playground.send")}
           </Button>
-          <Button variant="secondary" onClick={() => { setValuesById((all) => ({ ...all, [endpoint.id]: initialValues(endpoint) })); setSubmitted(false); }}>
-            {t("playground.tryExample")}
-          </Button>
+          {endpoint.params.length > 0 && (
+            <Button variant="secondary" onClick={() => { setValuesById((all) => ({ ...all, [endpoint.id]: initialValues(endpoint) })); setSubmitted(false); }}>
+              {t("playground.tryExample")}
+            </Button>
+          )}
           <Button variant="secondary" disabled={!curl} onClick={() => curl && copy(curl)} icon={copied ? <Check aria-hidden size={14} /> : <Copy aria-hidden size={14} />}>
             <span aria-live="polite">{copied ? t("playground.copied") : t("playground.copyCurl")}</span>
           </Button>
         </div>
       </div>
 
-      <div className={cx("border-t border-line p-4", tab === "response" ? "block" : "hidden md:block")}>
+      <div id="pg-response-panel" role="tabpanel" className={cx("border-t border-line p-4", tab === "response" ? "block" : "hidden md:block")}>
         <h3 className="mb-3 text-small font-semibold">{t("playground.response")}</h3>
         <ResponseViewer state={view} locale={locale} unavailable={unavailable} />
       </div>

@@ -8,6 +8,8 @@ const HEIGHT = 224;
 const MARGIN = { top: 12, right: 16, bottom: 28, left: 44 };
 const X_TICKS = 4;
 const TWO_DAYS_MS = 172_800_000;
+const TEN_MINUTES_MS = 600_000;
+const ONE_HOUR_MS = 3_600_000;
 const DOT = 4; // marker radius: 8px diameter
 
 /** Time on x (to scale, so gaps look like gaps), one measure on y, starting at zero. 2px line, hairline grid. */
@@ -40,8 +42,12 @@ export function LineChart({ points, locale, color, formatTick, formatValue, valu
   }, [points, width, fixedMax]);
 
   const span = geometry.t1 - geometry.t0;
-  const tickFormat = useMemo(() => new Intl.DateTimeFormat(locale, span < TWO_DAYS_MS ? { hour: "2-digit", minute: "2-digit" } : { month: "short", day: "numeric" }), [locale, span]);
-  const fullFormat = useMemo(() => new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }), [locale]);
+  // Axis labels follow the span: seconds for a burst of checks, clock times within two days, dates beyond.
+  const tickFormat = useMemo(
+    () => new Intl.DateTimeFormat(locale, span < TEN_MINUTES_MS ? { hour: "2-digit", minute: "2-digit", second: "2-digit" } : span < TWO_DAYS_MS ? { hour: "2-digit", minute: "2-digit" } : { month: "short", day: "numeric" }),
+    [locale, span],
+  );
+  const fullFormat = useMemo(() => new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: span < ONE_HOUR_MS ? "medium" : "short" }), [locale, span]);
 
   const select = (index: number) => {
     const point = points[index];
@@ -96,7 +102,8 @@ export function LineChart({ points, locale, color, formatTick, formatValue, valu
           {xTicks.map((time, i) => (
             <text key={time} x={geometry.x(time)} y={HEIGHT - 8} textAnchor={i === 0 ? "start" : i === X_TICKS - 1 ? "end" : "middle"} fontSize="11" fill="var(--chart-label)" className="tabular-nums">{tickFormat.format(new Date(time))}</text>
           ))}
-          <path d={area} fill={color} opacity="0.1" className="chart-fade" />
+          {/* fill-opacity, not opacity: the entrance animation drives opacity and would override a 0.1 wash. */}
+          <path d={area} fill={color} fillOpacity="0.1" className="chart-fade" />
           <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" pathLength={1} className="chart-line" />
           {end && <circle cx={end.x} cy={end.y} r={DOT} fill={color} stroke="var(--surface)" strokeWidth="2" className="chart-fade" />}
           {active !== null && (

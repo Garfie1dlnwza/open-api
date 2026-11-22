@@ -17,7 +17,7 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
   return (
     <a
       href={ROUTES.api(locale, api.id)}
-      className="anim-rise group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3.5 transition-colors duration-150 hover:bg-subtle focus-visible:bg-subtle md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.5fr)_auto]"
+      className="anim-rise group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3.5 transition-colors duration-150 hover:bg-subtle focus-visible:bg-subtle md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.5fr)_8.5rem]"
       style={{ "--i": Math.min(index, STAGGER_CAP) } as React.CSSProperties}
     >
       <StatusBadge status={api.status} locale={locale} size={20} />
@@ -26,7 +26,7 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
         <span className="block truncate text-caption text-ink-2">{api.provider}</span>
       </span>
       <span className="col-span-2 col-start-2 row-start-2 line-clamp-2 text-small text-ink-2 md:col-span-1 md:col-start-auto md:row-start-auto">{api.description}</span>
-      <span className="flex items-center gap-3 justify-self-end text-ink-3">
+      <span className="flex items-center justify-end gap-3 text-ink-3">
         <TrustBadge source={api.source} locale={locale} />
         {api.auth === "apiKey" && (
           <span role="img" aria-label={t("auth.apiKey")} title={t("auth.apiKey")} className="inline-flex">
