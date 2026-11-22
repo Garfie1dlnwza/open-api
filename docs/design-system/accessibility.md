@@ -1,6 +1,8 @@
 # Accessibility
 
-- WCAG AA contrast, enforced by a test over every token pair.
+- WCAG AA contrast, enforced by a test over every token pair **in both the light and the dark theme**.
+- The theme toggle is a button with `aria-pressed`; the first paint already uses the right theme, so there is
+  no flash for people sensitive to bright screens.
 - Visible focus ring (2 px brand outline), full keyboard use, native `<dialog>` for modals.
 - Every form control has a label; errors use `role="alert"`.
 - Status is never colour alone: each status has its own icon shape, and where the icon stands alone it

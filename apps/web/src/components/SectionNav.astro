@@ -10,7 +10,7 @@ const { label, sections } = Astro.props;
   <ul class="flex flex-col gap-0.5 border-l border-line">
     {sections.map((s) => (
       <li>
-        <a href={`#${s.id}`} data-section-link={s.id} class="-ml-px block border-l-2 border-transparent py-1.5 pl-4 text-small text-ink-2 transition-colors duration-150 hover:text-ink aria-[current=true]:border-brand-700 aria-[current=true]:font-medium aria-[current=true]:text-brand-700">
+        <a href={`#${s.id}`} data-section-link={s.id} class="-ml-px block border-l-2 border-transparent py-1.5 pl-4 text-small text-ink-2 transition-colors duration-150 hover:text-ink aria-[current=true]:border-link aria-[current=true]:font-medium aria-[current=true]:text-link">
           {s.label}
         </a>
       </li>

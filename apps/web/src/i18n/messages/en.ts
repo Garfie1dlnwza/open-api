@@ -76,6 +76,10 @@ export const en: Messages = {
       status: "Status",
     },
   },
+  theme: {
+    toggle: "Switch between dark and light",
+    dark: "Dark mode",
+  },
   legend: {
     title: "What the icons mean",
     date: "Last reviewed by a maintainer",

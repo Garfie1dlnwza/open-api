@@ -1,6 +1,7 @@
 ---
 import { LOCALES, type Locale } from "@thai-open-api/schema";
 import { SearchCommand } from "./SearchCommand.tsx";
+import { Moon, Sun } from "lucide-react";
 import { LOCALE_NAMES, ROUTES, SITE } from "../config/site.ts";
 import { createT } from "../i18n/index.ts";
 import { switchLocalePath } from "../lib/locale.ts";
@@ -20,8 +21,8 @@ const links = [
 ];
 const linkClass = (active: boolean) => [
   "relative whitespace-nowrap px-3 py-2 text-small font-medium transition-colors duration-150",
-  "after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-full after:bg-brand-700 after:transition-transform after:duration-200 after:origin-left",
-  active ? "text-brand-700 after:scale-x-100" : "text-ink-2 hover:text-ink after:scale-x-0 hover:after:scale-x-100 hover:after:bg-line-strong",
+  "after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-full after:bg-link after:transition-transform after:duration-200 after:origin-left",
+  active ? "text-link after:scale-x-100" : "text-ink-2 hover:text-ink after:scale-x-0 hover:after:scale-x-100 hover:after:bg-line-strong",
 ];
 ---
 
@@ -31,7 +32,7 @@ const linkClass = (active: boolean) => [
     <a href={ROUTES.home(locale)} class="flex shrink-0 items-center gap-2.5" aria-label={t("site.name")}>
       <img src="/brand/mark.png" alt="" width="36" height="33" class="h-9 w-auto" />
       <span class="hidden text-[17px] font-bold leading-none tracking-tight sm:block">
-        <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-brand-700">API</span>
+        <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-link">API</span>
       </span>
     </a>
     <nav aria-label={t("nav.mainNavigation")} class="ml-4 hidden items-center lg:flex">
@@ -39,6 +40,10 @@ const linkClass = (active: boolean) => [
     </nav>
     <div class="ml-auto flex items-center gap-4">
       <SearchCommand client:idle locale={locale} />
+      <button type="button" data-theme-toggle aria-pressed="false" aria-label={t("theme.toggle")} title={t("theme.dark")} class="grid size-10 place-items-center rounded-md border border-control bg-surface text-ink-2 transition-colors duration-150 hover:bg-subtle hover:text-ink">
+        <Sun aria-hidden size={18} className="hidden dark:block" />
+        <Moon aria-hidden size={18} className="dark:hidden" />
+      </button>
       <nav aria-label={t("nav.language")} class="flex items-center gap-1 text-small">
         {LOCALES.map((l, i) => (
           <>
@@ -55,3 +60,35 @@ const linkClass = (active: boolean) => [
     {links.map((link) => <a href={link.href} aria-current={link.active ? "page" : undefined} class:list={linkClass(link.active)}>{link.label}</a>)}
   </nav>
 </header>
+
+<script>
+  import { STORAGE } from "../config/site.ts";
+
+  // The pre-paint script already set data-theme; this wires the button and follows the OS until the visitor chooses.
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const apply = (theme: "dark" | "light") => {
+    root.dataset.theme = theme;
+    button?.setAttribute("aria-pressed", String(theme === "dark"));
+  };
+  const saved = () => {
+    try {
+      return localStorage.getItem(STORAGE.theme);
+    } catch {
+      return null;
+    }
+  };
+  apply(root.dataset.theme === "dark" ? "dark" : "light");
+  button?.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    apply(next);
+    try {
+      localStorage.setItem(STORAGE.theme, next);
+    } catch {
+      /* storage blocked: the choice lasts for this page only */
+    }
+  });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+    if (!saved()) apply(event.matches ? "dark" : "light");
+  });
+</script>

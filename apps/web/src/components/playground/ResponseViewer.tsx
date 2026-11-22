@@ -64,7 +64,7 @@ export function ResponseViewer({ state, locale, unavailable }: { state: ViewStat
       <div className="flex items-center justify-between gap-2">
         <div role="group" aria-label={t("playground.response")} className="inline-flex rounded-md border border-control p-0.5">
           {(["pretty", "raw"] as const).map((m) => (
-            <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} className={cx("h-8 rounded px-3 text-caption font-medium transition-colors duration-150", mode === m ? "bg-brand-100 text-brand-800" : "text-ink-2 hover:text-ink")}>
+            <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} className={cx("h-8 rounded px-3 text-caption font-medium transition-colors duration-150", mode === m ? "bg-brand-100 text-brand-fg" : "text-ink-2 hover:text-ink")}>
               {t(`playground.${m}`)}
             </button>
           ))}

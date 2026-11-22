@@ -9,7 +9,7 @@ export function ProviderInfo({ name, url, locale }: { name: string; url?: string
       <Building2 aria-hidden size={16} className="text-ink-3" />
       <span className="font-medium">{name}</span>
       {url && (
-        <a href={url} rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1 text-brand-700 hover:underline">
+        <a href={url} rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1 text-link hover:underline">
           {t("api.providerSite")}
           <ExternalLink aria-hidden size={13} />
         </a>

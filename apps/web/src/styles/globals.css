@@ -2,7 +2,14 @@
 @import "./tokens.css";
 @import "./typography.css";
 
+/* Lets components say dark:hidden / dark:inline without a second set of class names. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme inline {
+  --color-fill: var(--fill);
+  --color-fill-hover: var(--fill-hover);
+  --color-link: var(--link);
+  --color-brand-fg: var(--brand-fg);
   --color-brand-900: var(--brand-900);
   --color-brand-800: var(--brand-800);
   --color-brand-700: var(--brand-700);
@@ -117,7 +124,7 @@ body {
 
 /* Thai flag proportions (red, white, blue x2, white, red) as a hairline above the header. */
 .flag-stripe {
-  background: linear-gradient(90deg, var(--red) 0 16.66%, var(--surface) 16.66% 33.33%, var(--brand-900) 33.33% 66.66%, var(--surface) 66.66% 83.33%, var(--red) 83.33% 100%);
+  background: linear-gradient(90deg, var(--red) 0 16.66%, var(--surface) 16.66% 33.33%, var(--flag-blue) 33.33% 66.66%, var(--surface) 66.66% 83.33%, var(--red) 83.33% 100%);
 }
 
 .anim-rise { animation: rise var(--dur) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }

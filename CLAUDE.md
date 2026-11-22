@@ -19,6 +19,8 @@ A catalog of Thailand's public APIs with live status, a playground and a dashboa
   `scripts/check-hardcoded.mjs` and `jscpd` enforce this.
 - **Security-sensitive code** (`apps/worker`, `packages/schema/src/{url,params,upstream,playground,host}.ts`):
   the Worker accepts catalog IDs only, never URLs. Keep that property, and add a test for every new guard.
+- **Colour roles.** Use `bg-fill`, `text-link`, `text-brand-fg` and the status/chart tokens, never raw brand steps
+  (`brand-700`/`800`) for text or accents: the dark theme depends on it. Contrast is tested in both themes.
 - **Honest data.** Never fabricate metrics, statuses or licence information. `license.verified` is true only
   after a human read the terms.
 - **Git.** Branch from `develop` (`feat/*`, `fix/*`), merge into `develop`; `main` only receives releases.

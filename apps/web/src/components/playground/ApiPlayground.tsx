@@ -109,7 +109,7 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
         )}
         <div role="tablist" aria-label={t("playground.mobileTabs")} className="flex gap-1 md:hidden">
           {(["request", "response"] as const).map((name) => (
-            <button key={name} role="tab" type="button" aria-selected={tab === name} aria-controls={`pg-${name}-panel`} tabIndex={tab === name ? 0 : -1} onClick={() => setTab(name)} className={cx("h-10 flex-1 rounded-md text-small font-medium", tab === name ? "bg-brand-100 text-brand-800" : "text-ink-2")}>
+            <button key={name} role="tab" type="button" aria-selected={tab === name} aria-controls={`pg-${name}-panel`} tabIndex={tab === name ? 0 : -1} onClick={() => setTab(name)} className={cx("h-10 flex-1 rounded-md text-small font-medium", tab === name ? "bg-brand-100 text-brand-fg" : "text-ink-2")}>
               {t(`playground.${name}`)}
             </button>
           ))}
@@ -118,7 +118,7 @@ export function ApiPlayground({ api, locale }: { api: PlaygroundApi; locale: Loc
 
       <div id="pg-request-panel" role="tabpanel" className={cx("flex flex-col gap-4 p-4", tab === "request" ? "flex" : "hidden md:flex")}>
         <p className="flex items-center gap-2 rounded-md bg-subtle px-3 py-2 font-mono text-code">
-          <span className="rounded bg-brand-100 px-1.5 text-caption font-medium text-brand-800">{endpoint.method}</span>
+          <span className="rounded bg-brand-100 px-1.5 text-caption font-medium text-brand-fg">{endpoint.method}</span>
           <span className="break-all">{endpoint.path}</span>
         </p>
 

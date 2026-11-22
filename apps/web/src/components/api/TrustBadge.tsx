@@ -4,7 +4,7 @@ import { createT } from "../../i18n/index.ts";
 import { cx } from "../ui/cx.ts";
 
 export const SOURCE_ICON: Record<Source, LucideIcon> = { official: BadgeCheck, community: Users, unofficial: CircleDashed };
-const SOURCE_COLOR: Record<Source, string> = { official: "text-brand-700", community: "text-accent-700", unofficial: "text-ink-3" };
+const SOURCE_COLOR: Record<Source, string> = { official: "text-link", community: "text-accent-700", unofficial: "text-ink-3" };
 
 /**
  * Where the API comes from, kept apart from status. Default is the bare icon with the meaning in

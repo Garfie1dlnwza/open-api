@@ -53,9 +53,9 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
     href: explore(QUERY.status, status),
   }));
   const licenseSegments = [
-    { key: "verified", label: t("dashboard.licenseStates.verified"), value: data.license.verified, fill: "var(--series-1)", ink: "var(--on-series)" },
-    { key: "declared", label: t("dashboard.licenseStates.declared"), value: data.license.declared, fill: "var(--series-1-light)", ink: "var(--on-dark)" },
-    { key: "unknown", label: t("dashboard.licenseStates.unknown"), value: data.license.unknown, fill: "var(--series-other)", ink: "var(--on-dark)" },
+    { key: "verified", label: t("dashboard.licenseStates.verified"), value: data.license.verified, fill: "var(--series-1)", ink: "var(--on-series-1)" },
+    { key: "declared", label: t("dashboard.licenseStates.declared"), value: data.license.declared, fill: "var(--series-1-light)", ink: "var(--on-series-1-light)" },
+    { key: "unknown", label: t("dashboard.licenseStates.unknown"), value: data.license.unknown, fill: "var(--series-other)", ink: "var(--on-series-other)" },
   ];
   const share = (n: number, total: number) => (total > 0 ? `${Math.round((n / total) * PERCENT_SCALE)}%` : "0%");
   const totalEndpoints = kpis.endpoints;

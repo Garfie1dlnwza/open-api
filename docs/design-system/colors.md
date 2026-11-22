@@ -36,3 +36,33 @@ is why charts do not use it.
 
 Status colours are reserved for meaning (good, warning, critical, authentication) and always ship with
 an icon and a label.
+
+## Dark theme
+
+The site follows the OS until the visitor presses the toggle in the header; the choice is kept in
+`localStorage`. A tiny inline script in `BaseLayout.astro` sets `data-theme` on `<html>` before the first
+paint (no flash of the wrong theme), and `tokens.css` redefines the tokens under
+`:root[data-theme="dark"]`. Components never branch on the theme; they only use tokens.
+
+Because one blue cannot be both a button fill (white text on it) and readable link text on a dark page,
+brand colour is used by **role**:
+
+| Role token | Use |
+|---|---|
+| `fill`, `fill-hover` | Primary button and other filled blue surfaces (white text) |
+| `link` | Link text, active tab and nav underline, focus accents |
+| `brand-fg` | Text on a brand tint (`brand-50` / `brand-100`) |
+| `flag-blue` | The centre of the flag hairline |
+
+Do not reach for `brand-700` or `brand-800` for text or accents.
+
+Label colours printed on chart fills are per fill (`on-good`, `on-critical`, `on-series-1`, ...), because
+the right ink flips with the fill: the blue series needs white text in light and near-black in dark.
+
+Chart series in dark use the dark steps of the validated palette (`#3987E5`, `#D95926`, `#199E70`),
+re-validated with the dataviz script against the dark surface `#111A2E`: lightness band, chroma, adjacent
+colour-blind distance (worst dE 9.4) and contrast (>= 3:1 for all three, better than light mode, where the
+third series needs the legend and table as relief).
+
+`contrast.test.ts` runs every text and UI pair against **both** themes, and fails if the dark theme
+overrides a token that does not exist in the light one.

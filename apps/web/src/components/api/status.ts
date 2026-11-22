@@ -37,11 +37,11 @@ export const STATUS_BAR_CLASS: Record<Status, string> = {
 
 /** Fill and label colour of each status inside charts (tokens, validated for contrast). */
 export const STATUS_FILL: Record<Status, { fill: string; ink: string }> = {
-  operational: { fill: "var(--status-good)", ink: "var(--on-dark)" },
-  degraded: { fill: "var(--status-warning)", ink: "var(--on-dark)" },
-  outage: { fill: "var(--status-critical)", ink: "var(--on-series)" },
-  auth_required: { fill: "var(--status-info)", ink: "var(--on-series)" },
-  unknown: { fill: "var(--status-unknown)", ink: "var(--on-dark)" },
+  operational: { fill: "var(--status-good)", ink: "var(--on-good)" },
+  degraded: { fill: "var(--status-warning)", ink: "var(--on-warning)" },
+  outage: { fill: "var(--status-critical)", ink: "var(--on-critical)" },
+  auth_required: { fill: "var(--status-info)", ink: "var(--on-info)" },
+  unknown: { fill: "var(--status-unknown)", ink: "var(--on-unknown)" },
 };
 
 /** Healthiest first, which also reads left to right as "good to bad". */

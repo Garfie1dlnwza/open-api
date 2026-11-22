@@ -48,6 +48,7 @@ export const STORAGE = {
   playgroundRemember: "toa:playground-remember",
   recentApis: "toa:recent-apis",
   recentQueries: "toa:recent-queries",
+  theme: "toa:theme",
 } as const;
 
 /** Per-API storage key so a key saved for one provider is never offered to another. */

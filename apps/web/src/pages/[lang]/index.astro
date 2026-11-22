@@ -51,7 +51,7 @@ const checkedWhen = formatRelative(status.generatedAt, now, locale);
 const explore = ROUTES.explore(locale);
 const shortcuts = [
   { href: `${explore}?${QUERY.auth}=none`, label: t("auth.none"), count: apis.filter((a) => a.auth === "none").length, Icon: LockOpen, tone: "text-ink-3" },
-  { href: `${explore}?${QUERY.source}=official`, label: t("source.official"), count: apis.filter((a) => a.source === "official").length, Icon: SOURCE_ICON.official, tone: "text-brand-700" },
+  { href: `${explore}?${QUERY.source}=official`, label: t("source.official"), count: apis.filter((a) => a.source === "official").length, Icon: SOURCE_ICON.official, tone: "text-link" },
   { href: `${explore}?${QUERY.status}=operational`, label: t("status.operational"), count: operational, Icon: STATUS_ICON.operational, tone: STATUS_ICON_CLASS.operational },
 ];
 const hint = `${HOTKEY_LABEL.mac} / ${HOTKEY_LABEL.other}`;
@@ -75,24 +75,24 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
   <section class="mx-auto grid max-w-[var(--content-max)] grid-cols-[minmax(0,1fr)] gap-12 px-5 pb-14 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-16 lg:pt-16">
     <div class="min-w-0">
       <h1 class="max-w-xl text-[38px] font-bold leading-[1.16] tracking-tight sm:text-[48px]">
-        {t("home.heroTitle")}<br /><span class="text-brand-700">{t("home.heroAccent")}</span>
+        {t("home.heroTitle")}<br /><span class="text-link">{t("home.heroAccent")}</span>
       </h1>
       <p class="mt-5 max-w-xl text-body text-ink-2">{t("home.heroSubtitle")}</p>
       <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-8 flex max-w-xl">
         <label for="hero-search" class="sr-only">{t("home.searchLabel")}</label>
         <div class="relative flex-1">
-          <Search aria-hidden size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-700" />
-          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" list="hero-suggestions" placeholder={t("home.searchPlaceholder")} class="h-14 w-full rounded-l-md border-2 border-r-0 border-brand-700 bg-surface pl-12 pr-3 text-body placeholder:text-ink-3 sm:pr-24" />
+          <Search aria-hidden size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-link" />
+          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" list="hero-suggestions" placeholder={t("home.searchPlaceholder")} class="h-14 w-full rounded-l-md border-2 border-r-0 border-link bg-surface pl-12 pr-3 text-body placeholder:text-ink-3 sm:pr-24" />
           <datalist id="hero-suggestions">{suggestions.map((s) => <option value={s} />)}</datalist>
           <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-line bg-subtle px-1.5 py-0.5 text-caption text-ink-3 sm:block [@media(hover:none)]:hidden">{hint}</kbd>
         </div>
-        <button type="submit" class="h-14 rounded-r-md bg-brand-700 px-7 text-small font-semibold text-on-brand transition-colors duration-150 hover:bg-brand-900">{t("home.searchSubmit")}</button>
+        <button type="submit" class="h-14 rounded-r-md bg-fill px-7 text-small font-semibold text-on-brand transition-colors duration-150 hover:bg-fill-hover">{t("home.searchSubmit")}</button>
       </form>
       <nav aria-label={t("home.shortcuts")} class="mt-3 max-w-xl">
         <ul class="flex flex-wrap gap-x-5">
           {shortcuts.map(({ href, label, count, Icon, tone }) => (
             <li>
-              <a {href} class="tap group gap-1.5 text-small text-ink-2 transition-colors duration-150 hover:text-brand-700">
+              <a {href} class="tap group gap-1.5 text-small text-ink-2 transition-colors duration-150 hover:text-link">
                 <Icon aria-hidden size={16} className={tone} />
                 {label}
                 <span class="font-mono text-caption tabular-nums text-ink-3">{count}</span>
@@ -105,7 +105,7 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
         <section aria-labelledby="try" class="mt-7 max-w-xl">
           <div class="mb-2 flex items-center justify-between gap-3">
             <h2 id="try" class="text-small font-semibold">{t("home.tryTitle")}</h2>
-            <a href={`${ROUTES.api(locale, demo.id)}#playground`} class="tap gap-1 text-caption font-medium text-brand-700 hover:underline">{t("home.tryOpen")}<ArrowRight aria-hidden size={13} /></a>
+            <a href={`${ROUTES.api(locale, demo.id)}#playground`} class="tap gap-1 text-caption font-medium text-link hover:underline">{t("home.tryOpen")}<ArrowRight aria-hidden size={13} /></a>
           </div>
           <CodeBlock client:visible code={demoCurl} label={demo.name[locale]} locale={locale} />
           <pre class="mt-0.5 overflow-x-auto rounded-b-lg rounded-t-sm bg-code-bg px-4 py-3 text-code text-code-fg"><code>{demoExcerpt}</code></pre>
@@ -117,7 +117,7 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
     <section aria-labelledby="live" class="overflow-hidden rounded-lg border border-line bg-surface shadow-[0_1px_0_rgb(16_29_53/4%)]">
       <header class="flex items-center justify-between gap-3 border-b border-line pl-4 pr-2">
         <h2 id="live" class="py-3 text-small font-semibold">{t("home.liveTitle")}</h2>
-        <a href={ROUTES.dashboard(locale)} class="tap gap-1 px-2 text-caption font-medium text-brand-700 hover:underline">{t("home.openDashboard")}<ArrowRight aria-hidden size={13} /></a>
+        <a href={ROUTES.dashboard(locale)} class="tap gap-1 px-2 text-caption font-medium text-link hover:underline">{t("home.openDashboard")}<ArrowRight aria-hidden size={13} /></a>
       </header>
       {hasHealth ? (
         <>
@@ -173,8 +173,8 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
           const Icon = CATEGORY_ICON[c];
           return (
             <li>
-              <a href={`${explore}?${QUERY.category}=${c}`} class="tap group gap-2 text-small transition-colors duration-150 hover:text-brand-700">
-                <Icon aria-hidden size={16} className="text-ink-3 transition-colors duration-150 group-hover:text-brand-700" />
+              <a href={`${explore}?${QUERY.category}=${c}`} class="tap group gap-2 text-small transition-colors duration-150 hover:text-link">
+                <Icon aria-hidden size={16} className="text-ink-3 transition-colors duration-150 group-hover:text-link" />
                 {t(`category.${c}`)}
                 <span class="text-caption tabular-nums text-ink-3">{counts[c]}</span>
               </a>
@@ -188,7 +188,7 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
       <section aria-labelledby="featured">
         <div class="mb-3 flex items-end justify-between gap-3">
           <h2 id="featured" class="text-h3 font-semibold">{t("home.featured")}</h2>
-          <a href={explore} class="tap gap-1 text-small font-medium text-brand-700 hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
+          <a href={explore} class="tap gap-1 text-small font-medium text-link hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
         </div>
         <ul class="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
           {featured.map((api, i) => <li><ApiRow api={api} locale={locale} index={i} /></li>)}
@@ -202,7 +202,7 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
             {recent.map((api) => (
               <li class="relative pb-4 pl-5 last:pb-0">
                 <span aria-hidden="true" class="absolute -left-[4.5px] top-2 size-2 rounded-full bg-line-strong"></span>
-                <a href={ROUTES.api(locale, api.id)} class="block text-small font-medium transition-colors duration-150 hover:text-brand-700">{api.name}</a>
+                <a href={ROUTES.api(locale, api.id)} class="block text-small font-medium transition-colors duration-150 hover:text-link">{api.name}</a>
                 <time datetime={api.reviewedAt} title={t("api.lastVerified", { when: api.verifiedLabel })} class="text-caption text-ink-2">{api.verifiedShort}</time>
               </li>
             ))}
@@ -216,7 +216,7 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
         <h2 id="contribute" class="text-h4 font-semibold">{t("home.contributeTitle")}</h2>
         <p class="mt-1 text-small text-ink-2">{t("home.contributeShort")}</p>
       </div>
-      <a href={ROUTES.contribute()} class="tap gap-1.5 text-small font-medium text-brand-700 hover:underline">{t("home.contributeCta")}<ArrowRight aria-hidden size={14} /></a>
+      <a href={ROUTES.contribute()} class="tap gap-1.5 text-small font-medium text-link hover:underline">{t("home.contributeCta")}<ArrowRight aria-hidden size={14} /></a>
     </section>
   </div>
 </BaseLayout>

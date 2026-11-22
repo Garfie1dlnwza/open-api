@@ -42,7 +42,7 @@ export function Tabs({ items, label, className }: { items: TabItem[]; label: str
             onClick={() => setActive(item.id)}
             className={cx(
               "-mb-px h-10 border-b-2 px-3 text-small font-medium transition-colors duration-150",
-              active === item.id ? "border-brand-700 text-brand-700" : "border-transparent text-ink-2 hover:text-ink",
+              active === item.id ? "border-link text-link" : "border-transparent text-ink-2 hover:text-ink",
             )}
           >
             {item.label}
