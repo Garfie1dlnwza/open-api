@@ -33,7 +33,7 @@ export interface StatusFile {
 
 export interface Observation {
   /** Present when no HTTP response arrived at all. */
-  error?: "timeout" | "network" | "tls";
+  error?: "timeout" | "network" | "tls" | "redirect_blocked";
   httpStatus?: number;
   latencyMs: number;
   body?: string;

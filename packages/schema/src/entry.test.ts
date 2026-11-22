@@ -73,5 +73,6 @@ describe("host and pattern hardening", () => {
     expect(parse(withPattern("b")).success).toBe(false); // example "abc" must match fully, not partially
     expect(parse(withPattern("(a+)+$")).success).toBe(false);
     expect(parse(withPattern("(")).success).toBe(false);
+    expect(parse(withPattern("a)|(b")).success).toBe(false); // would escape the anchors once wrapped
   });
 });

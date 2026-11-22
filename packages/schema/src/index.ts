@@ -4,6 +4,7 @@ export * from "./entry.ts";
 export * from "./params.ts";
 export * from "./url.ts";
 export * from "./playground.ts";
+export * from "./upstream.ts";
 export * from "./health.ts";
 export * from "./trust.ts";
 export * from "./samples.ts";

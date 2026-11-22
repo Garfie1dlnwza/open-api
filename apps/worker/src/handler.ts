@@ -1,11 +1,9 @@
 import {
   LIMITS,
-  redirectAllowed,
-  USER_AGENT,
+  fetchWithRedirects,
   validatePlaygroundRequest,
   type PlaygroundErrorCode,
   type PlaygroundResponse,
-  type WorkerApi,
   type WorkerCatalog,
 } from "@thai-open-api/schema";
 import {
@@ -13,7 +11,6 @@ import {
   CLIENT_IP_HEADER,
   PLAYGROUND_CONTENT_TYPE,
   RATE_LIMIT_FALLBACK_KEY,
-  REDIRECT_STATUSES,
   ROUTES,
   SECURITY_HEADERS,
   UPSTREAM_ACCEPT,
@@ -54,37 +51,6 @@ function respond(body: PlaygroundResponse | { ok: true }, status: number, cors: 
 const failure = (code: PlaygroundErrorCode, message: string, cors: Record<string, string>, param?: string) =>
   respond({ ok: false, error: { code, message, param } }, ERROR_STATUS[code], cors);
 
-/**
- * Follows redirects by hand so every hop is checked against the catalog. Keyed APIs may only
- * redirect within their own host, which keeps the credential from travelling elsewhere.
- */
-async function fetchUpstream(api: WorkerApi, start: URL, headers: Record<string, string>, deps: Deps) {
-  let url = start;
-  for (let hop = 0; hop <= LIMITS.maxRedirects; hop++) {
-    const res = await deps.fetch(url, {
-      method: "GET",
-      headers: { accept: UPSTREAM_ACCEPT, "user-agent": USER_AGENT, ...headers },
-      redirect: "manual",
-      signal: AbortSignal.timeout(LIMITS.upstreamTimeoutMs),
-    });
-    if (!REDIRECT_STATUSES.includes(res.status)) return res;
-
-    const location = res.headers.get("location");
-    await res.body?.cancel();
-    if (!location) return null;
-    let next: URL;
-    try {
-      next = new URL(location, url);
-    } catch {
-      return null;
-    }
-    const sameHostOnly = api.auth.type === "apiKey" && next.host !== url.host;
-    if (sameHostOnly || !redirectAllowed(api, url, next)) return null;
-    url = next;
-  }
-  return null;
-}
-
 export async function handle(request: Request, env: Env, deps: Deps): Promise<Response> {
   const { pathname } = new URL(request.url);
   const origin = request.headers.get("origin");
@@ -119,7 +85,7 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   const started = performance.now();
   let upstream: Response | null;
   try {
-    upstream = await fetchUpstream(checked.api, checked.url, checked.headers, deps);
+    upstream = await fetchWithRedirects(checked.api, checked.url, checked.headers, deps.fetch, UPSTREAM_ACCEPT);
   } catch (error) {
     const timedOut = error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError");
     return timedOut ? failure("upstream_timeout", "The API did not answer in time", cors) : failure("upstream_unreachable", "Could not reach the API", cors);

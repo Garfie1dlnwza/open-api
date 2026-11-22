@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { makeEntry } from "./fixtures.ts";
-import { redirectAllowed, toWorkerCatalog, validatePlaygroundRequest } from "./playground.ts";
+import { toWorkerCatalog, validatePlaygroundRequest } from "./playground.ts";
+import { redirectAllowed } from "./upstream.ts";
 
 const keyed = makeEntry({
   id: "keyed",

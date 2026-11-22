@@ -4,9 +4,9 @@ import {
   appendHistory,
   buildRequest,
   evaluateEndpoint,
-  LIMITS,
+  fetchWithRedirects,
+  policyFromEntry,
   rollupStatus,
-  USER_AGENT,
   type ApiEntry,
   type ApiHealth,
   type Endpoint,
@@ -17,6 +17,7 @@ import {
 import { loadCatalog, loadStatus, PATHS } from "../packages/schema/src/node.ts";
 
 const CONCURRENCY = 4;
+const HEALTH_ACCEPT = "application/json, application/xml;q=0.9, text/plain;q=0.8, */*;q=0.1";
 
 const TLS_ERROR_CODE = /CERT|SSL|TLS|ISSUER|SIGNATURE/;
 
@@ -26,14 +27,11 @@ function classifyError(error: unknown): "timeout" | "network" | "tls" {
   return TLS_ERROR_CODE.test(code) ? "tls" : "network";
 }
 
-async function observe(url: URL, headers: Record<string, string>): Promise<Observation & { body?: string }> {
+async function observe(api: ApiEntry, url: URL, headers: Record<string, string>): Promise<Observation> {
   const started = performance.now();
   try {
-    const res = await fetch(url, {
-      headers: { "user-agent": USER_AGENT, ...headers },
-      redirect: "follow",
-      signal: AbortSignal.timeout(LIMITS.upstreamTimeoutMs),
-    });
+    const res = await fetchWithRedirects(policyFromEntry(api), url, headers, fetch, HEALTH_ACCEPT);
+    if (!res) return { error: "redirect_blocked", latencyMs: Math.round(performance.now() - started) };
     const body = await res.text();
     return { httpStatus: res.status, latencyMs: Math.round(performance.now() - started), body };
   } catch (error) {
@@ -45,7 +43,7 @@ async function checkEndpoint(api: ApiEntry, endpoint: Endpoint, checkedAt: strin
   // Keyless on purpose: we never hold third-party credentials, so keyed APIs report auth_required.
   const built = buildRequest(api, endpoint, endpoint.example);
   if (!built.ok) throw new Error(`${api.id}/${endpoint.id}: invalid example (${built.name}: ${built.message})`);
-  return evaluateEndpoint(api, endpoint, await observe(built.url, built.headers), checkedAt);
+  return evaluateEndpoint(api, endpoint, await observe(api, built.url, built.headers), checkedAt);
 }
 
 async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {

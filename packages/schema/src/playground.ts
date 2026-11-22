@@ -99,6 +99,3 @@ export function validatePlaygroundRequest(catalog: WorkerCatalog, body: unknown)
   if (!built.ok) return fail("invalid_param", built.message, built.name);
   return { ok: true, api, url: built.url, headers: built.headers };
 }
-
-export const redirectAllowed = (api: WorkerApi, from: URL, to: URL): boolean =>
-  to.protocol === from.protocol && api.allowedHosts.includes(to.host) && !to.username && !to.password;

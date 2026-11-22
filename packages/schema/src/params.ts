@@ -18,6 +18,9 @@ export function compileParamPattern(source: string): RegExp | string {
   if (source.length > MAX_PATTERN_LENGTH) return `pattern is longer than ${MAX_PATTERN_LENGTH} characters`;
   if (NESTED_QUANTIFIER.test(source) || BACKREFERENCE.test(source)) return "pattern may backtrack catastrophically";
   try {
+    // Must compile on its own first: "a)|(b" is only valid once wrapped, and wrapping would
+    // let the alternation escape the anchors.
+    new RegExp(source);
     return new RegExp(`^(?:${source})$`);
   } catch {
     return "pattern is not a valid regular expression";
