@@ -1,29 +1,35 @@
-/* Design tokens. Colours are defined once here; components use the Tailwind names below. */
+/* Design tokens. Colours are defined once here; components use the Tailwind names from globals.css.
+   The palette comes from the project logo: blue, red, green and a navy ink. */
 :root {
-  /* Brand */
-  --brand-900: #142d4e;
-  --brand-800: #1d426c;
-  --brand-700: #245b91;
-  --brand-500: #347cb8;
-  --brand-100: #dceaf6;
+  /* Brand blue (logo blue is brand-700) */
+  --brand-900: #0b2a57;
+  --brand-800: #00418c;
+  --brand-700: #0053b1;
+  --brand-500: #2f7bd1;
+  --brand-100: #e2edf9;
+  --brand-50: #f1f6fc;
 
-  /* Accent (decorative; text uses accent-800) */
-  --accent-800: #0f766e;
-  --accent-600: #0d9488;
-  --accent-100: #ccfbf1;
-  --accent-50: #f0fdfa;
+  /* Logo red: flag stripe, wordmark and one-off emphasis. Text uses red-fg. */
+  --red: #f2152d;
+  --red-fg: #b4112a;
+
+  /* Logo green */
+  --accent-700: #0f8f4d;
+  --accent-800: #0b6b3a;
+  --accent-100: #d4eede;
+  --accent-50: #eaf6ef;
 
   /* Neutral */
-  --canvas: #f8fafc;
+  --canvas: #f6f7f9;
   --surface: #ffffff;
-  --subtle: #f1f5f9;
-  --line: #e2e8f0;
-  --line-strong: #cbd5e1;
+  --subtle: #eef0f4;
+  --line: #e2e5ec;
+  --line-strong: #cdd2dc;
   /* Borders of inputs and buttons must reach 3:1 (WCAG 1.4.11); --line is decorative only. */
-  --control-border: #7b8aa0;
-  --ink: #172b45;
-  --ink-2: #55657a;
-  --ink-3: #5f6e84;
+  --control-border: #7d869a;
+  --ink: #1a1f36;
+  --ink-2: #4f566d;
+  --ink-3: #5a617a;
   --on-brand: #ffffff;
 
   /* Semantic: *-dot for icons and borders, fg/bg pairs for text */
@@ -40,10 +46,27 @@
   --info-fg: #1e40af;
   --info-bg: #dbeafe;
   --quiet-fg: #475569;
-  --quiet-bg: #f1f5f9;
+  --quiet-bg: #eef0f4;
+
+  /* Data visualisation. Series validated with the dataviz script (adjacent CVD dE >= 8). */
+  --series-1: #0053b1;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-other: #98a1b3;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-critical: #d03b3b;
+  --status-info: #0053b1;
+  --status-unknown: #98a1b3;
+  /* Label colours inside fills: white only where it reaches 4.5:1, near-black elsewhere. */
+  --on-series: #ffffff;
+  --on-dark: #0b0b0b;
+  --gridline: #e6e8ee;
+  --axis: #cdd2dc;
+  --chart-label: #5a617a;
 
   /* Code surfaces */
-  --code-bg: #0f1d33;
+  --code-bg: #101a2e;
   --code-fg: #e6edf6;
   --code-muted: #9db0c7;
 
@@ -51,26 +74,30 @@
   --font-sans: "IBM Plex Sans Thai", "Noto Sans Thai", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
 
-  /* Shape */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Shape: tighter than the usual 12px bubbles; cards are the exception, not the rule */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
   /* Layout */
-  --header-height: 64px;
-  --sidebar-width: 248px;
+  --header-height: 60px;
+  --sidebar-width: 232px;
   --content-max: 1200px;
   --detail-max: 760px;
+  --playground-width: 420px;
   /* sidebar + detail + playground + gaps */
   --detail-page-max: 1480px;
-  --playground-width: 420px;
   --control-height: 40px;
 
-  /* Elevation */
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 4%);
-  --shadow-pop: 0 8px 24px rgb(15 23 42 / 10%);
+  /* Elevation: only floating layers have a shadow */
+  --shadow-pop: 0 8px 28px rgb(16 24 56 / 14%);
 
   /* Motion */
-  --motion: 160ms ease;
+  --ease-out: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-chart: 650ms;
+  --dur-count: 800ms;
+  --shimmer: 1.5s;
 }

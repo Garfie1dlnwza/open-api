@@ -18,12 +18,14 @@
     "check:hardcoded": "node scripts/check-hardcoded.mjs",
     "check:dup": "jscpd --config .jscpd.json",
     "test": "vitest run",
-    "check": "npm run catalog:validate && npm run catalog:build && npm run typecheck && npm run lint && npm run check:hardcoded && npm run check:dup && npm test"
+    "check": "npm run catalog:validate && npm run catalog:build && npm run typecheck && npm run lint && npm run check:hardcoded && npm run check:dup && npm test",
+    "brand:build": "node scripts/build-brand-assets.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.15.0",
     "jscpd": "^5.4.3",
+    "sharp": "^0.34.0",
     "tsx": "^4.23.15",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.73.0",
