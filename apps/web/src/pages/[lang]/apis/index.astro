@@ -16,9 +16,13 @@ const apis = getSummaries(locale);
 ---
 
 <BaseLayout locale={locale} title={t("explorer.title")} description={t("explorer.subtitle")} wide>
-  <div class="mx-auto max-w-[var(--detail-page-max)] px-5 py-10 sm:px-8">
-    <h1 class="text-h1 font-bold">{t("explorer.title")}</h1>
-    <p class="mt-2 mb-8 text-ink-2">{t("explorer.subtitle")}</p>
+  <div class="hero-bg border-b border-line">
+    <div class="mx-auto max-w-[var(--detail-page-max)] px-5 pb-10 pt-12 sm:px-8">
+      <h1 class="text-h1 font-bold tracking-tight">{t("explorer.title")}</h1>
+      <p class="mt-2 text-ink-2">{t("explorer.subtitle")}</p>
+    </div>
+  </div>
+  <div class="mx-auto max-w-[var(--detail-page-max)] px-5 py-8 sm:px-8">
     <!-- client:only: the list reads the URL on its first render, so a filtered link never flashes every API first. -->
     <ApiExplorer client:only="react" apis={apis} locale={locale}>
       <Fragment slot="fallback"><ExplorerSkeleton label={t("common.loading")} /></Fragment>

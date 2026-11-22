@@ -91,7 +91,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
       {FACETS.map((facet) => {
         const counts = facetCounts(apis, filters, facet, locale);
         return (
-          <details key={facet} open className="group/facet border-t border-line py-3 first:border-t-0 first:pt-0">
+          <details key={facet} open className="group/facet border-t border-line/70 py-3 first:border-t-0 first:pt-0">
             <summary className="mb-1 flex min-h-9 cursor-pointer list-none items-center justify-between rounded-md px-2 text-small font-semibold text-ink transition-colors duration-150 hover:bg-subtle [&::-webkit-details-marker]:hidden">
               {t(`explorer.facets.${facet}`)}
               <ChevronDown aria-hidden size={16} className="text-ink-3 transition-transform duration-200 group-open/facet:rotate-180" />
@@ -123,7 +123,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
           {showFilters ? t("explorer.hideFilters") : t("explorer.showFilters")}
           {active.length > 0 && ` (${active.length})`}
         </Button>
-        <div className={`${showFilters ? "mt-4 block" : "hidden"} lg:mt-0 lg:block`}>
+        <div className={`${showFilters ? "mt-4 block" : "hidden"} glass rounded-2xl p-3 lg:mt-0 lg:block`}>
           {active.length > 0 && (
             <Button variant="ghost" className="mb-2 h-8 px-2 text-caption" onClick={clearFacets} icon={<X aria-hidden size={13} />}>
               {t("explorer.clear")} ({active.length})
@@ -138,13 +138,14 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
         <div className="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
           <Field label={t("explorer.searchLabel")} htmlFor="explorer-search">
             <div className="relative">
-              <Search aria-hidden size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3" />
-              <Input id="explorer-search" type="search" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t("explorer.searchPlaceholder")} className="pl-9" />
+              <Search aria-hidden size={16} className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-ink-3" />
+              <Input id="explorer-search" type="search" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t("explorer.searchPlaceholder")} className="rounded-xl bg-surface/70 pl-9 backdrop-blur" />
             </div>
           </Field>
           <Field label={t("explorer.sort")} htmlFor="explorer-sort">
             <Listbox
               id="explorer-sort"
+              triggerClassName="rounded-xl bg-surface/70 backdrop-blur"
               value={sort}
               options={SORTS.filter((o) => o !== "relevance" || filters.q).map((o) => ({ value: o, label: t(`explorer.sortOptions.${o}`) }))}
               onChange={(next) => setFilters((f) => ({ ...f, sort: next as Filters["sort"], dir: undefined }))}
