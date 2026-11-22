@@ -160,12 +160,12 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
   <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-12 px-5 pt-12 sm:px-8">
     <section id="categories" aria-labelledby="categories-title" class="scroll-mt-24">
       <h2 id="categories-title" class="sr-only">{t("home.categories")}</h2>
-      <ul class="flex flex-wrap gap-x-7 border-y border-line">
+      <ul class="flex flex-wrap gap-2">
         {CATEGORIES.map((c) => {
           const Icon = CATEGORY_ICON[c];
           return (
             <li>
-              <a href={`${explore}?${QUERY.category}=${c}`} class="tap group gap-2 text-small transition-colors duration-150 hover:text-link">
+              <a href={`${explore}?${QUERY.category}=${c}`} class="tap group gap-2 rounded-full border border-line bg-surface/70 px-4 text-small shadow-sm backdrop-blur transition-colors duration-150 hover:border-line-strong hover:text-link">
                 <Icon aria-hidden size={16} className="text-ink-3 transition-colors duration-150 group-hover:text-link" />
                 {t(`category.${c}`)}
                 <span class="text-caption tabular-nums text-ink-3">{counts[c]}</span>
@@ -177,15 +177,12 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
     </section>
 
     <div class:list={["grid gap-14", showRecent && "lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-16"]}>
-      <section aria-labelledby="featured">
-        <div class="mb-3 flex items-end justify-between gap-3">
-          <h2 id="featured" class="text-h3 font-semibold">{t("home.featured")}</h2>
-          <a href={explore} class="tap gap-1 text-small font-medium text-link hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
-        </div>
-        <ul class="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+      <WindowChrome title={t("home.featured")} titleId="featured">
+        <a slot="actions" href={explore} class="tap gap-1 whitespace-nowrap text-caption font-medium text-link hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={13} /></a>
+        <ul class="divide-y divide-line/70">
           {featured.map((api, i) => <li><ApiRow api={api} locale={locale} index={i} /></li>)}
         </ul>
-      </section>
+      </WindowChrome>
 
       {showRecent && (
         <section aria-labelledby="recent">
@@ -203,12 +200,12 @@ const demoExcerpt = demoLines.slice(0, UI.heroSampleLines).join("\n") + (demoLin
       )}
     </div>
 
-    <section aria-labelledby="contribute" class="flex flex-wrap items-center justify-between gap-4 border-t border-line py-6">
+    <section aria-labelledby="contribute" class="glass flex flex-wrap items-center justify-between gap-4 rounded-2xl px-6 py-5">
       <div>
         <h2 id="contribute" class="text-h4 font-semibold">{t("home.contributeTitle")}</h2>
         <p class="mt-1 text-small text-ink-2">{t("home.contributeShort")}</p>
       </div>
-      <a href={ROUTES.contribute()} class="tap gap-1.5 text-small font-medium text-link hover:underline">{t("home.contributeCta")}<ArrowRight aria-hidden size={14} /></a>
+      <a href={ROUTES.contribute()} class="tap gap-1.5 rounded-full bg-fill px-5 text-small font-semibold text-on-brand transition-colors duration-150 hover:bg-fill-hover">{t("home.contributeCta")}<ArrowRight aria-hidden size={14} /></a>
     </section>
   </div>
 </BaseLayout>

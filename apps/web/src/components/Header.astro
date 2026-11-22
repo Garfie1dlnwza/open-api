@@ -28,7 +28,7 @@ const pill = (active: boolean) => [
 ---
 
 <div aria-hidden="true" class="flag-stripe h-1"></div>
-<header class="glass-bar sticky top-0 z-40">
+<header class="glass-bar sticky top-0 z-40 border-b border-line/60">
   <div class:list={["mx-auto flex h-[var(--header-height)] items-center gap-4 px-5 sm:px-8", wide ? "max-w-[var(--detail-page-max)]" : "max-w-[var(--content-max)]"]}>
     <a href={ROUTES.home(locale)} class="flex shrink-0 items-center gap-2.5" aria-label={t("site.name")}>
       <img src="/brand/mark.png" alt="" width="36" height="33" class="h-9 w-auto" />
