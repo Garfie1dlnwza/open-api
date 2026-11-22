@@ -73,6 +73,10 @@ export const UI = {
   slowLatencyMs: 2_000,
   /** Status data older than this is shown as stale on the home page. The probe runs every 6 hours. */
   statusStaleWarnHours: 24,
+  /** The scheduled probe interval, quoted on the dashboard so nobody mistakes it for live data. */
+  probeEveryHours: 6,
+  /** A trend needs at least this many probe runs before a line chart is honest. */
+  minTrendRuns: 2,
   playgroundClientTimeoutMs: 20_000,
 } as const;
 

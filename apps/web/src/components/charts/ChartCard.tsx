@@ -1,6 +1,8 @@
 import type { Locale } from "@thai-open-api/schema";
+import { ChevronDown } from "lucide-react";
 import { useId, type ReactNode } from "react";
 import { createT } from "../../i18n/index.ts";
+import { rowKeys } from "../../lib/tableKeys.ts";
 import { cx } from "../ui/cx.ts";
 
 export interface TableView {
@@ -15,6 +17,7 @@ export interface TableView {
 export function ChartCard({ title, question, table, locale, children, className }: { title: string; question: string; table: TableView; locale: Locale; children: ReactNode; className?: string }) {
   const t = createT(locale);
   const id = useId();
+  const keys = rowKeys(table.rows);
   return (
     <section aria-labelledby={id} className={cx("flex min-w-0 flex-col gap-4 border-t border-line pt-5", className)}>
       <header>
@@ -22,8 +25,12 @@ export function ChartCard({ title, question, table, locale, children, className 
         <p className="text-caption text-ink-2">{question}</p>
       </header>
       <div className="flex-1">{children}</div>
-      <details className="text-caption">
-        <summary className="w-fit cursor-pointer text-ink-2 transition-colors duration-150 hover:text-ink">{t("dashboard.tableView")}</summary>
+      <details className="group text-caption">
+        <summary className="inline-flex w-fit cursor-pointer list-none items-center gap-1 rounded-sm text-ink-2 transition-colors duration-150 hover:text-ink [&::-webkit-details-marker]:hidden">
+          <span className="group-open:hidden">{t("dashboard.tableShow")}</span>
+          <span className="hidden group-open:inline">{t("dashboard.tableHide")}</span>
+          <ChevronDown aria-hidden size={14} className="transition-transform duration-150 group-open:rotate-180" />
+        </summary>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full border-collapse text-left tabular-nums">
             <thead>
@@ -32,9 +39,9 @@ export function ChartCard({ title, question, table, locale, children, className 
               </tr>
             </thead>
             <tbody>
-              {table.rows.map((row) => (
-                <tr key={row.join("|")} className="border-b border-line last:border-0">
-                  {row.map((cell, i) => <td key={`${i}-${cell}`} className="py-1.5 pr-4">{cell}</td>)}
+              {keys.map((key, index) => (
+                <tr key={key} className="border-b border-line last:border-0">
+                  {table.rows[index].map((cell, i) => <td key={`${key}:${i}`} className="py-1.5 pr-4">{cell}</td>)}
                 </tr>
               ))}
             </tbody>

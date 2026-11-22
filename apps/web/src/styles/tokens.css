@@ -172,21 +172,15 @@
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
-  --series-1-light: #184f95;
+  --series-1-light: #9cc3f5;
   --series-other: #7d89a3;
   --status-good: #0ca30c;
   --status-warning: #fab219;
   --status-critical: #d03b3b;
   --status-info: #2b6bd6;
   --status-unknown: #7d89a3;
+  /* Label inks that match the light theme (near-black on the pale, good, warning, unknown fills; white on critical and info) are inherited. */
   --on-series-1: #0b0b0b;
-  --on-series-1-light: #ffffff;
-  --on-series-other: #0b0b0b;
-  --on-good: #0b0b0b;
-  --on-warning: #0b0b0b;
-  --on-critical: #ffffff;
-  --on-info: #ffffff;
-  --on-unknown: #0b0b0b;
   --gridline: #1f2b47;
   --axis: #34456f;
   --chart-label: #9aa7c0;

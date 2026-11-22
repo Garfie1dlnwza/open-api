@@ -2,6 +2,7 @@ import type { Locale } from "@thai-open-api/schema";
 import type { LucideIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { createT } from "../../i18n/index.ts";
+import { sharePercents } from "../../lib/shares.ts";
 import { ChartTooltip, type TipState } from "./ChartTooltip.tsx";
 import { useInView, useWidth } from "./useChart.ts";
 
@@ -28,9 +29,10 @@ export function SegmentedBar({ segments, locale, ariaLabel, format }: { segments
   const [tip, setTip] = useState<TipState | null>(null);
   const shown = segments.filter((s) => s.value > 0);
   const total = shown.reduce((n, s) => n + s.value, 0);
+  const shares = sharePercents(shown.map((s) => s.value));
 
   const point = (segment: Segment, x: number, y: number) =>
-    setTip({ x, y, content: { title: segment.label, rows: [{ swatch: segment.fill, label: `${Math.round((segment.value / total) * PERCENT)}%`, value: format(segment.value) }] } });
+    setTip({ x, y, content: { title: segment.label, rows: [{ swatch: segment.fill, label: `${shares[shown.indexOf(segment)]}%`, value: format(segment.value) }] } });
   const move = (segment: Segment) => (event: React.PointerEvent) => {
     const box = wrap.current?.getBoundingClientRect();
     if (box) point(segment, event.clientX - box.left, event.clientY - box.top);
