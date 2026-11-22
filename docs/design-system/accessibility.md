@@ -3,6 +3,8 @@
 - WCAG AA contrast, enforced by a test over every token pair **in both the light and the dark theme**.
 - The theme toggle is a button with `aria-pressed`; the first paint already uses the right theme, so there is
   no flash for people sensitive to bright screens.
+- The global focus rule lives in the Tailwind base layer, so a utility (for example `-outline-offset-2` inside a dialog
+  that clips overflow) can override it. Unlayered CSS beats every layer, which once hid the ring.
 - Visible focus ring (2 px brand outline), full keyboard use, native `<dialog>` for modals.
 - Every form control has a label; errors use `role="alert"`.
 - Status is never colour alone: each status has its own icon shape, and where the icon stands alone it
