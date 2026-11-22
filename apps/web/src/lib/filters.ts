@@ -42,6 +42,21 @@ export function serializeFilters(filters: Filters): URLSearchParams {
   return params;
 }
 
+/**
+ * "Authentication required" is a status, but the Authentication group already says the same thing about the
+ * same APIs. One place should speak, so the status filter omits it. Old links with ?status=auth_required still work.
+ */
+export const STATUS_FACET_VALUES: readonly Status[] = STATUSES.filter((s) => s !== "auth_required");
+
+export type EmptyReason = "query" | "facets" | "both";
+
+/** What to blame when nothing matches: the search text, the chosen filters, or both. null when nothing is applied. */
+export function emptyReason(filters: Filters): EmptyReason | null {
+  const query = filters.q.trim() !== "";
+  const facets = activeFacets(filters).length > 0;
+  return query && facets ? "both" : query ? "query" : facets ? "facets" : null;
+}
+
 export const activeFacets = (filters: Filters): Facet[] => FACETS.filter((f) => filters[f] !== undefined);
 
 /** Without an explicit sort, a query ranks by relevance and browsing sorts by name. */

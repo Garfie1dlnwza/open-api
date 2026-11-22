@@ -17,9 +17,16 @@
 - **Dashboard:** hero availability figure, four KPI tiles, then seven charts that each answer one
   question (see [charts.md](charts.md)). Filters would sit in a single row above the charts; with a
   history this short there is no date filter yet.
-- **Explorer:** filters live in the URL (`?q=&category=&source=&auth=&status=&sort=`) so Back from a
-  detail page restores the view. Facet counts ignore their own facet, so an option never promises
-  results that are not there. An empty result names the active filters and offers Clear.
+- **Explorer:** filters live in the URL (`?q=&category=&source=&auth=&status=&sort=`) so Back from a detail
+  page restores the view, and the page is client-only, reading the URL on its very first render so a filtered
+  link never flashes the full list (a skeleton shows meanwhile; `<noscript>` lists every API).
+  Filter groups are collapsible, each option is a checkbox with an icon, a name and a result count, and an
+  option that would show nothing is disabled but still listed. The sidebar sticks, scrolls on its own on short
+  screens, and starts with a skip link and a "clear filters" button. Active filters (including the search text)
+  are removable chips. An empty result names its cause ("No results for “zzz” in Finance") and offers clear
+  search, clear filters or clear all. Column labels sit above the list from 1280 px, where rows have four
+  columns; below that the description moves under the name. The key icon appears on a row only when the
+  status is not already "authentication required".
 - **Detail:** overview → provider and trust → base URL → authentication → quick start → endpoints
   (parameters and response in tabs) → licence → changelog. Playground sticks to the right at ≥ 1280 px.
 - **Playground:** request and response are separate; shows status, time and size; Pretty/Raw; Copy

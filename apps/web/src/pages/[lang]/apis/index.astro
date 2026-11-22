@@ -2,6 +2,8 @@
 import { LOCALES, type Locale } from "@thai-open-api/schema";
 import type { GetStaticPaths } from "astro";
 import { ApiExplorer } from "../../../components/api/ApiExplorer.tsx";
+import ExplorerSkeleton from "../../../components/api/ExplorerSkeleton.astro";
+import { ROUTES } from "../../../config/site.ts";
 import { createT } from "../../../i18n/index.ts";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { getSummaries } from "../../../lib/catalog.ts";
@@ -10,12 +12,21 @@ export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ par
 
 const locale = Astro.params.lang as Locale;
 const t = createT(locale);
+const apis = getSummaries(locale);
 ---
 
 <BaseLayout locale={locale} title={t("explorer.title")} description={t("explorer.subtitle")}>
   <div class="mx-auto max-w-[var(--content-max)] px-5 py-10 sm:px-8">
     <h1 class="text-h1 font-bold">{t("explorer.title")}</h1>
     <p class="mt-2 mb-8 text-ink-2">{t("explorer.subtitle")}</p>
-    <ApiExplorer client:load apis={getSummaries(locale)} locale={locale} />
+    <!-- client:only: the list reads the URL on its first render, so a filtered link never flashes every API first. -->
+    <ApiExplorer client:only="react" apis={apis} locale={locale}>
+      <Fragment slot="fallback"><ExplorerSkeleton label={t("common.loading")} /></Fragment>
+    </ApiExplorer>
+    <noscript>
+      <ul class="divide-y divide-line rounded-lg border border-line bg-surface">
+        {apis.map((a) => <li><a class="block px-4 py-3 text-small hover:bg-subtle" href={ROUTES.api(locale, a.id)}><strong class="font-semibold">{a.name}</strong> · <span class="text-ink-2">{a.provider}</span></a></li>)}
+      </ul>
+    </noscript>
   </div>
 </BaseLayout>

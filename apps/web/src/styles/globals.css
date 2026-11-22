@@ -57,6 +57,7 @@
   --text-h3: var(--fs-h3);
   --text-h4: var(--fs-h4);
   --text-body: var(--fs-body);
+  --text-row: var(--fs-row);
   --text-small: var(--fs-small);
   --text-caption: var(--fs-caption);
   --text-code: var(--fs-code);
@@ -74,9 +75,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-:focus-visible {
-  outline: 2px solid var(--brand-500);
-  outline-offset: 2px;
+/* In the base layer so a utility such as -outline-offset-2 can still override it. Unlayered CSS beats every layer. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--brand-500);
+    outline-offset: 2px;
+  }
 }
 
 /* Smooth page-to-page fades with no JavaScript (supported browsers; others just navigate). */
@@ -146,6 +150,26 @@ body {
 [data-in="true"] .chart-line { stroke-dasharray: 1; animation: draw 900ms var(--ease-out) both; }
 [data-in="true"] .chart-arc { animation: arc-in var(--dur-chart) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 90ms); }
 [data-in="true"] .chart-fade { animation: fade var(--dur-chart) var(--ease-out) both; animation-delay: 300ms; }
+
+/* A removable filter, shown above the results. */
+.chip-filter {
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 0 0.625rem;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--ink);
+  transition: border-color var(--dur-fast), background-color var(--dur-fast);
+}
+.chip-filter:hover {
+  border-color: var(--line-strong);
+  background: var(--subtle);
+}
 
 /* Small links get a real hit area without changing their type size: 32 px with a mouse, 44 px on touch. */
 .tap {

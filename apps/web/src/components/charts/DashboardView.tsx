@@ -50,7 +50,8 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
     value: data.endpointHealth[status],
     ...STATUS_FILL[status],
     icon: STATUS_ICON[status],
-    href: explore(QUERY.status, status),
+    // "Authentication required" is shown under the Authentication filter, not Status.
+    href: status === "auth_required" ? explore(QUERY.auth, "apiKey") : explore(QUERY.status, status),
   }));
   const licenseSegments = [
     { key: "verified", label: t("dashboard.licenseStates.verified"), value: data.license.verified, fill: "var(--series-1)", ink: "var(--on-series-1)" },

@@ -58,10 +58,19 @@ export const th = {
     sort: "เรียงตาม",
     sortOptions: {
       relevance: "ตรงกับคำค้นมากที่สุด",
-      name: "ชื่อ",
-      trust: "ความน่าเชื่อถือ",
-      verified: "ตรวจสอบล่าสุด",
+      name: "ชื่อ (ก-ฮ)",
+      trust: "ความน่าเชื่อถือ (สูงไปต่ำ)",
+      verified: "ทบทวนล่าสุด (ใหม่ไปเก่า)",
     },
+    columns: { status: "สถานะ", api: "API", description: "คำอธิบาย", meta: "ที่มา · ทบทวน" },
+    skipToResults: "ข้ามไปยังรายการ API",
+    clearQuery: "ล้างคำค้น",
+    clearAll: "ล้างทั้งหมด",
+    emptyQuery: "ไม่พบ “{query}”",
+    emptyQueryIn: "ไม่พบ “{query}” ใน {filters}",
+    queryChip: "คำค้น: “{query}”",
+    countLabel: "{count} ผลลัพธ์",
+    sortedBy: "เรียงตาม {sort}",
     emptyTitle: "ไม่พบ API ที่ตรงกับเงื่อนไข",
     emptyBody: "ลองเปลี่ยนคำค้นหรือล้างตัวกรองบางรายการ",
     emptyWithFilters: "ตัวกรองที่ใช้อยู่: {filters}",
@@ -75,7 +84,6 @@ export const th = {
     },
   },
   theme: {
-    toggle: "สลับโหมดสีมืดและสว่าง",
     dark: "โหมดมืด",
   },
   legend: {
@@ -180,7 +188,7 @@ export const th = {
     energy: "พลังงาน",
   },
   auth: {
-    none: "ไม่ต้องใช้ Key",
+    none: "ไม่ต้องใช้ API Key",
     apiKey: "ต้องใช้ API Key",
   },
   license: {

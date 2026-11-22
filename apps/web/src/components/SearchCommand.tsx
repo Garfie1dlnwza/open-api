@@ -164,7 +164,7 @@ export function SearchCommand({ locale }: { locale: Locale }) {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={t("search.placeholder")}
-            className="h-14 w-full bg-transparent text-body outline-none placeholder:text-ink-3"
+            className="h-14 w-full bg-transparent text-body placeholder:text-ink-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-500"
           />
         </div>
         <div id={listId} role="listbox" aria-label={t("search.title")} className="max-h-[50vh] overflow-y-auto p-2">
