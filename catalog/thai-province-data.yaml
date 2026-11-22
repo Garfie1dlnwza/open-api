@@ -1,0 +1,33 @@
+id: thai-province-data
+name: { th: ข้อมูลจังหวัดประเทศไทย, en: Thai Province Data }
+provider:
+  name: { th: ชุมชนโอเพนซอร์ส (kongvut), en: Open-source community (kongvut) }
+  url: https://github.com/kongvut/thai-province-data
+description:
+  th: รายชื่อจังหวัดไทยสองภาษาในรูปไฟล์ JSON แบบ static เหมาะกับ dropdown และการ validate ที่อยู่
+  en: Bilingual list of Thai provinces as static JSON files, handy for dropdowns and address validation.
+category: geography
+source: community
+auth: { type: none }
+baseUrl: https://raw.githubusercontent.com/kongvut/thai-province-data/master/api/latest
+docsUrl: https://github.com/kongvut/thai-province-data
+license: { type: unknown, verified: false }
+rateLimit:
+  th: เป็นไฟล์บน GitHub ควรแคชฝั่งผู้ใช้ ไม่ควรเรียกถี่
+  en: Served from GitHub raw; cache on your side and avoid frequent polling.
+tags: [province, จังหวัด, address, geography]
+reviewedAt: 2026-11-22
+endpoints:
+  - id: provinces
+    path: /province.json
+    title: { th: รายชื่อจังหวัด, en: List of provinces }
+    description:
+      th: คืนอาร์เรย์ของจังหวัดทั้งหมด พร้อมชื่อภาษาไทยและอังกฤษ
+      en: Returns all provinces with Thai and English names.
+    response:
+      format: json
+      sample: |
+        [ { "id": 1, "name": { "th": "กรุงเทพมหานคร", "en": "Bangkok" } } ]
+    health:
+      checks:
+        - { kind: json, path: $, type: array, minItems: 70 }

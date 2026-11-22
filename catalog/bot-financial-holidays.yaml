@@ -1,0 +1,36 @@
+id: bot-financial-holidays
+name: { th: วันหยุดสถาบันการเงิน (ธปท.), en: Financial Institution Holidays (BOT) }
+provider:
+  name: { th: ธนาคารแห่งประเทศไทย, en: Bank of Thailand }
+  url: https://www.bot.or.th/
+description:
+  th: รายการวันหยุดของสถาบันการเงินรายปี ต้องสมัครและขอ token ที่ BOT API Portal
+  en: Yearly list of financial institution holidays. Requires a token from the BOT API Portal.
+category: finance
+source: official
+auth:
+  type: apiKey
+  in: header
+  name: Authorization
+  signupUrl: https://portal.api.bot.or.th/
+baseUrl: https://gateway.api.bot.or.th
+docsUrl: https://portal.api.bot.or.th/
+license: { type: terms, verified: false }
+tags: [holiday, วันหยุด, bot, ธปท]
+reviewedAt: 2026-11-22
+endpoints:
+  - id: holidays-by-year
+    path: /financial-institutions-holidays/
+    title: { th: วันหยุดรายปี, en: Holidays by year }
+    description:
+      th: คืนรายการวันหยุดของสถาบันการเงินในปีที่ระบุ
+      en: Returns the financial institution holidays for the given year.
+    params:
+      - name: year
+        in: query
+        type: integer
+        required: true
+        min: 2000
+        max: 2100
+        description: { th: ปี ค.ศ., en: Gregorian year }
+    example: { year: "2026" }

@@ -1,0 +1,47 @@
+id: tmd-earthquake
+name: { th: แผ่นดินไหวรายวัน (กรมอุตุฯ), en: Daily Earthquakes (TMD) }
+provider:
+  name: { th: กรมอุตุนิยมวิทยา, en: Thai Meteorological Department }
+  url: https://www.tmd.go.th/
+description:
+  th: เหตุการณ์แผ่นดินไหวในภูมิภาคและทั่วโลกรายวัน ตอบกลับเป็น XML ไฟล์ค่อนข้างใหญ่
+  en: Daily seismic events for the region and worldwide. Responds with a fairly large XML document.
+category: environment
+source: official
+auth: { type: none }
+baseUrl: https://data.tmd.go.th/api
+docsUrl: https://data.tmd.go.th/api/index1.php
+license: { type: terms, verified: false }
+rateLimit:
+  th: ค่า uid/ukey เริ่มต้นเป็นค่าทดลองในเอกสาร ควรสมัครของตัวเองเมื่อใช้งานจริง
+  en: The default uid/ukey are the documentation's demo values; register your own for real use.
+tags: [earthquake, แผ่นดินไหว, seismic, xml]
+reviewedAt: 2026-11-22
+maxResponseBytes: 2000000
+endpoints:
+  - id: daily-seismic-events
+    path: /DailySeismicEvent/v1/
+    title: { th: เหตุการณ์แผ่นดินไหวรายวัน, en: Daily seismic events }
+    description:
+      th: รายการเหตุการณ์แผ่นดินไหวล่าสุดในรูป XML
+      en: Most recent seismic events as an XML document.
+    params:
+      - name: uid
+        in: query
+        required: true
+        default: api
+        description: { th: รหัสผู้ใช้ (ค่าทดลอง), en: User id (demo value) }
+      - name: ukey
+        in: query
+        required: true
+        default: api12345
+        description: { th: คีย์ผู้ใช้ (ค่าทดลอง), en: User key (demo value) }
+    example: { uid: api, ukey: api12345 }
+    response:
+      format: xml
+      sample: |
+        <DailySeismicEvents version="1.0"><header><title>Daily Seismic (Earthquake) Events</title></header>...</DailySeismicEvents>
+    health:
+      slowMs: 8000
+      checks:
+        - { kind: text, contains: "<DailySeismicEvents" }

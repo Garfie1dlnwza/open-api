@@ -1,0 +1,44 @@
+id: bot-exchange-rate
+name: { th: อัตราแลกเปลี่ยนเฉลี่ยรายวัน (ธปท.), en: Daily Average Exchange Rates (BOT) }
+provider:
+  name: { th: ธนาคารแห่งประเทศไทย, en: Bank of Thailand }
+  url: https://www.bot.or.th/
+description:
+  th: อัตราแลกเปลี่ยนเฉลี่ยรายวันของบาทเทียบสกุลเงินต่าง ๆ ต้องสมัครและขอ token ที่ BOT API Portal
+  en: Daily average THB exchange rates against other currencies. Requires a token from the BOT API Portal.
+category: finance
+source: official
+auth:
+  type: apiKey
+  in: header
+  name: Authorization
+  signupUrl: https://portal.api.bot.or.th/
+baseUrl: https://gateway.api.bot.or.th
+docsUrl: https://portal.api.bot.or.th/
+license: { type: terms, verified: false }
+tags: [exchange-rate, fx, อัตราแลกเปลี่ยน, bot, ธปท]
+featured: true
+reviewedAt: 2026-11-22
+endpoints:
+  - id: daily-average
+    path: /Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/
+    title: { th: อัตราแลกเปลี่ยนเฉลี่ยรายวัน, en: Daily average exchange rate }
+    description:
+      th: ดึงอัตราแลกเปลี่ยนเฉลี่ยในช่วงวันที่ที่กำหนด
+      en: Average exchange rates over a date range.
+    params:
+      - name: start_period
+        in: query
+        type: date
+        required: true
+        description: { th: วันที่เริ่มต้น (YYYY-MM-DD), en: Start date (YYYY-MM-DD) }
+      - name: end_period
+        in: query
+        type: date
+        required: true
+        description: { th: วันที่สิ้นสุด (YYYY-MM-DD), en: End date (YYYY-MM-DD) }
+      - name: currency_id
+        in: query
+        pattern: "^[A-Z]{3}$"
+        description: { th: "รหัสสกุลเงิน เช่น USD", en: "Currency code, e.g. USD" }
+    example: { start_period: "2026-11-01", end_period: "2026-11-07", currency_id: USD }

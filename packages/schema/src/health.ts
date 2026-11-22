@@ -39,9 +39,12 @@ export interface Observation {
   body?: string;
 }
 
+const ROOT_PATH = "$";
 const is2xx = (status: number) => status >= HTTP.ok && status < HTTP.ok + 100;
 
+/** Dot path into parsed JSON; "$" addresses the document root. */
 function getPath(value: unknown, path: string): unknown {
+  if (path === ROOT_PATH) return value;
   return path.split(".").reduce<unknown>((cur, key) => {
     if (cur === null || typeof cur !== "object") return undefined;
     return (cur as Record<string, unknown>)[key];

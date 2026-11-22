@@ -1,0 +1,40 @@
+id: air4thai
+name: { th: Air4Thai คุณภาพอากาศ, en: Air4Thai Air Quality }
+provider:
+  name: { th: กรมควบคุมมลพิษ, en: Pollution Control Department }
+  url: https://www.pcd.go.th/
+description:
+  th: ค่าคุณภาพอากาศ (AQI, PM2.5, PM10 และอื่น ๆ) ล่าสุดจากสถานีตรวจวัดทั่วประเทศ
+  en: Latest air quality readings (AQI, PM2.5, PM10 and more) from monitoring stations across Thailand.
+category: environment
+source: official
+auth: { type: none }
+baseUrl: https://air4thai.pcd.go.th
+docsUrl: https://air4thai.pcd.go.th/webV3/
+license: { type: unknown, verified: false }
+tags: [pm2.5, aqi, air-quality, ฝุ่น, อากาศ]
+featured: true
+reviewedAt: 2026-11-22
+endpoints:
+  - id: latest-aqi
+    path: /services/getNewAQI_JSON.php
+    title: { th: ค่า AQI ล่าสุดทุกสถานี, en: Latest AQI for all stations }
+    description:
+      th: คืนรายการสถานีพร้อมค่ามลพิษล่าสุดของแต่ละสถานี
+      en: Returns every station with its most recent pollutant readings.
+    response:
+      format: json
+      sample: |
+        {
+          "stations": [
+            {
+              "stationID": "119t",
+              "nameEN": "Thara Public Park",
+              "stationType": "GROUND",
+              "AQILast": { "date": "...", "PM25": { "value": "..." } }
+            }
+          ]
+        }
+    health:
+      checks:
+        - { kind: json, path: stations, type: array, minItems: 1 }

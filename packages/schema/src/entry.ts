@@ -97,7 +97,7 @@ export const ApiEntrySchema = z
   .strictObject({
     id: slug,
     name: LocalizedText,
-    provider: z.strictObject({ name: LocalizedText, url: httpUrl }),
+    provider: z.strictObject({ name: LocalizedText, url: httpUrl.optional() }),
     description: LocalizedText,
     category: z.enum(CATEGORIES),
     source: z.enum(SOURCES),

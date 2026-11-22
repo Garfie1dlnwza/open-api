@@ -1,0 +1,55 @@
+id: data-go-th
+name: { th: ข้อมูลเปิดภาครัฐ (data.go.th), en: Thailand Open Government Data }
+provider:
+  name: { th: สำนักงานพัฒนารัฐบาลดิจิทัล (สพร.), en: Digital Government Development Agency (DGA) }
+  url: https://data.go.th/
+description:
+  th: ค้นหาชุดข้อมูลเปิดของหน่วยงานรัฐผ่าน CKAN API (ค้นหา, รายละเอียดชุดข้อมูล, ไฟล์ข้อมูล)
+  en: Search open datasets published by Thai agencies through the CKAN API.
+category: government
+source: official
+auth: { type: none }
+baseUrl: https://data.go.th/api/3/action
+docsUrl: https://docs.ckan.org/en/2.11/api/
+license:
+  type: varies
+  name: { th: ขึ้นกับแต่ละชุดข้อมูล, en: Varies per dataset }
+  verified: false
+tags: [ckan, dataset, open-data, ข้อมูลเปิด]
+featured: true
+reviewedAt: 2026-11-22
+endpoints:
+  - id: package-search
+    path: /package_search
+    title: { th: ค้นหาชุดข้อมูล, en: Search datasets }
+    description:
+      th: ค้นหาชุดข้อมูลด้วยคำค้น รองรับการแบ่งหน้า
+      en: Full-text search over datasets, with pagination.
+    params:
+      - name: q
+        in: query
+        description: { th: คำค้น, en: Search query }
+      - name: rows
+        in: query
+        type: integer
+        min: 1
+        max: 100
+        default: "10"
+        description: { th: จำนวนผลลัพธ์ต่อหน้า, en: Results per page }
+      - name: start
+        in: query
+        type: integer
+        min: 0
+        description: { th: ตำแหน่งเริ่มต้น (offset), en: Result offset }
+    example: { q: air, rows: "3" }
+    response:
+      format: json
+      sample: |
+        {
+          "success": true,
+          "result": { "count": 177, "results": [ { "title": "...", "resources": [] } ] }
+        }
+    health:
+      checks:
+        - { kind: json, path: success, type: boolean }
+        - { kind: json, path: result.results, type: array, minItems: 1 }

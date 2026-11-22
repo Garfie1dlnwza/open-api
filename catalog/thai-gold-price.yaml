@@ -1,0 +1,29 @@
+id: thai-gold-price
+name: { th: ราคาทองคำ, en: Thai Gold Price }
+provider:
+  name: { th: ชุมชน (chnwt), en: Community (chnwt) }
+description:
+  th: ราคาทองคำแท่งและทองรูปพรรณล่าสุด (รับซื้อ/ขายออก) ข้อมูลรวบรวมจากแหล่งสาธารณะ
+  en: Latest gold bar and ornament prices (buy/sell), collected from public sources.
+category: finance
+source: unofficial
+auth: { type: none }
+baseUrl: https://api.chnwt.dev/thai-gold-api
+license: { type: unknown, verified: false }
+tags: [gold, ทอง, price]
+reviewedAt: 2026-11-22
+endpoints:
+  - id: latest
+    path: /latest
+    title: { th: ราคาทองล่าสุด, en: Latest prices }
+    description:
+      th: ราคารับซื้อและขายออกของทองคำแท่งและทองรูปพรรณ
+      en: Buy and sell prices for gold bar and ornament gold.
+    response:
+      format: json
+      sample: |
+        { "status": "success", "response": { "update_date": "...", "price": { "gold_bar": { "buy": "...", "sell": "..." } } } }
+    health:
+      checks:
+        - { kind: json, path: status, type: string }
+        - { kind: json, path: response.price, type: object }

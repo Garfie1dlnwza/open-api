@@ -1,0 +1,29 @@
+id: thai-oil-price
+name: { th: ราคาน้ำมันขายปลีก, en: Thai Retail Oil Price }
+provider:
+  name: { th: ชุมชน (chnwt), en: Community (chnwt) }
+description:
+  th: ราคาน้ำมันขายปลีกวันนี้ในกรุงเทพฯ แยกตามสถานีบริการ ข้อมูลรวบรวมจากหน้าเว็บของผู้ค้าน้ำมัน
+  en: Today's retail fuel prices in Bangkok by station brand, collected from the retailers' public pages.
+category: energy
+source: unofficial
+auth: { type: none }
+baseUrl: https://api.chnwt.dev/thai-oil-api
+license: { type: unknown, verified: false }
+tags: [oil, fuel, น้ำมัน, ptt, gasohol]
+reviewedAt: 2026-11-22
+endpoints:
+  - id: latest
+    path: /latest
+    title: { th: ราคาน้ำมันล่าสุด, en: Latest prices }
+    description:
+      th: ราคาน้ำมันทุกชนิดของแต่ละสถานีบริการ หน่วยบาทต่อลิตร
+      en: Prices for every fuel type per station brand, in baht per litre.
+    response:
+      format: json
+      sample: |
+        { "status": "success", "response": { "date": "...", "stations": { "ptt": { "gasohol_95": { "name": "...", "price": "38.14" } } } } }
+    health:
+      checks:
+        - { kind: json, path: status, type: string }
+        - { kind: json, path: response.stations, type: object }
