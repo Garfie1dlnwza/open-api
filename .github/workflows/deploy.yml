@@ -16,7 +16,9 @@ permissions:
 
 jobs:
   deploy:
-    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    # Secrets are only reachable from main. The real control is the production environment's
+    # deployment branch rule (docs/release.md); this condition is a second layer.
+    if: ${{ vars.DEPLOY_ENABLED == 'true' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production

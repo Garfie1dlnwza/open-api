@@ -22,6 +22,11 @@ Repository **variables**: `DEPLOY_ENABLED=true`, `PUBLIC_SITE_URL`, `PUBLIC_PLAY
 `CF_PAGES_PROJECT`. **Secrets**: `CLOUDFLARE_API_TOKEN` (Pages + Workers edit),
 `CLOUDFLARE_ACCOUNT_ID`. Create a `production` environment if you want approval gates.
 
+**Required:** Settings → Environments → `production` → *Deployment branches and tags* → restrict to
+`main`. Without it, anyone with write access could run the Deploy workflow from another branch with a
+modified workflow file and reach the Cloudflare secrets. Store the secrets on that environment (not
+repo-wide) and scope the API token to this Pages project and Worker only.
+
 Branch protection (recommended): require the **CI** checks on `develop` and `main`, block force
 pushes, and restrict who can push to `main`. Settings → Actions → General → allow GitHub Actions to
 create pull requests, which release-please needs. Releases opened with the default token do not
