@@ -80,6 +80,16 @@ export function prettyXml(xml: string): string {
   return lines.join("\n");
 }
 
+/**
+ * True when the viewer is not showing everything. For pretty XML the formatter only reads the first
+ * responsePreviewChars of the body, so truncation is judged from the real body, never from the length of
+ * the formatted text (collapsing whitespace can make that shorter than the cut-off).
+ */
+export function isPreviewClipped(body: string, shown: string, contentType: string, mode: "pretty" | "raw"): boolean {
+  const xmlCut = mode === "pretty" && /xml/i.test(contentType) && body.length > UI.responsePreviewChars;
+  return xmlCut || shown.length > UI.responsePreviewChars;
+}
+
 /** Pretty-prints JSON or XML when possible; anything else is returned as-is. */
 export function prettyBody(body: string, contentType: string): string {
   if (/xml/i.test(contentType)) return prettyXml(body);

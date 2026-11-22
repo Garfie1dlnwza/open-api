@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { UI } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
 import { formatBytes } from "../../lib/format.ts";
-import { prettyBody, type PlaygroundResult } from "../../lib/playground.ts";
+import { isPreviewClipped, prettyBody, type PlaygroundResult } from "../../lib/playground.ts";
 import { Button } from "../ui/Button.tsx";
 import { Skeleton } from "../ui/Skeleton.tsx";
 import { EmptyState } from "../ui/EmptyState.tsx";
@@ -49,7 +49,7 @@ export function ResponseViewer({ state, locale, unavailable }: { state: ViewStat
   if (result?.kind !== "ok") return null;
 
   const ok = result.status >= HTTP_OK_MIN && result.status <= HTTP_OK_MAX;
-  const clipped = shown.length > UI.responsePreviewChars;
+  const clipped = isPreviewClipped(result.body, shown, result.contentType, mode);
   return (
     <div className="anim-rise flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-small">
