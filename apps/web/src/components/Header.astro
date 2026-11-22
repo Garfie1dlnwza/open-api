@@ -34,7 +34,7 @@ const linkClass = (active: boolean) => [
         <span class="text-flag-fg">Thai</span> <span class="text-ink">Open</span> <span class="text-brand-700">API</span>
       </span>
     </a>
-    <nav aria-label={t("nav.mainNavigation")} class="ml-4 hidden items-center md:flex">
+    <nav aria-label={t("nav.mainNavigation")} class="ml-4 hidden items-center lg:flex">
       {links.map((link) => <a href={link.href} aria-current={link.active ? "page" : undefined} class:list={linkClass(link.active)}>{link.label}</a>)}
     </nav>
     <div class="ml-auto flex items-center gap-4">
@@ -43,7 +43,7 @@ const linkClass = (active: boolean) => [
         {LOCALES.map((l, i) => (
           <>
             {i > 0 && <span aria-hidden="true" class="text-line-strong">/</span>}
-            <a href={`${switchLocalePath(path, l)}${Astro.url.search}`} hreflang={l} lang={l} aria-current={l === locale ? "true" : undefined} class:list={["rounded-sm px-1 py-0.5 transition-colors duration-150", l === locale ? "font-semibold text-ink" : "text-ink-3 hover:text-ink"]}>
+            <a href={`${switchLocalePath(path, l)}${Astro.url.search}`} hreflang={l} lang={l} aria-current={l === locale ? "true" : undefined} class:list={["tap rounded-sm px-2 transition-colors duration-150", l === locale ? "font-semibold text-ink" : "text-ink-3 hover:text-ink"]}>
               {LOCALE_NAMES[l]}
             </a>
           </>
@@ -51,7 +51,7 @@ const linkClass = (active: boolean) => [
       </nav>
     </div>
   </div>
-  <nav aria-label={t("nav.mainNavigation")} class="flex overflow-x-auto border-t border-line px-3 md:hidden">
+  <nav aria-label={t("nav.mainNavigation")} class="flex overflow-x-auto border-t border-line px-3 lg:hidden">
     {links.map((link) => <a href={link.href} aria-current={link.active ? "page" : undefined} class:list={linkClass(link.active)}>{link.label}</a>)}
   </nav>
 </header>

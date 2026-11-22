@@ -8,4 +8,5 @@
 - `prefers-reduced-motion` removes transitions.
 - Skip link, landmarks, and `aria-current` on navigation.
 - Touch targets: on touch screens (`pointer: coarse`) buttons, tabs, selects, text inputs, `<summary>`
-  and navigation links are at least 44 px tall. Mouse layouts keep the denser 32-40 px sizes.
+  and navigation links are at least 44 px tall. Mouse layouts keep the denser sizes, but small text links
+use the `.tap` utility (32 px, 44 px on touch) so their hit area is larger than their text.

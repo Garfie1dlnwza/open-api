@@ -22,8 +22,8 @@ export function ApiRow({ api, locale, index = 0 }: { api: ApiSummary; locale: Lo
     >
       <StatusBadge status={api.status} locale={locale} size={20} />
       <span className="min-w-0">
-        <strong className="block truncate text-small font-semibold transition-colors duration-150 group-hover:text-brand-700">{api.name}</strong>
-        <span className="block truncate text-caption text-ink-2">{api.provider}</span>
+        <strong className="line-clamp-2 break-words text-small font-semibold leading-snug transition-colors duration-150 group-hover:text-brand-700">{api.name}</strong>
+        <span className="line-clamp-2 break-words text-caption leading-snug text-ink-2">{api.provider}</span>
       </span>
       <span className="col-span-2 col-start-2 row-start-2 line-clamp-2 text-small text-ink-2 md:col-span-1 md:col-start-auto md:row-start-auto">{api.description}</span>
       <span className="flex items-center justify-end gap-3 text-ink-3">
