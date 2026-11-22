@@ -237,6 +237,7 @@ export const en: Messages = {
       unsupported_media: "The API returned a content type that cannot be displayed",
       not_found: "Route not found",
       method_not_allowed: "Method not allowed",
+      server_misconfigured: "The playground is misconfigured, please tell the maintainers",
     },
     mobileTabs: "Switch between request and response",
   },

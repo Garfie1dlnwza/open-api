@@ -3,6 +3,7 @@ import { dirname, join, parse as parsePath } from "node:path";
 import { parse } from "yaml";
 import { ApiEntrySchema, type ApiEntry } from "./entry.ts";
 import type { StatusFile } from "./health.ts";
+import { StatusFileSchema } from "./status-schema.ts";
 
 const ROOT_ENV = "THAI_OPEN_API_ROOT";
 const PACKAGE_NAME = "thai-open-api";
@@ -63,7 +64,17 @@ export function loadCatalog(dir: string = PATHS.catalog): ApiEntry[] {
   return entries;
 }
 
+const EMPTY_STATUS = (): StatusFile => ({ generatedAt: new Date(0).toISOString(), apis: {} });
+
+/** Reads data/status.json. A missing or malformed file means "no data" (everything Unknown), never a failed build. */
 export function loadStatus(file: string = PATHS.status): StatusFile {
-  if (!existsSync(file)) return { generatedAt: new Date(0).toISOString(), apis: {} };
-  return JSON.parse(readFileSync(file, "utf8")) as StatusFile;
+  if (!existsSync(file)) return EMPTY_STATUS();
+  try {
+    const parsed = StatusFileSchema.safeParse(JSON.parse(readFileSync(file, "utf8")));
+    if (parsed.success) return parsed.data as StatusFile;
+    console.error(`Ignoring ${file}: ${parsed.error.issues[0]?.path.join(".")} ${parsed.error.issues[0]?.message}`);
+  } catch (error) {
+    console.error(`Ignoring ${file}: ${(error as Error).message}`);
+  }
+  return EMPTY_STATUS();
 }

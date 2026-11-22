@@ -11,7 +11,8 @@ const keyed = makeEntry({
 const open = makeEntry({ redirectHosts: ["cdn.example.go.th"] });
 const catalog = toWorkerCatalog([open, keyed]);
 const ORIGIN = "https://open-api.example.org";
-const env: Env = { ALLOWED_ORIGINS: ORIGIN };
+const allow = { limit: async () => ({ success: true }) };
+const env: Env = { ALLOWED_ORIGINS: ORIGIN, RATE_LIMITER: allow };
 
 const call = (body: unknown, init: { origin?: string | null; method?: string; fetchImpl?: typeof fetch; env?: Env } = {}) => {
   const fetchImpl = init.fetchImpl ?? vi.fn(async () => json({ data: [1] }));
@@ -103,6 +104,39 @@ describe("playground worker", () => {
     expect((await call(ok, { fetchImpl: binary as unknown as typeof fetch })).json).toMatchObject({ error: { code: "unsupported_media" } });
   });
 
+  it("answers in the usual envelope when the upstream stream dies mid-body", async () => {
+    const broken = vi.fn(async () => {
+      const body = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode("{"));
+          controller.error(new Error("socket hang up 10.0.0.1"));
+        },
+      });
+      return new Response(body, { headers: { "content-type": "application/json" } });
+    });
+    const result = await call(ok, { fetchImpl: broken as unknown as typeof fetch });
+    expect(result.res.status).toBe(502);
+    expect(result.json).toMatchObject({ error: { code: "upstream_unreachable" } });
+    expect(JSON.stringify(result.json)).not.toContain("10.0.0.1");
+  });
+
+  it("refuses an oversized body from its declared length alone", async () => {
+    const request = new Request("https://worker.test/v1/playground", { method: "POST", headers: { origin: ORIGIN, "content-length": "999999", "content-type": "application/json" }, body: JSON.stringify(ok) });
+    const res = await handle(request, env, { catalog, fetch: vi.fn() as unknown as typeof fetch });
+    expect(res.status).toBe(400);
+  });
+
+  it("only shows JSON, XML and text, even when the type merely mentions json", async () => {
+    for (const type of ["application/octet-stream; x=json", "image/svg+xml; json", "application/pdf"]) {
+      const impl = vi.fn(async () => new Response("x", { headers: { "content-type": type } }));
+      expect((await call(ok, { fetchImpl: impl as unknown as typeof fetch })).json, type).toMatchObject({ error: { code: "unsupported_media" } });
+    }
+    for (const type of ["application/json; charset=utf-8", "application/vnd.api+json", "application/atom+xml", "text/plain", "text/xml; charset=utf-8"]) {
+      const impl = vi.fn(async () => new Response("x", { headers: { "content-type": type } }));
+      expect((await call(ok, { fetchImpl: impl as unknown as typeof fetch })).json, type).toMatchObject({ ok: true });
+    }
+  });
+
   it("maps timeouts and network errors without leaking details", async () => {
     const timeout = vi.fn(async () => { throw new DOMException("timed out", "TimeoutError"); });
     expect((await call(ok, { fetchImpl: timeout as unknown as typeof fetch })).res.status).toBe(504);
@@ -115,6 +149,12 @@ describe("playground worker", () => {
   it("applies the rate limiter and keeps the key out of responses", async () => {
     const limited = await call(ok, { env: { ...env, RATE_LIMITER: { limit: async () => ({ success: false }) } } });
     expect(limited.res.status).toBe(429);
+
+    // A missing binding must fail closed, never run unthrottled.
+    const unthrottled = await call(ok, { env: { ALLOWED_ORIGINS: ORIGIN } });
+    expect(unthrottled.res.status).toBe(500);
+    expect(unthrottled.json).toMatchObject({ error: { code: "server_misconfigured" } });
+    expect(unthrottled.fetchImpl).not.toHaveBeenCalled();
 
     const echo = await call({ ...ok, apiId: "keyed", authValue: "super-secret-token" });
     expect(JSON.stringify(echo.json)).not.toContain("super-secret-token");

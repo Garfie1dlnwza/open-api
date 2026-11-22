@@ -235,6 +235,7 @@ export const th = {
       unsupported_media: "API ตอบกลับเป็นชนิดข้อมูลที่แสดงไม่ได้",
       not_found: "ไม่พบเส้นทางนี้",
       method_not_allowed: "ไม่รองรับวิธีเรียกนี้",
+      server_misconfigured: "Playground ตั้งค่าไม่ถูกต้อง กรุณาแจ้งผู้ดูแล",
     },
     mobileTabs: "สลับระหว่าง Request และ Response",
   },

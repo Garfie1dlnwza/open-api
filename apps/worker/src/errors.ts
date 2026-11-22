@@ -16,4 +16,5 @@ export const ERROR_STATUS: Record<PlaygroundErrorCode, number> = {
   unsupported_media: 502,
   not_found: 404,
   method_not_allowed: 405,
+  server_misconfigured: 500,
 };
