@@ -58,3 +58,20 @@ describe("filters", () => {
     expect(facetCounts(all, { q: "", source: "official" }, "source", "th")).toEqual({ official: 2, unofficial: 1 });
   });
 });
+
+import { STATUS_FACET_VALUES, emptyReason } from "./filters.ts";
+
+describe("explorer filters", () => {
+  it("names the cause of an empty list: the search text, the filters, or both", () => {
+    expect(emptyReason({ q: "" })).toBeNull();
+    expect(emptyReason({ q: "zzz" })).toBe("query");
+    expect(emptyReason({ q: "  ", category: "finance" })).toBe("facets");
+    expect(emptyReason({ q: "zzz", category: "finance" })).toBe("both");
+  });
+
+  it("does not offer 'authentication required' twice, but still understands links that use it", () => {
+    expect(STATUS_FACET_VALUES).not.toContain("auth_required");
+    expect(STATUS_FACET_VALUES).toContain("operational");
+    expect(parseFilters(new URLSearchParams("status=auth_required")).status).toBe("auth_required");
+  });
+});

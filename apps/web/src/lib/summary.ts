@@ -18,6 +18,8 @@ export interface ApiSummary {
   verifiedLabel: string;
   /** Short date for dense rows, e.g. "22 Nov". */
   verifiedShort: string;
+  /** When the health probe last ran, relative to the build ("5 minutes ago"); undefined if never. */
+  checkedLabel?: string;
   /** Names in the other language(s) so a search in one language finds the other. */
   aliases: string[];
   trustScore: number;

@@ -12,7 +12,7 @@ import {
 } from "@thai-open-api/schema";
 import { loadCatalog, loadStatus } from "@thai-open-api/schema/node";
 import { createT } from "../i18n/index.ts";
-import { formatDate, formatShortDate } from "./format.ts";
+import { formatDate, formatRelative, formatShortDate } from "./format.ts";
 import type { ApiSummary } from "./summary.ts";
 
 export interface Catalog {
@@ -58,6 +58,7 @@ export function toSummary(entry: ApiEntry, locale: Locale): ApiSummary {
     reviewedAt: entry.reviewedAt,
     verifiedLabel: formatDate(entry.reviewedAt, locale),
     verifiedShort: formatShortDate(entry.reviewedAt, locale),
+    checkedLabel: getHealth(entry.id) ? formatRelative(getHealth(entry.id)!.checkedAt, now, locale) : undefined,
     aliases: LOCALES.filter((l) => l !== locale).flatMap((l) => [localize(entry.name, l), localize(entry.provider.name, l)]),
     trustScore: trust.score,
     trustLevel: trust.level,

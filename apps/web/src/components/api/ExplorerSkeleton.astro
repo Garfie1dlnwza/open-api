@@ -1,0 +1,37 @@
+---
+/** Same grid as ApiExplorer, so nothing moves when the real list takes over. */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+const groups = [5, 3, 2, 4];
+---
+
+<div role="status" aria-label={label} class="grid gap-8 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]">
+  <aside class="hidden flex-col lg:flex">
+    {groups.map((rows) => (
+      <div class="flex flex-col gap-2 border-t border-line py-3 first:border-t-0 first:pt-0">
+        <div class="skeleton h-5 w-28"></div>
+        {Array.from({ length: rows }, () => <div class="skeleton h-8 w-full"></div>)}
+      </div>
+    ))}
+  </aside>
+  <section class="min-w-0">
+    <div class="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
+      <div class="skeleton h-[4.25rem]"></div>
+      <div class="skeleton h-[4.25rem]"></div>
+    </div>
+    <div class="skeleton mb-4 h-5 w-24"></div>
+    <ul class="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+      {Array.from({ length: 6 }, () => (
+        <li class="flex items-start gap-4 px-4 py-4">
+          <div class="skeleton size-5 shrink-0 rounded-full"></div>
+          <div class="flex flex-1 flex-col gap-2">
+            <div class="skeleton h-4 w-2/5"></div>
+            <div class="skeleton h-3 w-4/5"></div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+</div>

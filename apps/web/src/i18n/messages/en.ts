@@ -60,10 +60,19 @@ export const en: Messages = {
     sort: "Sort by",
     sortOptions: {
       relevance: "Best match",
-      name: "Name",
-      trust: "Trust",
-      verified: "Recently verified",
+      name: "Name (A-Z)",
+      trust: "Trust (high to low)",
+      verified: "Recently reviewed (newest first)",
     },
+    columns: { status: "Status", api: "API", description: "Description", meta: "Source · Reviewed" },
+    skipToResults: "Skip to the API list",
+    clearQuery: "Clear search",
+    clearAll: "Clear all",
+    emptyQuery: "No results for “{query}”",
+    emptyQueryIn: "No results for “{query}” in {filters}",
+    queryChip: "Search: “{query}”",
+    countLabel: "{count} results",
+    sortedBy: "Sorted by {sort}",
     emptyTitle: "No APIs match these filters",
     emptyBody: "Try a different search or clear some filters.",
     emptyWithFilters: "Active filters: {filters}",
@@ -77,7 +86,6 @@ export const en: Messages = {
     },
   },
   theme: {
-    toggle: "Switch between dark and light",
     dark: "Dark mode",
   },
   legend: {
@@ -182,7 +190,7 @@ export const en: Messages = {
     energy: "Energy",
   },
   auth: {
-    none: "No key needed",
+    none: "No API key needed",
     apiKey: "API key required",
   },
   license: {
