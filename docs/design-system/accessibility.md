@@ -7,5 +7,5 @@
   has an accessible name (`aria-label`) and a tooltip. Charts add a legend with figures and a table view.
 - `prefers-reduced-motion` removes transitions.
 - Skip link, landmarks, and `aria-current` on navigation.
-- Touch targets: controls are 40 px tall; the ⌘K and nav rows have spacing to avoid mis-taps.
-  The 44 × 44 px recommendation is not met everywhere yet (small chips are 32 px).
+- Touch targets: on touch screens (`pointer: coarse`) buttons, tabs, selects, text inputs, `<summary>`
+  and navigation links are at least 44 px tall. Mouse layouts keep the denser 32-40 px sizes.
