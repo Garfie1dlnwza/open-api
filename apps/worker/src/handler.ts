@@ -59,7 +59,9 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   if (pathname === ROUTES.health) return respond({ ok: true }, 200, {});
   if (pathname !== ROUTES.playground) return failure("not_found", "Not found", {});
 
-  if (origin && !allowed.includes(origin)) return failure("origin_not_allowed", "Origin is not allowed", {});
+  // The playground is for this site's pages only. Origin is client-set, so this is not a security
+  // boundary against scripts; the catalog-ID-only API, per-IP rate limit and size caps are.
+  if (!origin || !allowed.includes(origin)) return failure("origin_not_allowed", "Origin is not allowed", {});
   const cors = corsHeaders(origin, allowed);
 
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });

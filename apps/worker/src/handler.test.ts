@@ -54,9 +54,11 @@ describe("playground worker", () => {
     expect(preflight.res.headers.get("access-control-allow-origin")).toBe(ORIGIN);
   });
 
-  it("fails closed when no origins are configured but still serves non-browser callers", async () => {
+  it("fails closed when no origins are configured or the Origin header is missing", async () => {
     expect((await call(ok, { env: {} })).res.status).toBe(403);
-    expect((await call(ok, { env: {}, origin: null })).res.status).toBe(200);
+    const noOrigin = await call(ok, { origin: null });
+    expect(noOrigin.res.status).toBe(403);
+    expect(noOrigin.fetchImpl).not.toHaveBeenCalled();
   });
 
   it("only accepts POST and rejects oversized bodies", async () => {
