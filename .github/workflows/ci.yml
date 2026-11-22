@@ -34,3 +34,36 @@ jobs:
         run: npm run check
       - name: Build the site
         run: npm run build
+
+  audit:
+    name: Dependency audit (when dependencies change)
+    # Blocks a pull request that adds or bumps a vulnerable dependency, but stays out of the way of
+    # PRs that do not touch the manifests. audit.yml re-checks everything weekly for new advisories.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Did this PR change dependencies?
+        id: deps
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          if git diff --quiet "origin/${BASE}...HEAD" -- package.json package-lock.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.deps.outputs.changed == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: steps.deps.outputs.changed == 'true'
+        run: npm ci
+      - if: steps.deps.outputs.changed == 'true'
+        run: npm audit --audit-level=high
+

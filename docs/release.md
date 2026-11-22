@@ -32,6 +32,12 @@ pushes, and restrict who can push to `main`. Settings → Actions → General �
 create pull requests, which release-please needs. Releases opened with the default token do not
 trigger CI on the release PR; use a fine-grained token in `release.yml` if you want that.
 
+## Dependency audits
+
+Pull requests that change `package.json` or `package-lock.json` must pass `npm audit --audit-level=high`.
+PRs that do not touch dependencies skip it, so a new advisory never blocks unrelated work. The weekly
+**Dependency audit** workflow re-checks `main` and tells you about advisories published later.
+
 ## Versioning
 
 Pre-1.0: `feat` bumps the minor, `fix` the patch. `feat!`/`BREAKING CHANGE` also bumps the minor until 1.0.
