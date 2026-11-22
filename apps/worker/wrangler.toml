@@ -1,0 +1,16 @@
+name = "thai-open-api-playground"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# Browser origins allowed to call the playground, comma separated. Empty = no browser origin.
+# Production value is passed by the deploy workflow (--var ALLOWED_ORIGINS:...).
+[vars]
+ALLOWED_ORIGINS = "http://localhost:4321"
+
+# 30 requests per minute per client IP.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 30
+  period = 60
