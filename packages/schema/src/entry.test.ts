@@ -45,3 +45,33 @@ describe("shipped catalog", () => {
     }
   });
 });
+
+describe("host and pattern hardening", () => {
+  it.each(["127.0.0.1", "10.0.0.5", "[::1]", "db.internal", "printer.local", "nodot", "api.example.go.th:8443", "-bad.example.go.th"])(
+    "rejects redirect host %s",
+    (host) => {
+      expect(parse({ redirectHosts: [host] }).success).toBe(false);
+    },
+  );
+
+  it("normalises obfuscated IP base URLs before checking them", () => {
+    for (const baseUrl of ["https://0x7f.1/api", "https://2130706433/api", "https://0177.0.0.1/api", "https://foo.internal/api"]) {
+      expect(parse({ baseUrl }).success, baseUrl).toBe(false);
+    }
+  });
+
+  it("accepts a public redirect host", () => {
+    expect(parse({ redirectHosts: ["cdn.example.go.th"] }).success).toBe(true);
+  });
+
+  it("anchors patterns and refuses risky or invalid ones", () => {
+    const [endpoint] = base.endpoints;
+    const withPattern = (pattern: string, limit = "5") => ({
+      endpoints: [{ ...endpoint, params: [...endpoint.params, { name: "code", in: "query", description: endpoint.title, pattern }], example: { ...endpoint.example, limit, code: "abc" } }],
+    });
+    expect(parse(withPattern("[a-c]{3}")).success).toBe(true);
+    expect(parse(withPattern("b")).success).toBe(false); // example "abc" must match fully, not partially
+    expect(parse(withPattern("(a+)+$")).success).toBe(false);
+    expect(parse(withPattern("(")).success).toBe(false);
+  });
+});

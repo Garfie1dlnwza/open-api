@@ -30,6 +30,7 @@ export const HEALTH_REASONS = [
   "ok",
   "timeout",
   "network",
+  "tls",
   "auth_required",
   "unexpected_auth",
   "rate_limited",

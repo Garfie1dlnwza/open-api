@@ -4,6 +4,26 @@ const SAFE_PATH_VALUE = /^[A-Za-z0-9._~-]+$/;
 const DATE_VALUE = /^\d{4}-\d{2}-\d{2}$/;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
 
+// A quantified group containing a quantifier, e.g. (a+)+ or (\w*)*, is the classic backtracking trap.
+const NESTED_QUANTIFIER = /\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/;
+const BACKREFERENCE = /\\[1-9]|\\k</;
+const MAX_PATTERN_LENGTH = 200;
+
+/**
+ * Compiles a catalog pattern fully anchored (so "abc" cannot match "xabcx") or returns why it
+ * was refused. The nested-quantifier check is a heuristic, not a proof of linear time; values are
+ * also capped at maxParamValueLength before they ever reach a pattern.
+ */
+export function compileParamPattern(source: string): RegExp | string {
+  if (source.length > MAX_PATTERN_LENGTH) return `pattern is longer than ${MAX_PATTERN_LENGTH} characters`;
+  if (NESTED_QUANTIFIER.test(source) || BACKREFERENCE.test(source)) return "pattern may backtrack catastrophically";
+  try {
+    return new RegExp(`^(?:${source})$`);
+  } catch {
+    return "pattern is not a valid regular expression";
+  }
+}
+
 /** Returns an error message, or null when the value is acceptable for the parameter. */
 export function validateParamValue(param: Param, value: string): string | null {
   if (CONTROL_CHARS.test(value)) return "contains control characters";
@@ -11,7 +31,10 @@ export function validateParamValue(param: Param, value: string): string | null {
     return "path values may only contain letters, digits and . _ ~ -";
   }
   if (param.enum && !param.enum.includes(value)) return `must be one of: ${param.enum.join(", ")}`;
-  if (param.pattern && !new RegExp(param.pattern).test(value)) return "does not match the required pattern";
+  if (param.pattern) {
+    const regex = compileParamPattern(param.pattern);
+    if (typeof regex === "string" || !regex.test(value)) return "does not match the required pattern";
+  }
 
   switch (param.type) {
     case "integer":

@@ -28,6 +28,7 @@ describe("evaluateEndpoint", () => {
   it("is an outage on network failure, timeout and server errors", () => {
     expect(run({ error: "timeout", latencyMs: 10000 })).toMatchObject({ status: "outage", reason: "timeout" });
     expect(run({ error: "network", latencyMs: 5 })).toMatchObject({ status: "outage", reason: "network" });
+    expect(run({ error: "tls", latencyMs: 5 })).toMatchObject({ status: "outage", reason: "tls" });
     expect(run({ httpStatus: 503, latencyMs: 30 })).toMatchObject({ status: "outage", reason: "http_error" });
   });
 

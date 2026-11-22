@@ -12,12 +12,16 @@ auth: { type: none }
 baseUrl: https://air4thai.pcd.go.th
 docsUrl: https://air4thai.pcd.go.th/webV3/
 license: { type: unknown, verified: false }
+knownIssue:
+  th: เซิร์ฟเวอร์ส่ง certificate chain ไม่ครบ (ขาด intermediate) ทำให้ client ฝั่งเซิร์ฟเวอร์อย่าง Node.js และ Cloudflare Workers เชื่อมต่อ HTTPS ไม่ได้ (UNABLE_TO_VERIFY_LEAF_SIGNATURE) แต่เบราว์เซอร์และ curl ใช้งานได้ Playground จึงปิดไว้ชั่วคราว
+  en: The server sends an incomplete certificate chain (missing intermediate), so server-side clients such as Node.js and Cloudflare Workers fail the HTTPS handshake (UNABLE_TO_VERIFY_LEAF_SIGNATURE), while browsers and curl work. The playground is disabled for now.
 tags: [pm2.5, aqi, air-quality, ฝุ่น, อากาศ]
 featured: true
 reviewedAt: 2026-11-22
 endpoints:
   - id: latest-aqi
     path: /services/getNewAQI_JSON.php
+    playground: false
     title: { th: ค่า AQI ล่าสุดทุกสถานี, en: Latest AQI for all stations }
     description:
       th: คืนรายการสถานีพร้อมค่ามลพิษล่าสุดของแต่ละสถานี

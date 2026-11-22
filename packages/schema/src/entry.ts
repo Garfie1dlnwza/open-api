@@ -11,13 +11,15 @@ import {
   SOURCES,
 } from "./constants.ts";
 import { LocalizedText } from "./locale.ts";
-import { resolveParams } from "./params.ts";
+import { publicHostError } from "./host.ts";
+import { compileParamPattern, resolveParams } from "./params.ts";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "use lower-case kebab-case").max(64);
 const isoDate = z.iso.date();
 const httpUrl = z.url({ protocol: /^https?$/ });
 
-export const ParamSchema = z.strictObject({
+export const ParamSchema = z
+  .strictObject({
   name: z.string().regex(/^[A-Za-z_][A-Za-z0-9_.-]*$/).max(64),
   in: z.enum(PARAM_LOCATIONS),
   type: z.enum(PARAM_TYPES).default("string"),
@@ -28,7 +30,12 @@ export const ParamSchema = z.strictObject({
   min: z.number().optional(),
   max: z.number().optional(),
   default: z.string().optional(),
-});
+  })
+  .superRefine((param, ctx) => {
+    if (param.pattern === undefined) return;
+    const result = compileParamPattern(param.pattern);
+    if (typeof result === "string") ctx.addIssue({ code: "custom", message: result, path: ["pattern"] });
+  });
 export type Param = z.infer<typeof ParamSchema>;
 
 const HealthCheckSchema = z.discriminatedUnion("kind", [
@@ -91,8 +98,6 @@ const LicenseSchema = z.strictObject({
   verified: z.boolean().default(false),
 });
 
-const IP_LITERAL = /^(\d{1,3}\.){3}\d{1,3}$|^\[.*\]$/;
-
 export const ApiEntrySchema = z
   .strictObject({
     id: slug,
@@ -110,6 +115,8 @@ export const ApiEntrySchema = z
     docsUrl: httpUrl.optional(),
     license: LicenseSchema,
     rateLimit: LocalizedText.optional(),
+    /** A problem on the provider side that users should know about before integrating. */
+    knownIssue: LocalizedText.optional(),
     tags: z.array(z.string().min(1)).default([]),
     featured: z.boolean().default(false),
     /** Date a human last checked docs, licence and endpoints. */
@@ -129,7 +136,12 @@ export const ApiEntrySchema = z
 
     const base = new URL(api.baseUrl);
     if (base.protocol === "http:" && !api.allowInsecure) issue("http base URL requires allowInsecure: true", ["baseUrl"]);
-    if (IP_LITERAL.test(base.hostname) || base.hostname === "localhost") issue("base URL must use a public hostname", ["baseUrl"]);
+    const hostError = publicHostError(base.hostname);
+    if (hostError) issue(`base URL ${hostError}`, ["baseUrl"]);
+    api.redirectHosts.forEach((host, i) => {
+      const error = publicHostError(host);
+      if (error) issue(`redirect host ${error}`, ["redirectHosts", i]);
+    });
     if (base.username || base.password || base.search || base.hash) issue("base URL must not carry credentials, query or fragment", ["baseUrl"]);
 
     const seen = new Set<string>();
