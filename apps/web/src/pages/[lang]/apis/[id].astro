@@ -1,0 +1,152 @@
+---
+import { LOCALES, SAMPLE_LANGS, localize, renderSample, sampleRequest, type Locale, type SampleLang } from "@thai-open-api/schema";
+import type { GetStaticPaths } from "astro";
+import { ArrowLeft } from "lucide-react";
+import { EndpointCard } from "../../../components/api/EndpointCard.tsx";
+import { CodeTabs } from "../../../components/api/CodeTabs.tsx";
+import { KnownIssue } from "../../../components/api/KnownIssue.tsx";
+import { LastVerified } from "../../../components/api/LastVerified.tsx";
+import { ProviderInfo } from "../../../components/api/ProviderInfo.tsx";
+import { StatusBadge } from "../../../components/api/StatusBadge.tsx";
+import { LicenseBadge, TrustBadge } from "../../../components/api/TrustBadge.tsx";
+import { TrustScore } from "../../../components/api/TrustScore.tsx";
+import { ApiPlayground } from "../../../components/playground/ApiPlayground.tsx";
+import { LinkButton } from "../../../components/ui/Button.tsx";
+import { EmptyState } from "../../../components/ui/EmptyState.tsx";
+import SectionNav from "../../../components/SectionNav.astro";
+import { ROUTES } from "../../../config/site.ts";
+import { createT } from "../../../i18n/index.ts";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { authLocationKey, endpointHealth, getCatalog, getEntry, getHealth, getTrust, toSummary } from "../../../lib/catalog.ts";
+import { formatRelative } from "../../../lib/format.ts";
+import { toPlaygroundApi } from "../../../lib/playground.ts";
+
+export const getStaticPaths: GetStaticPaths = () =>
+  LOCALES.flatMap((lang) => getCatalog().entries.map((entry) => ({ params: { lang, id: entry.id } })));
+
+const locale = Astro.params.lang as Locale;
+const t = createT(locale);
+const entry = getEntry(Astro.params.id as string);
+const { now } = getCatalog();
+const summary = toSummary(entry, locale);
+const health = getHealth(entry.id);
+const trust = getTrust(entry);
+const playgroundApi = toPlaygroundApi(entry);
+
+const samplesFor = (endpoint: (typeof entry.endpoints)[number]) => {
+  const request = sampleRequest(entry, endpoint);
+  return request ? (Object.fromEntries(SAMPLE_LANGS.map((lang) => [lang, renderSample(lang, request)])) as Record<SampleLang, string>) : null;
+};
+const quickStart = samplesFor(entry.endpoints[0]);
+const worstReason = health?.endpoints.find((e) => e.status !== "operational")?.reason;
+const key = entry.auth.type === "apiKey" ? entry.auth : null;
+
+const sections = [
+  { id: "overview", label: t("api.overview") },
+  { id: "provider", label: `${t("api.provider")} · ${t("api.trust")}` },
+  { id: "base-url", label: t("api.baseUrl") },
+  { id: "auth", label: t("api.authentication") },
+  { id: "quick-start", label: t("api.quickStart") },
+  { id: "endpoints", label: t("api.endpoints") },
+  { id: "license", label: t("api.license") },
+  { id: "changelog", label: t("api.changelog") },
+];
+const h2 = "mb-4 text-h2 font-semibold";
+---
+
+<BaseLayout locale={locale} title={summary.name} description={summary.description}>
+  <div class="mx-auto max-w-[var(--detail-page-max)] px-5 py-8 sm:px-8">
+    <a href={ROUTES.explore(locale)} class="mb-6 inline-flex items-center gap-1.5 text-small font-medium text-brand-700 hover:underline">
+      <ArrowLeft aria-hidden size={14} />{t("api.backToExplorer")}
+    </a>
+
+    <details class="mb-6 rounded-lg border border-line bg-surface p-3 lg:hidden">
+      <summary class="cursor-pointer text-small font-medium">{t("api.onThisPage")}</summary>
+      <div class="mt-3"><SectionNav label={t("api.onThisPage")} sections={sections} /></div>
+    </details>
+
+    <div class="grid gap-10 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] xl:grid-cols-[var(--sidebar-width)_minmax(0,var(--detail-max))_var(--playground-width)]">
+      <aside class="hidden lg:block lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:self-start">
+        <p class="mb-3 text-caption font-semibold uppercase tracking-wide text-ink-2">{t("api.onThisPage")}</p>
+        <SectionNav label={t("api.onThisPage")} sections={sections} />
+      </aside>
+
+      <div class="flex min-w-0 flex-col gap-12">
+        <section id="overview" class="scroll-mt-24">
+          <div class="mb-3 flex flex-wrap items-center gap-2">
+            <StatusBadge status={summary.status} locale={locale} />
+            <TrustBadge source={entry.source} locale={locale} />
+          </div>
+          <h1 class="text-h1 font-bold">{summary.name}</h1>
+          <p class="mt-3 text-body text-ink-2">{summary.description}</p>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
+            {health ? <LastVerified iso={health.checkedAt} relative={formatRelative(health.checkedAt, now, locale)} locale={locale} labelKey="api.healthChecked" /> : <span class="text-small text-ink-2">{t("api.neverChecked")}</span>}
+            {worstReason && <span class="text-small text-ink-2">{t(`statusReason.${worstReason}`)}</span>}
+          </div>
+          {entry.knownIssue && <div class="mt-4"><KnownIssue text={localize(entry.knownIssue, locale)} locale={locale} /></div>}
+          <div class="mt-5 flex flex-wrap gap-2">
+            {playgroundApi && <LinkButton href="#playground" className="xl:hidden">{t("api.playground")}</LinkButton>}
+            {entry.docsUrl && <LinkButton variant="secondary" href={entry.docsUrl} external>{t("api.docs")}</LinkButton>}
+            {key && <LinkButton variant="secondary" href={key.signupUrl} external>{t("api.getKey")}</LinkButton>}
+          </div>
+        </section>
+
+        <section id="provider" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.provider")}</h2>
+          <ProviderInfo name={summary.provider} url={entry.provider.url} locale={locale} />
+          <div class="mt-5"><TrustScore trust={trust} locale={locale} /></div>
+        </section>
+
+        <section id="base-url" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.baseUrl")}</h2>
+          <p class="break-all rounded-md bg-subtle px-3 py-2 font-mono text-code">{entry.baseUrl}</p>
+        </section>
+
+        <section id="auth" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.authentication")}</h2>
+          <p class="text-small text-ink-2">
+            {key ? t("api.keyAuthBody", { location: t(authLocationKey(key.in)), name: key.name }) : t("api.noAuthBody")}
+          </p>
+        </section>
+
+        <section id="quick-start" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.quickStart")}</h2>
+          {quickStart ? <CodeTabs client:visible samples={quickStart} locale={locale} /> : null}
+        </section>
+
+        <section id="endpoints" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.endpoints")} <span class="text-small font-normal text-ink-2">{t("api.endpointCount", { count: entry.endpoints.length })}</span></h2>
+          <div class="flex flex-col gap-4">
+            {entry.endpoints.map((endpoint) => {
+              const view = endpointHealth(entry.id, endpoint.id);
+              return <EndpointCard client:visible endpoint={endpoint} locale={locale} status={view.status} exampleVerified={view.exampleVerified} samples={samplesFor(endpoint)} />;
+            })}
+          </div>
+        </section>
+
+        <section id="license" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.license")}</h2>
+          <div class="flex flex-col items-start gap-3 text-small">
+            <LicenseBadge type={entry.license.type} verified={entry.license.verified} locale={locale} />
+            {entry.license.name && <p>{localize(entry.license.name, locale)}</p>}
+            {entry.license.url && <a class="text-brand-700 hover:underline" href={entry.license.url} target="_blank" rel="noopener noreferrer">{entry.license.url}</a>}
+            {entry.rateLimit && <p class="text-ink-2"><strong class="font-medium text-ink">{t("api.rateLimit")}:</strong> {localize(entry.rateLimit, locale)}</p>}
+          </div>
+        </section>
+
+        <section id="changelog" class="scroll-mt-24">
+          <h2 class={h2}>{t("api.changelog")}</h2>
+          {entry.changelog.length === 0 ? <p class="text-small text-ink-2">{t("api.noChangelog")}</p> : (
+            <ol class="flex flex-col gap-3">
+              {entry.changelog.map((c) => <li class="text-small"><time class="font-medium" datetime={c.date}>{c.date}</time> · {localize(c.note, locale)}</li>)}
+            </ol>
+          )}
+        </section>
+      </div>
+
+      <aside id="playground" class="scroll-mt-24 min-w-0 lg:col-start-2 xl:col-start-3 xl:sticky xl:top-[calc(var(--header-height)+1.5rem)] xl:max-h-[calc(100vh-var(--header-height)-3rem)] xl:self-start xl:overflow-y-auto">
+        {playgroundApi ? <ApiPlayground client:visible api={playgroundApi} locale={locale} /> : <EmptyState title={t("playground.unavailableTitle")}>{t("playground.unavailableBody")}</EmptyState>}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

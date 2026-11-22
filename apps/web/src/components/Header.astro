@@ -1,0 +1,53 @@
+---
+import { LOCALES, type Locale } from "@thai-open-api/schema";
+import { SearchCommand } from "./SearchCommand.tsx";
+import { ROUTES, SITE } from "../config/site.ts";
+import { createT } from "../i18n/index.ts";
+import { localeName, switchLocalePath } from "../lib/locale.ts";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = createT(locale);
+const path = Astro.url.pathname;
+const links = [
+  { href: ROUTES.explore(locale), label: t("nav.explore"), active: path.startsWith(ROUTES.explore(locale)) },
+  { href: `${ROUTES.home(locale)}#categories`, label: t("nav.categories"), active: false },
+  { href: ROUTES.contribute(), label: t("nav.contribute"), active: false },
+  { href: SITE.repoUrl, label: t("nav.github"), active: false },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
+  <div class="mx-auto flex h-[var(--header-height)] max-w-[var(--content-max)] items-center gap-4 px-5 sm:px-8">
+    <a href={ROUTES.home(locale)} class="flex items-center gap-2 font-semibold text-brand-900">
+      <span aria-hidden="true" class="grid size-8 place-items-center rounded-md bg-brand-800 text-accent-100">
+        <svg viewBox="0 0 32 32" width="18" height="18" fill="none"><path d="M7 10h18M7 16h18M7 22h10" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+      </span>
+      <span class="hidden sm:inline">{t("site.name")}</span>
+    </a>
+    <nav aria-label={t("nav.mainNavigation")} class="ml-2 hidden items-center gap-1 md:flex">
+      {links.map((link) => (
+        <a href={link.href} aria-current={link.active ? "page" : undefined} class:list={["rounded-md px-3 py-2 text-small font-medium transition-colors duration-150", link.active ? "bg-brand-100 text-brand-800" : "text-ink-2 hover:bg-subtle hover:text-ink"]}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    <div class="ml-auto flex items-center gap-2">
+      <SearchCommand client:idle locale={locale} />
+      <nav aria-label={t("nav.language")} class="flex rounded-md border border-control p-0.5">
+        {LOCALES.map((l) => (
+          <a href={switchLocalePath(path, l)} hreflang={l} lang={l} aria-current={l === locale ? "true" : undefined} class:list={["grid h-8 min-w-11 place-items-center rounded px-2 text-caption font-medium transition-colors duration-150", l === locale ? "bg-brand-800 text-on-brand" : "text-ink-2 hover:text-ink"]}>
+            {localeName[l]}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </div>
+  <nav aria-label={t("nav.mainNavigation")} class="flex gap-1 overflow-x-auto border-t border-line px-3 py-1 md:hidden">
+    {links.slice(0, 2).map((link) => (
+      <a href={link.href} class="shrink-0 rounded-md px-3 py-2 text-small font-medium text-ink-2 hover:bg-subtle">{link.label}</a>
+    ))}
+  </nav>
+</header>

@@ -1,0 +1,6 @@
+---
+import { DEFAULT_LOCALE } from "@thai-open-api/schema";
+import { ROUTES } from "../config/site.ts";
+
+return Astro.redirect(ROUTES.home(DEFAULT_LOCALE));
+---

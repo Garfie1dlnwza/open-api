@@ -1,11 +1,21 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, join, parse as parsePath } from "node:path";
 import { parse } from "yaml";
 import { ApiEntrySchema, type ApiEntry } from "./entry.ts";
 import type { StatusFile } from "./health.ts";
 
-const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+/**
+ * Repo root, found by walking up from the working directory. Not derived from import.meta.url,
+ * because bundlers (Astro/Vite) move this module into a build output directory.
+ */
+function findRoot(start: string): string {
+  for (let dir = start; ; dir = dirname(dir)) {
+    if (existsSync(join(dir, "catalog")) && existsSync(join(dir, "packages", "schema"))) return dir;
+    if (dir === parsePath(dir).root) throw new Error(`Could not find the repository root above ${start}`);
+  }
+}
+
+const ROOT = findRoot(process.cwd());
 export const PATHS = {
   root: ROOT,
   catalog: join(ROOT, "catalog"),

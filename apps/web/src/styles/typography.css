@@ -6,22 +6,22 @@
 @import "@fontsource/ibm-plex-mono/500.css";
 
 :root {
-  --text-display: 36px;
-  --text-h1: 32px;
-  --text-h2: 24px;
-  --text-h3: 20px;
-  --text-h4: 16px;
-  --text-body: 16px;
-  --text-small: 14px;
-  --text-caption: 12px;
-  --text-code: 13px;
+  --fs-display: 36px;
+  --fs-h1: 32px;
+  --fs-h2: 24px;
+  --fs-h3: 20px;
+  --fs-h4: 16px;
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-caption: 12px;
+  --fs-code: 13px;
 }
 
 code,
 pre,
 kbd {
   font-family: var(--font-mono);
-  font-size: var(--text-code);
+  font-size: var(--fs-code);
 }
 
 /* Thai needs a taller line box than Latin to keep tone marks from colliding. */

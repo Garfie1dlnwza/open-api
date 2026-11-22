@@ -1,0 +1,35 @@
+---
+interface Props {
+  label: string;
+  sections: { id: string; label: string }[];
+}
+const { label, sections } = Astro.props;
+---
+
+<nav aria-label={label} data-section-nav>
+  <ul class="flex flex-col gap-0.5 border-l border-line">
+    {sections.map((s) => (
+      <li>
+        <a href={`#${s.id}`} data-section-link={s.id} class="-ml-px block border-l-2 border-transparent py-1.5 pl-4 text-small text-ink-2 transition-colors duration-150 hover:text-ink aria-[current=true]:border-brand-700 aria-[current=true]:font-medium aria-[current=true]:text-brand-700">
+          {s.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  // Highlights the section nearest the top of the viewport in every section nav on the page.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-section-link]")];
+  const ids = [...new Set(links.map((l) => l.dataset.sectionLink ?? ""))];
+  const sections = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
+  const mark = (id: string) => links.forEach((l) => l.setAttribute("aria-current", String(l.dataset.sectionLink === id)));
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (visible) mark(visible.target.id);
+    },
+    { rootMargin: "-80px 0px -70% 0px" },
+  );
+  sections.forEach((s) => observer.observe(s));
+</script>

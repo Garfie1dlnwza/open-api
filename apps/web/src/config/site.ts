@@ -13,7 +13,7 @@ export const ROUTES = {
   explore: (l: Locale) => `/${l}/apis/`,
   api: (l: Locale, id: string) => `/${l}/apis/${id}/`,
   searchIndex: (l: Locale) => `/${l}/search-index.json`,
-  contribute: (l: Locale) => `${SITE.repoUrl}/blob/main/CONTRIBUTING.md`,
+  contribute: () => `${SITE.repoUrl}/blob/main/CONTRIBUTING.md`,
   root: "/",
 } as const;
 
@@ -33,12 +33,16 @@ export const STORAGE = {
   playgroundRemember: "toa:playground-remember",
 } as const;
 
+/** Per-API storage key so a key saved for one provider is never offered to another. */
+export const storageKey = (base: string, apiId: string) => `${base}:${apiId}`;
+
 export const UI = {
   searchDebounceMs: 200,
   searchResultLimit: 8,
   homeListSize: 6,
   copiedResetMs: 1_600,
   responsePreviewChars: 200_000,
+  playgroundClientTimeoutMs: 20_000,
 } as const;
 
 export const SORTS = ["relevance", "name", "trust", "verified"] as const;

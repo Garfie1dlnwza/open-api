@@ -41,13 +41,21 @@
   --color-code-muted: var(--code-muted);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --text-display: var(--fs-display);
+  --text-h1: var(--fs-h1);
+  --text-h2: var(--fs-h2);
+  --text-h3: var(--fs-h3);
+  --text-h4: var(--fs-h4);
+  --text-body: var(--fs-body);
+  --text-small: var(--fs-small);
+  --text-caption: var(--fs-caption);
+  --text-code: var(--fs-code);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
   --shadow-card: var(--shadow-card);
   --shadow-pop: var(--shadow-pop);
-  --breakpoint-xl: 1280px;
 }
 
 body {

@@ -1,0 +1,25 @@
+---
+import type { Locale } from "@thai-open-api/schema";
+import { SITE } from "../config/site.ts";
+import { createT } from "../i18n/index.ts";
+import { getCatalog } from "../lib/catalog.ts";
+import { formatRelative } from "../lib/format.ts";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = createT(locale);
+const { status, now } = getCatalog();
+const hasStatus = Object.keys(status.apis).length > 0;
+---
+
+<footer class="mt-16 border-t border-line bg-surface">
+  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-3 px-5 py-8 text-small text-ink-2 sm:px-8">
+    <p>{t("footer.built")}</p>
+    <p class="flex flex-wrap gap-x-4 gap-y-1">
+      <span>{hasStatus ? t("footer.status", { when: formatRelative(status.generatedAt, now, locale) }) : t("footer.noStatus")}</span>
+      <a class="text-brand-700 hover:underline" href={SITE.repoUrl}>{t("nav.github")}</a>
+    </p>
+  </div>
+</footer>

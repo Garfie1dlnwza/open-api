@@ -5,7 +5,7 @@ compatibility_date = "2026-11-01"
 # Browser origins allowed to call the playground, comma separated. Empty = no browser origin.
 # Production value is passed by the deploy workflow (--var ALLOWED_ORIGINS:...).
 [vars]
-ALLOWED_ORIGINS = "http://localhost:4321"
+ALLOWED_ORIGINS = "http://localhost:4321,http://127.0.0.1:4321"
 
 # 30 requests per minute per client IP.
 [[ratelimits]]

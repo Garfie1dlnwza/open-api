@@ -62,6 +62,8 @@
   --sidebar-width: 248px;
   --content-max: 1200px;
   --detail-max: 760px;
+  /* sidebar + detail + playground + gaps */
+  --detail-page-max: 1480px;
   --playground-width: 420px;
   --control-height: 40px;
 

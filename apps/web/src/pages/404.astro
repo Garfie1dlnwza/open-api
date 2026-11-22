@@ -1,0 +1,18 @@
+---
+import { DEFAULT_LOCALE } from "@thai-open-api/schema";
+import { LinkButton } from "../components/ui/Button.tsx";
+import { ROUTES } from "../config/site.ts";
+import { createT } from "../i18n/index.ts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const locale = DEFAULT_LOCALE;
+const t = createT(locale);
+---
+
+<BaseLayout locale={locale} title={t("notFound.title")}>
+  <div class="mx-auto flex max-w-[var(--content-max)] flex-col items-start gap-4 px-5 py-24 sm:px-8">
+    <h1 class="text-h1 font-bold">{t("notFound.title")}</h1>
+    <p class="text-ink-2">{t("notFound.body")}</p>
+    <LinkButton href={ROUTES.home(locale)}>{t("notFound.home")}</LinkButton>
+  </div>
+</BaseLayout>

@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @thai-open-api/web",
     "build": "npm run catalog:build && npm run build -w @thai-open-api/web",
@@ -25,5 +28,8 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.1"
+  },
+  "engines": {
+    "node": ">=22.23.4"
   }
 }

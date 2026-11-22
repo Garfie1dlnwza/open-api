@@ -1,0 +1,74 @@
+---
+import { CATEGORIES, LOCALES, type Locale } from "@thai-open-api/schema";
+import type { GetStaticPaths } from "astro";
+import { ArrowRight, Search } from "lucide-react";
+import { ApiCard } from "../../components/api/ApiCard.tsx";
+import { CategoryChip } from "../../components/api/CategoryChip.tsx";
+import { LinkButton } from "../../components/ui/Button.tsx";
+import { HOTKEY, QUERY, ROUTES, UI } from "../../config/site.ts";
+import { createT } from "../../i18n/index.ts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getSummaries } from "../../lib/catalog.ts";
+
+export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
+
+const locale = Astro.params.lang as Locale;
+const t = createT(locale);
+const apis = getSummaries(locale);
+const byTrust = [...apis].sort((a, b) => b.trustScore - a.trustScore || a.name.localeCompare(b.name));
+const featuredIds = new Set(apis.filter((a) => a.id && a.trustLevel !== "low").map((a) => a.id));
+const featured = byTrust.filter((a) => featuredIds.has(a.id)).slice(0, UI.homeListSize);
+const recent = [...apis].sort((a, b) => b.reviewedAt.localeCompare(a.reviewedAt) || a.name.localeCompare(b.name)).slice(0, UI.homeListSize);
+const counts = Object.fromEntries(CATEGORIES.map((c) => [c, apis.filter((a) => a.category === c).length]));
+---
+
+<BaseLayout locale={locale}>
+  <section class="border-b border-line bg-surface">
+    <div class="mx-auto max-w-[var(--content-max)] px-5 py-16 sm:px-8 sm:py-20">
+      <p class="mb-3 text-small font-medium text-accent-800">{t("home.apiCount", { count: apis.length })}</p>
+      <h1 class="max-w-3xl text-h1 font-bold text-brand-900 sm:text-display">{t("home.heroTitle")}</h1>
+      <p class="mt-4 max-w-2xl text-body text-ink-2">{t("home.heroSubtitle")}</p>
+      <form action={ROUTES.explore(locale)} method="get" role="search" class="mt-8 flex max-w-2xl gap-2">
+        <label for="hero-search" class="sr-only">{t("home.searchLabel")}</label>
+        <div class="relative flex-1">
+          <Search aria-hidden size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3" />
+          <input id="hero-search" name={QUERY.search} type="search" autocomplete="off" placeholder={t("home.searchPlaceholder")} class="h-12 w-full rounded-md border border-control bg-surface pl-10 pr-3 text-body placeholder:text-ink-3 hover:border-ink-3" />
+        </div>
+        <button type="submit" class="h-12 rounded-md bg-brand-800 px-5 text-small font-medium text-on-brand transition-colors duration-150 hover:bg-brand-900">{t("home.searchSubmit")}</button>
+      </form>
+      <p class="mt-3 text-caption text-ink-2"><kbd class="rounded border border-line bg-subtle px-1.5">⌘{HOTKEY.toUpperCase()}</kbd></p>
+    </div>
+  </section>
+
+  <div class="mx-auto flex max-w-[var(--content-max)] flex-col gap-14 px-5 py-12 sm:px-8">
+    <section aria-labelledby="featured">
+      <div class="mb-4 flex items-end justify-between gap-3">
+        <h2 id="featured" class="text-h2 font-semibold">{t("home.featured")}</h2>
+        <a href={ROUTES.explore(locale)} class="inline-flex items-center gap-1 text-small font-medium text-brand-700 hover:underline">{t("home.browseAll")}<ArrowRight aria-hidden size={14} /></a>
+      </div>
+      <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {featured.map((api) => <li class="flex"><div class="flex w-full flex-col"><ApiCard api={api} locale={locale} /></div></li>)}
+      </ul>
+    </section>
+
+    <section id="categories" aria-labelledby="categories-title" class="scroll-mt-24">
+      <h2 id="categories-title" class="mb-4 text-h2 font-semibold">{t("home.categories")}</h2>
+      <div class="flex flex-wrap gap-3">
+        {CATEGORIES.map((c) => <CategoryChip category={c} label={t(`category.${c}`)} count={counts[c]} href={`${ROUTES.explore(locale)}?${QUERY.category}=${c}`} />)}
+      </div>
+    </section>
+
+    <section aria-labelledby="recent">
+      <h2 id="recent" class="mb-4 text-h2 font-semibold">{t("home.recent")}</h2>
+      <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {recent.map((api) => <li class="flex"><div class="flex w-full flex-col"><ApiCard api={api} locale={locale} /></div></li>)}
+      </ul>
+    </section>
+
+    <section aria-labelledby="contribute" class="flex flex-col items-start gap-3 rounded-xl border border-line bg-surface p-8 shadow-card">
+      <h2 id="contribute" class="text-h3 font-semibold">{t("home.contributeTitle")}</h2>
+      <p class="max-w-2xl text-small text-ink-2">{t("home.contributeBody")}</p>
+      <LinkButton variant="secondary" href={ROUTES.contribute()}>{t("home.contributeCta")}</LinkButton>
+    </section>
+  </div>
+</BaseLayout>

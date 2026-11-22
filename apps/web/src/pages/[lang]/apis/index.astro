@@ -1,0 +1,21 @@
+---
+import { LOCALES, type Locale } from "@thai-open-api/schema";
+import type { GetStaticPaths } from "astro";
+import { ApiExplorer } from "../../../components/api/ApiExplorer.tsx";
+import { createT } from "../../../i18n/index.ts";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getSummaries } from "../../../lib/catalog.ts";
+
+export const getStaticPaths: GetStaticPaths = () => LOCALES.map((lang) => ({ params: { lang } }));
+
+const locale = Astro.params.lang as Locale;
+const t = createT(locale);
+---
+
+<BaseLayout locale={locale} title={t("explorer.title")} description={t("explorer.subtitle")}>
+  <div class="mx-auto max-w-[var(--content-max)] px-5 py-10 sm:px-8">
+    <h1 class="text-h1 font-bold">{t("explorer.title")}</h1>
+    <p class="mt-2 mb-8 text-ink-2">{t("explorer.subtitle")}</p>
+    <ApiExplorer client:load apis={getSummaries(locale)} locale={locale} />
+  </div>
+</BaseLayout>
