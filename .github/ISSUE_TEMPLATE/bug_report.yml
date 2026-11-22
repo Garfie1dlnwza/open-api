@@ -1,0 +1,14 @@
+name: Bug report
+description: Something is broken or wrong on the site, playground or health data
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: "What you did, what you expected, what you saw." }
+    validations: { required: true }
+  - type: input
+    id: url
+    attributes: { label: Page URL }
+  - type: textarea
+    id: env
+    attributes: { label: Browser / OS }

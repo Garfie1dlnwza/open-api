@@ -1,0 +1,31 @@
+name: Suggest an API
+description: Propose a public Thai API for the catalog
+title: "api: "
+labels: [catalog]
+body:
+  - type: input
+    id: name
+    attributes: { label: API name, description: In Thai and English if you can }
+    validations: { required: true }
+  - type: input
+    id: base
+    attributes: { label: Base URL, placeholder: https://api.example.go.th }
+    validations: { required: true }
+  - type: input
+    id: docs
+    attributes: { label: Official documentation URL }
+  - type: dropdown
+    id: source
+    attributes:
+      label: Who publishes it?
+      options: [Official (the agency itself), Community (open source), Unofficial (scraped or unaffiliated)]
+    validations: { required: true }
+  - type: textarea
+    id: terms
+    attributes: { label: Licence / terms of use, description: Link or quote the terms. We do not mark a licence as verified without reading it. }
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Contribution
+      options:
+        - label: I can open a pull request adding catalog/<id>.yaml

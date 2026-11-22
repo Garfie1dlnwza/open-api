@@ -1,0 +1,53 @@
+name: Deploy
+
+# Needs repository variables DEPLOY_ENABLED=true, PUBLIC_SITE_URL, PUBLIC_PLAYGROUND_URL,
+# CF_PAGES_PROJECT and secrets CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Fetch latest health data
+        run: |
+          if git ls-remote --exit-code --heads origin status-data >/dev/null 2>&1; then
+            git fetch --depth=1 origin status-data
+            mkdir -p data
+            git show FETCH_HEAD:status.json > data/status.json
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_PLAYGROUND_URL: ${{ vars.PUBLIC_PLAYGROUND_URL }}
+      - name: Deploy the playground Worker
+        run: npx wrangler deploy --var "ALLOWED_ORIGINS:${{ vars.PUBLIC_SITE_URL }}"
+        working-directory: apps/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy the site
+        run: npx wrangler pages deploy apps/web/dist --project-name "${{ vars.CF_PAGES_PROJECT }}" --branch main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
