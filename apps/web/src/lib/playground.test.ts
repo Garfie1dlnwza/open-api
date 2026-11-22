@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { UI } from "../config/site.ts";
 import { prettyBody, prettyXml } from "./playground.ts";
 
 describe("prettyXml", () => {
@@ -12,6 +13,23 @@ describe("prettyXml", () => {
     expect(prettyXml(cdata)).toBe(cdata);
     expect(prettyXml("not xml at all")).toBe("not xml at all");
     expect(prettyXml("</a></a>")).toBe("</a>\n</a>");
+  });
+});
+
+describe("prettyXml limits", () => {
+  it("stays fast and bounded on hostile, deeply nested input", () => {
+    const deep = "<a>".repeat(400_000);
+    const started = performance.now();
+    const out = prettyXml(deep);
+    expect(performance.now() - started).toBeLessThan(1_000);
+    // Preview cap, plus at most one more line, and indentation never exceeds the clamp.
+    expect(out.length).toBeLessThan(UI.responsePreviewChars + 100);
+    expect(Math.max(...out.split("\n").map((l) => l.length - l.trimStart().length))).toBeLessThanOrEqual(48);
+  });
+
+  it("marks an oversized document as longer than the preview so the viewer shows its truncation note", () => {
+    const wide = `<r>${"<i>x</i>".repeat(100_000)}</r>`;
+    expect(prettyXml(wide).length).toBeGreaterThan(UI.responsePreviewChars);
   });
 });
 
