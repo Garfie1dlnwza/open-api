@@ -5,7 +5,9 @@ import {
   buildRequest,
   evaluateEndpoint,
   fetchWithRedirects,
+  LIMITS,
   policyFromEntry,
+  readLimited,
   rollupStatus,
   type ApiEntry,
   type ApiHealth,
@@ -14,6 +16,7 @@ import {
   type Observation,
   type StatusFile,
 } from "../packages/schema/src/index.ts";
+import { hostResolvesPublicly } from "../packages/schema/src/dns-guard.ts";
 import { loadCatalog, loadStatus, PATHS } from "../packages/schema/src/node.ts";
 
 const CONCURRENCY = 4;
@@ -30,9 +33,10 @@ function classifyError(error: unknown): "timeout" | "network" | "tls" {
 async function observe(api: ApiEntry, url: URL, headers: Record<string, string>): Promise<Observation> {
   const started = performance.now();
   try {
-    const res = await fetchWithRedirects(policyFromEntry(api), url, headers, fetch, HEALTH_ACCEPT);
+    const res = await fetchWithRedirects(policyFromEntry(api), url, headers, fetch, HEALTH_ACCEPT, (hop) => hostResolvesPublicly(hop.hostname));
     if (!res) return { error: "redirect_blocked", latencyMs: Math.round(performance.now() - started) };
-    const body = await res.text();
+    // Capped like the Worker, so a hostile or broken upstream cannot exhaust the runner's memory.
+    const { text: body } = await readLimited(res, LIMITS.hardMaxResponseBytes);
     return { httpStatus: res.status, latencyMs: Math.round(performance.now() - started), body };
   } catch (error) {
     return { error: classifyError(error), latencyMs: Math.round(performance.now() - started) };

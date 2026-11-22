@@ -6,23 +6,38 @@ const DATE_VALUE = /^\d{4}-\d{2}-\d{2}$/;
 // eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
 
-// A quantified group containing a quantifier, e.g. (a+)+ or (\w*)*, is the classic backtracking trap.
-const NESTED_QUANTIFIER = /\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/;
-const BACKREFERENCE = /\\[1-9]|\\k</;
-const MAX_PATTERN_LENGTH = 200;
-
 /**
- * Compiles a catalog pattern fully anchored (so "abc" cannot match "xabcx") or returns why it
- * was refused. The nested-quantifier check is a heuristic, not a proof of linear time; values are
- * also capped at maxParamValueLength before they ever reach a pattern.
+ * Catalog patterns use a deliberately small grammar: literals, escapes such as \d, character
+ * classes, ".", and quantifiers ? * + {n} {n,m} on single atoms. No groups, alternation,
+ * backreferences or lookaround, so there is nothing to nest and no exponential backtracking.
+ * (Detecting dangerous regexes is a losing game; not allowing them is not.)
  */
+const ATOM = String.raw`(?:[^\\^$.|?*+()[\]{}]|\\[dDwWsS.\-/\\^$|?*+()[\]{}]|\.|\[\^?(?:[^\]\\]|\\.)+\])`;
+const QUANT = String.raw`(?:\?|\*|\+|\{\d{1,2}(?:,\d{1,2})?\})?`;
+const SAFE_PATTERN = new RegExp(`^\\^?(?:${ATOM}${QUANT})+\\$?$`);
+const TOKEN = new RegExp(`(${ATOM})(${QUANT})`, "g");
+
+const MAX_PATTERN_LENGTH = 120;
+const MAX_UNBOUNDED_QUANTIFIERS = 3;
+const MAX_REPEAT = 64;
+/** Values checked against a pattern are short; this also bounds the polynomial worst case. */
+export const MAX_PATTERN_VALUE_LENGTH = 64;
+
+/** Compiles a catalog pattern fully anchored, or returns why it was refused. */
 export function compileParamPattern(source: string): RegExp | string {
   if (source.length > MAX_PATTERN_LENGTH) return `pattern is longer than ${MAX_PATTERN_LENGTH} characters`;
-  if (NESTED_QUANTIFIER.test(source) || BACKREFERENCE.test(source)) return "pattern may backtrack catastrophically";
+  if (!SAFE_PATTERN.test(source)) return "pattern uses syntax outside the allowed subset (no groups, alternation or backreferences)";
+
+  const body = source.replace(/^\^/, "").replace(/(?<!\\)\$$/, "");
+  let unbounded = 0;
+  for (const [, , quant] of body.matchAll(TOKEN)) {
+    if (quant === "*" || quant === "+") unbounded++;
+    const repeat = quant.match(/^\{(\d+)(?:,(\d+))?\}$/);
+    if (repeat && Math.max(Number(repeat[1]), Number(repeat[2] ?? 0)) > MAX_REPEAT) return `repeat counts must be at most ${MAX_REPEAT}`;
+  }
+  if (unbounded > MAX_UNBOUNDED_QUANTIFIERS) return `at most ${MAX_UNBOUNDED_QUANTIFIERS} unbounded quantifiers (* or +) are allowed`;
+
   try {
-    // Must compile on its own first: "a)|(b" is only valid once wrapped, and wrapping would
-    // let the alternation escape the anchors.
-    new RegExp(source);
     return new RegExp(`^(?:${source})$`);
   } catch {
     return "pattern is not a valid regular expression";
@@ -37,6 +52,7 @@ export function validateParamValue(param: Param, value: string): string | null {
   }
   if (param.enum && !param.enum.includes(value)) return `must be one of: ${param.enum.join(", ")}`;
   if (param.pattern) {
+    if (value.length > MAX_PATTERN_VALUE_LENGTH) return `must be at most ${MAX_PATTERN_VALUE_LENGTH} characters`;
     const regex = compileParamPattern(param.pattern);
     if (typeof regex === "string" || !regex.test(value)) return "does not match the required pattern";
   }

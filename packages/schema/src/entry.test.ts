@@ -47,7 +47,7 @@ describe("shipped catalog", () => {
 });
 
 describe("host and pattern hardening", () => {
-  it.each(["127.0.0.1", "10.0.0.5", "[::1]", "db.internal", "printer.local", "nodot", "api.example.go.th:8443", "-bad.example.go.th"])(
+  it.each(["127.0.0.1", "10.0.0.5", "[::1]", "db.internal", "printer.local", "nodot", "api.example.go.th:8443", "-bad.example.go.th", "169.254.169.254.nip.io", "127.0.0.1.sslip.io", "foo.localhost", "x.localtest.me"])(
     "rejects redirect host %s",
     (host) => {
       expect(parse({ redirectHosts: [host] }).success).toBe(false);
@@ -71,7 +71,11 @@ describe("host and pattern hardening", () => {
     });
     expect(parse(withPattern("[a-c]{3}")).success).toBe(true);
     expect(parse(withPattern("b")).success).toBe(false); // example "abc" must match fully, not partially
-    expect(parse(withPattern("(a+)+$")).success).toBe(false);
+    for (const risky of ["(a+)+$", "((a+))+", "(a|aa)+", "(a|a)*", "(?=a)a", "(a)\\1", "a*a*a*a*"]) {
+      expect(parse(withPattern(risky)).success, risky).toBe(false);
+    }
+    expect(parse(withPattern("[a-c]{3}")).success).toBe(true);
+    expect(parse(withPattern("^[a-c]{1,3}$")).success).toBe(true);
     expect(parse(withPattern("(")).success).toBe(false);
     expect(parse(withPattern("a)|(b")).success).toBe(false); // would escape the anchors once wrapped
   });

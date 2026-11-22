@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { findRoot } from "./node.ts";
+import { findRoot, loadStatus } from "./node.ts";
 
 const makeDir = (pkgName?: string) => {
   const dir = mkdtempSync(join(tmpdir(), "toa-root-"));
@@ -28,5 +28,26 @@ describe("findRoot", () => {
     const real = makeDir("thai-open-api");
     expect(findRoot("/", real)).toBe(real);
     expect(() => findRoot("/", makeDir("other"))).toThrow(/not a thai-open-api checkout/);
+  });
+});
+
+describe("loadStatus", () => {
+  const write = (content: string) => {
+    const dir = mkdtempSync(join(tmpdir(), "toa-status-"));
+    const file = join(dir, "status.json");
+    writeFileSync(file, content);
+    return file;
+  };
+  const now = "2026-11-22T00:00:00.000Z";
+
+  it("returns validated data", () => {
+    const file = write(JSON.stringify({ generatedAt: now, apis: { demo: { status: "operational", checkedAt: now, endpoints: [], history: [] } } }));
+    expect(loadStatus(file).apis.demo.status).toBe("operational");
+  });
+
+  it("treats missing, malformed or hostile files as no data instead of failing the build", () => {
+    expect(loadStatus(join(tmpdir(), "does-not-exist.json")).apis).toEqual({});
+    expect(loadStatus(write("not json")).apis).toEqual({});
+    expect(loadStatus(write(JSON.stringify({ generatedAt: now, apis: { demo: { status: "<script>", checkedAt: now, endpoints: [], history: [] } } }))).apis).toEqual({});
   });
 });

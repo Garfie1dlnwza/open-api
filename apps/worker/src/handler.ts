@@ -1,6 +1,7 @@
 import {
   LIMITS,
   fetchWithRedirects,
+  readLimited,
   validatePlaygroundRequest,
   type PlaygroundErrorCode,
   type PlaygroundResponse,
@@ -16,10 +17,10 @@ import {
   UPSTREAM_ACCEPT,
 } from "./config.ts";
 import { ERROR_STATUS } from "./errors.ts";
-import { readLimited } from "./read-limited.ts";
 
 export interface Env {
   ALLOWED_ORIGINS?: string;
+  /** Required. A missing binding is a deployment error, never a reason to run unthrottled. */
   RATE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 }
 export interface Deps {
@@ -67,11 +68,12 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
   if (request.method !== "POST") return failure("method_not_allowed", "Use POST", cors);
 
-  if (env.RATE_LIMITER) {
-    const key = request.headers.get(CLIENT_IP_HEADER) ?? RATE_LIMIT_FALLBACK_KEY;
-    if (!(await env.RATE_LIMITER.limit({ key })).success) return failure("rate_limited", "Too many requests", cors);
-  }
+  if (!env.RATE_LIMITER) return failure("server_misconfigured", "The playground is not configured correctly", cors);
+  const key = request.headers.get(CLIENT_IP_HEADER) ?? RATE_LIMIT_FALLBACK_KEY;
+  if (!(await env.RATE_LIMITER.limit({ key })).success) return failure("rate_limited", "Too many requests", cors);
 
+  // Refuse on the declared length first so an oversized body is never read into memory.
+  if (Number(request.headers.get("content-length")) > LIMITS.maxRequestBodyBytes) return failure("invalid_request", "Request body is too large", cors);
   const raw = await request.text();
   if (new TextEncoder().encode(raw).byteLength > LIMITS.maxRequestBodyBytes) return failure("invalid_request", "Request body is too large", cors);
   let body: unknown;
@@ -100,7 +102,14 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
     return failure("unsupported_media", "The API returned a content type the playground cannot show", cors);
   }
 
-  const { text, sizeBytes, truncated } = await readLimited(upstream, checked.api.maxResponseBytes);
+  let read: Awaited<ReturnType<typeof readLimited>>;
+  try {
+    read = await readLimited(upstream, checked.api.maxResponseBytes);
+  } catch {
+    // The upstream stream failed after the headers arrived; answer in the usual envelope.
+    return failure("upstream_unreachable", "The connection to the API was interrupted", cors);
+  }
+  const { text, sizeBytes, truncated } = read;
   return respond(
     {
       ok: true,

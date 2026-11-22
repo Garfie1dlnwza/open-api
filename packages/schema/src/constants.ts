@@ -58,6 +58,7 @@ export const PLAYGROUND_ERROR_CODES = [
   "unsupported_media",
   "not_found",
   "method_not_allowed",
+  "server_misconfigured",
 ] as const;
 export type PlaygroundErrorCode = (typeof PLAYGROUND_ERROR_CODES)[number];
 
