@@ -42,29 +42,38 @@ export async function callPlayground(body: { apiId: string; endpointId: string; 
 }
 
 const MARKUP_TOKEN = /(<[^>]+>)/;
+const MAX_INDENT_DEPTH = 24;
 
 /**
- * Indents well-formed XML, one tag per line, keeping short text elements on one line. A document with
+ * Indents well-formed XML, one tag per line, keeping short text elements on one line. The work is
+ * bounded on purpose, because the body comes from a third party: only the part the viewer can show
+ * is formatted, indentation stops growing past MAX_INDENT_DEPTH (so deep nesting cannot make the
+ * output quadratic), and building stops once the output passes the preview limit. A document with
  * CDATA is returned untouched: its content may contain ">" and cannot be split safely this way.
  */
 export function prettyXml(xml: string): string {
   if (xml.includes("<![CDATA[")) return xml;
-  const tokens = xml.replace(/>\s+</g, "><").trim().split(MARKUP_TOKEN).filter(Boolean);
+  const tokens = xml.slice(0, UI.responsePreviewChars).replace(/>\s+</g, "><").trim().split(MARKUP_TOKEN).filter(Boolean);
+  const pad = (depth: number) => "  ".repeat(Math.min(depth, MAX_INDENT_DEPTH));
   const lines: string[] = [];
   let depth = 0;
-  for (let i = 0; i < tokens.length; i++) {
+  let length = 0;
+  const push = (line: string) => {
+    lines.push(line);
+    length += line.length + 1;
+  };
+  for (let i = 0; i < tokens.length && length <= UI.responsePreviewChars; i++) {
     const token = tokens[i];
-    const pad = "  ".repeat(depth);
     if (token.startsWith("</")) {
       depth = Math.max(depth - 1, 0);
-      lines.push(`${"  ".repeat(depth)}${token}`);
+      push(`${pad(depth)}${token}`);
     } else if (!token.startsWith("<") || token.startsWith("<?") || token.startsWith("<!") || token.endsWith("/>")) {
-      lines.push(`${pad}${token}`);
+      push(`${pad(depth)}${token}`);
     } else if (tokens[i + 1] && !tokens[i + 1].startsWith("<") && tokens[i + 2]?.startsWith("</")) {
-      lines.push(`${pad}${token}${tokens[i + 1]}${tokens[i + 2]}`);
+      push(`${pad(depth)}${token}${tokens[i + 1]}${tokens[i + 2]}`);
       i += 2;
     } else {
-      lines.push(`${pad}${token}`);
+      push(`${pad(depth)}${token}`);
       depth++;
     }
   }
