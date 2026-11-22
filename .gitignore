@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+coverage/
+.DS_Store
+# Written by `npm run health` locally; production copy lives on the status-data branch.
+data/status.json
+# Generated for the Worker at build time.
+apps/worker/src/catalog.generated.json
