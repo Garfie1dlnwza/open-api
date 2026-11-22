@@ -41,7 +41,7 @@ function Collecting({ count, locale }: { count: number; locale: Locale }) {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-6">
+    <section className="flex flex-col gap-4">
       <h2 className="text-h3 font-semibold tracking-tight">{title}</h2>
       {children}
     </section>
@@ -108,7 +108,7 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
   const availabilityOf = kpis.availabilityOf;
 
   return (
-    <div className="flex flex-col gap-14">
+    <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-1 text-small text-ink-2">
         {data.latestCheck ? <p>{t("dashboard.updated", { when: updated.format(new Date(data.latestCheck)) })}</p> : <p>{t("dashboard.noStatusTitle")}</p>}
         <p>
@@ -118,7 +118,7 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
       </div>
 
       <Section title={t("dashboard.sections.overview")}>
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+        <div className="glass grid gap-10 rounded-2xl p-6 sm:p-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <StatTile
             hero
             label={t("dashboard.kpi.availability")}
@@ -149,8 +149,8 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
       </Section>
 
       <Section title={t("dashboard.sections.health")}>
-        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-          <div className="flex min-w-0 flex-col gap-10">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div className="flex min-w-0 flex-col gap-6">
             <ChartCard
               locale={locale}
               title={t("dashboard.charts.availability.title")}
@@ -181,7 +181,7 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
             </ChartCard>
           </div>
 
-          <div className="flex min-w-0 flex-col gap-10">
+          <div className="flex min-w-0 flex-col gap-6">
             <ChartCard locale={locale} title={t("dashboard.charts.health.title")} question={t("dashboard.charts.health.question")} table={{ headers: shareHeaders, rows: tableRows(healthSegments) }}>
               <div className="flex flex-col gap-3">
                 <SegmentedBar segments={healthSegments} locale={locale} ariaLabel={t("dashboard.charts.health.title")} format={count} />
@@ -231,7 +231,7 @@ export function DashboardView({ data, names, locale }: { data: DashboardData; na
       </Section>
 
       <Section title={t("dashboard.sections.catalog")}>
-        <div className="grid gap-x-12 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           <ChartCard locale={locale} title={t("dashboard.charts.category.title")} question={t("dashboard.charts.category.question")} table={{ headers: [t("dashboard.colName"), t("dashboard.colValue")], rows: data.byCategory.map((c) => [t(`category.${c.category}`), c.count]) }}>
             <BarList
               locale={locale}

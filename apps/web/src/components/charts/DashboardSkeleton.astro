@@ -12,13 +12,13 @@ const healthNarrow: Kind[] = ["segment", "segment", "bars"];
 const catalog: Kind[] = ["bars", "donut", "segment"];
 ---
 
-<div role="status" aria-label={label} class="flex flex-col gap-14">
+<div role="status" aria-label={label} class="flex flex-col gap-10">
   <div class="flex flex-col gap-2">
     <div class="skeleton h-4 w-56"></div>
     <div class="skeleton h-4 w-72 max-w-full"></div>
   </div>
   <div class="skeleton h-5 w-28"></div>
-  <section class="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+  <section class="glass grid gap-10 rounded-2xl p-6 sm:p-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
     <div class="flex flex-col gap-3">
       <div class="skeleton h-4 w-24"></div>
       <div class="skeleton h-14 w-52"></div>
@@ -34,12 +34,12 @@ const catalog: Kind[] = ["bars", "donut", "segment"];
     </div>
   </section>
   <div class="skeleton h-5 w-44"></div>
-  <div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-    <div class="flex flex-col gap-10">{healthWide.map((kind) => <DashboardSkeletonBlock kind={kind} />)}</div>
-    <div class="flex flex-col gap-10">{healthNarrow.map((kind) => <DashboardSkeletonBlock kind={kind} />)}</div>
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+    <div class="flex flex-col gap-6">{healthWide.map((kind) => <DashboardSkeletonBlock kind={kind} />)}</div>
+    <div class="flex flex-col gap-6">{healthNarrow.map((kind) => <DashboardSkeletonBlock kind={kind} />)}</div>
   </div>
   <div class="skeleton h-5 w-40"></div>
-  <div class="grid gap-x-12 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
     {catalog.map((kind) => <DashboardSkeletonBlock kind={kind} />)}
   </div>
 </div>

@@ -19,7 +19,7 @@ export function ChartCard({ title, question, table, locale, children, className 
   const id = useId();
   const keys = rowKeys(table.rows);
   return (
-    <section aria-labelledby={id} className={cx("flex min-w-0 flex-col gap-4 border-t border-line pt-5", className)}>
+    <section aria-labelledby={id} className={cx("glass flex min-w-0 flex-col gap-4 rounded-2xl p-5", className)}>
       <header>
         <h3 id={id} className="text-small font-semibold">{title}</h3>
         <p className="text-caption text-ink-2">{question}</p>
