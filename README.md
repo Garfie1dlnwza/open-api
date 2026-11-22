@@ -27,25 +27,36 @@ docs/               architecture, release process, design system
 The site reads the catalog from static files. If the Worker is down you can still read every page
 and copy code; only "Send request" stops working.
 
-## Develop
-
-Needs **Node 22.23.4 or newer** (`nvm install && nvm use` reads `.nvmrc`), because Astro 7 requires it.
+## Run it locally
 
 ```bash
+nvm install && nvm use      # Astro 7 needs Node 22.23.4+; .nvmrc says which
 npm install
-npm run health          # optional: writes data/status.json for real status badges
-npm run catalog:build   # generates the Worker's catalog from catalog/*.yaml
-npm run brand:build     # regenerates logo/favicon/OG images from brand/logo-source.png (optional)
-cp .env.example apps/web/.env
-
-npm run dev -w @thai-open-api/worker   # playground proxy on http://127.0.0.1:8787 (or --port)
-npm run dev                            # site on http://localhost:4321
+cp .env.example apps/web/.env   # once; points the site at the local playground proxy
+npm run dev
 ```
 
-If port 8787 is taken, run the Worker with `npx wrangler dev --port 8788` in `apps/worker` and
-point `PUBLIC_PLAYGROUND_URL` at it.
+`npm run dev` checks Node and the ports, regenerates the Worker's catalog, then starts the playground
+proxy (http://127.0.0.1:8788) and the site (http://localhost:4321) together. Ctrl+C stops both.
 
-Useful URLs: `/th/`, `/en/`, `/th/apis/`, `/th/apis/<id>/`, `/th/dashboard/`, e.g. `?q=ฝุ่น` or `?category=finance&status=auth_required`.
+Open **http://localhost:4321/th/** (or `/en/`). Useful pages: `/th/apis/` (try `?q=ฝุ่น` or
+`?category=finance&status=auth_required`), `/th/apis/<id>/` (the playground is on the right), `/th/dashboard/`.
+
+Optional: `npm run health` probes every API once and writes `data/status.json`, which fills in the status
+icons and the dashboard trends (they show "unknown" until you do, and again after 72 hours).
+
+Run one half alone with `npm run dev:web` or `npm run dev:worker`. `npm run brand:build` regenerates the
+logo, favicon and social images from `brand/logo-source.png`.
+
+### If something does not start
+
+| Symptom | Fix |
+|---|---|
+| `Node ... is too old` | `nvm install && nvm use` |
+| `Port 8788 (worker) is already in use` | `lsof -nP -iTCP:8788 -sTCP:LISTEN` shows what holds it. Stop it, or change the port in `apps/worker/wrangler.toml` (`[dev] port`), `DEV_PORTS` in `scripts/dev.mjs` and `PUBLIC_PLAYGROUND_URL` in `apps/web/.env` |
+| Port 4321 in use | Same idea. The Worker only accepts the site origins in `ALLOWED_ORIGINS` (`localhost:4321`, `127.0.0.1:4321`) |
+| Playground says it cannot connect | The Worker is not running, or `PUBLIC_PLAYGROUND_URL` does not match its port (restart `npm run dev` after editing `.env`; Astro reads it at start) |
+| Status icons all "unknown" | Run `npm run health` |
 
 ## Checks
 
