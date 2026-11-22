@@ -19,6 +19,9 @@ export interface TrendPoint {
 export interface Incident {
   id: string;
   status: Status;
+  /** Probes where the API was down / slow, and of all counted probes. `bad` is their sum. */
+  outage: number;
+  degraded: number;
   bad: number;
   of: number;
 }
@@ -31,7 +34,13 @@ export interface DashboardData {
     endpoints: number;
     availability: number | null;
     availabilityDelta: number | null;
+    /** APIs that answered / APIs that could be checked in the latest run (key-gated ones are not countable). */
+    availabilityOf: { up: number; total: number } | null;
     medianLatencyMs: number | null;
+    /** Change of the median since the previous run, in ms. */
+    latencyDelta: number | null;
+    /** How many APIs the latest median is taken over. */
+    latencySamples: number;
     licensesVerified: number;
   };
   availabilityTrend: TrendPoint[];
@@ -40,6 +49,8 @@ export interface DashboardData {
   byCategory: { category: Category; count: number }[];
   bySource: { source: Source; count: number }[];
   license: { verified: number; declared: number; unknown: number };
+  /** How many APIs can be called straight away and how many need a key. */
+  access: { open: number; apiKey: number };
   incidents: Incident[];
 }
 
@@ -48,6 +59,8 @@ const MAX_INCIDENTS = 5;
 /** Auth-gated and unknown results say nothing about whether an API is up. */
 const countable = (p: HistoryPoint) => p.status !== "unknown" && p.status !== "auth_required";
 const isUp = (p: HistoryPoint) => p.status !== "outage";
+/** A failed probe's elapsed time is a timeout, not a response time, so it never enters the latency figures. */
+const answered = (p: HistoryPoint): p is HistoryPoint & { latencyMs: number } => isUp(p) && p.latencyMs !== undefined;
 
 function median(values: number[]): number | null {
   if (values.length === 0) return null;
@@ -70,11 +83,16 @@ export function computeDashboard(entries: ApiEntry[], status: StatusFile, now: D
 
   const availabilityTrend: TrendPoint[] = [];
   const latencyTrend: TrendPoint[] = [];
+  let latestRun: { up: number; total: number } | null = null;
+  let latencySamples = 0;
   for (const [t, points] of ordered) {
     const counted = points.filter(countable);
     if (counted.length === 0) continue;
     availabilityTrend.push({ t, value: (counted.filter(isUp).length / counted.length) * PERCENT });
-    const latency = median(counted.flatMap((p) => (p.latencyMs === undefined ? [] : [p.latencyMs])));
+    latestRun = { up: counted.filter(isUp).length, total: counted.length };
+    const latencies = counted.filter(answered).map((p) => p.latencyMs);
+    latencySamples = latencies.length;
+    const latency = median(latencies);
     if (latency !== null) latencyTrend.push({ t, value: Math.round(latency) });
   }
 
@@ -91,8 +109,10 @@ export function computeDashboard(entries: ApiEntry[], status: StatusFile, now: D
   const incidents = entries
     .flatMap((entry): Incident[] => {
       const history = (status.apis[entry.id]?.history ?? []).filter(countable);
-      const bad = history.filter((p) => p.status === "outage" || p.status === "degraded").length;
-      return bad > 0 ? [{ id: entry.id, status: effectiveStatus(status.apis[entry.id], now), bad, of: history.length }] : [];
+      const outage = history.filter((p) => p.status === "outage").length;
+      const degraded = history.filter((p) => p.status === "degraded").length;
+      const bad = outage + degraded;
+      return bad > 0 ? [{ id: entry.id, status: effectiveStatus(status.apis[entry.id], now), outage, degraded, bad, of: history.length }] : [];
     })
     .sort((a, b) => b.bad - a.bad || b.bad / b.of - a.bad / a.of || a.id.localeCompare(b.id))
     .slice(0, MAX_INCIDENTS);
@@ -101,6 +121,8 @@ export function computeDashboard(entries: ApiEntry[], status: StatusFile, now: D
   const declared = entries.filter((e) => e.license.type !== "unknown").length - verified;
   const last = availabilityTrend.at(-1);
   const previous = availabilityTrend.at(-2);
+  const latencyNow = latencyTrend.at(-1);
+  const latencyBefore = latencyTrend.at(-2);
 
   return {
     latestCheck: ordered.at(-1)?.[0] ?? null,
@@ -110,7 +132,10 @@ export function computeDashboard(entries: ApiEntry[], status: StatusFile, now: D
       endpoints: entries.reduce((n, e) => n + e.endpoints.length, 0),
       availability: last ? Math.round(last.value * 10) / 10 : null,
       availabilityDelta: last && previous ? Math.round((last.value - previous.value) * 10) / 10 : null,
-      medianLatencyMs: latencyTrend.at(-1)?.value ?? null,
+      availabilityOf: latestRun,
+      medianLatencyMs: latencyNow?.value ?? null,
+      latencyDelta: latencyNow && latencyBefore ? latencyNow.value - latencyBefore.value : null,
+      latencySamples,
       licensesVerified: verified,
     },
     availabilityTrend,
@@ -121,6 +146,7 @@ export function computeDashboard(entries: ApiEntry[], status: StatusFile, now: D
       .sort((a, b) => b.count - a.count),
     bySource: SOURCES.map((source) => ({ source, count: entries.filter((e) => e.source === source).length })).filter((s) => s.count > 0),
     license: { verified, declared: Math.max(declared, 0), unknown: entries.length - verified - Math.max(declared, 0) },
+    access: { open: entries.filter((e) => e.auth.type === "none").length, apiKey: entries.filter((e) => e.auth.type === "apiKey").length },
     incidents,
   };
 }
