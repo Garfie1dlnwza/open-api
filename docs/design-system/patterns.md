@@ -10,6 +10,8 @@
 - **Legend and history:** icons are named once, in a one-line legend (under the status board, above the
   explorer list). Each status row has an uptime strip of recent probes. Rows lift on hover and focus.
   The command palette shows recent and suggested APIs while empty. Reasons: [decisions.md](decisions.md).
+- **Theme:** light and dark, system by default, switchable from the header and remembered. Charts, code
+  blocks and the status board all use tokens, so nothing needs a per-theme override.
 - **Header:** the one-row menu appears from 1024 px; below that it is a second, scrollable row, so
   nothing is pushed off-screen at 768 px.
 - **Dashboard:** hero availability figure, four KPI tiles, then seven charts that each answer one
