@@ -6,5 +6,6 @@ export * from "./url.ts";
 export * from "./playground.ts";
 export * from "./upstream.ts";
 export * from "./health.ts";
+export * from "./status-schema.ts";
 export * from "./trust.ts";
 export * from "./samples.ts";

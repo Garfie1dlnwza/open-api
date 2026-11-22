@@ -20,15 +20,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # No credentials stay on disk: npm install scripts and the probe run without a write token.
       - uses: actions/checkout@v4
         with:
           ref: main
+          persist-credentials: false
       - name: Restore previous results (for history)
+        uses: actions/checkout@v4
+        continue-on-error: true # the branch does not exist before the first run
+        with:
+          ref: status-data
+          path: .status-prev
+          persist-credentials: false
+      - name: Seed history
         run: |
-          if git ls-remote --exit-code --heads origin status-data >/dev/null 2>&1; then
-            git fetch --depth=1 origin status-data
+          if [ -f .status-prev/status.json ]; then
             mkdir -p data
-            git show FETCH_HEAD:status.json > data/status.json
+            cp .status-prev/status.json data/status.json
           fi
       - uses: actions/setup-node@v4
         with:
@@ -37,6 +45,9 @@ jobs:
       - run: npm ci
       - run: npm run health
       - name: Publish to status-data
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           work="$(mktemp -d)"
@@ -47,7 +58,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add status.json
           git commit -q -m "chore(health): update status.json"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" status-data
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
+            push -f "https://github.com/${REPO}.git" status-data
       - name: Redeploy the site so it shows the new status
         if: ${{ vars.DEPLOY_ENABLED == 'true' }}
         run: gh workflow run deploy.yml --ref main

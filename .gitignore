@@ -13,3 +13,4 @@ coverage/
 data/status.json
 # Generated for the Worker at build time.
 apps/worker/src/catalog.generated.json
+.status-prev/

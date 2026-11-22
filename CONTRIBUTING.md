@@ -59,8 +59,11 @@ endpoints:
         - { kind: json, path: items, type: array, minItems: 1 }
 ```
 
-Rules the validator enforces: both Thai and English text everywhere, public https hostnames only,
-every path placeholder declared, and examples that satisfy their own parameter rules.
+Rules the validator enforces: both Thai and English text everywhere, public https hostnames only
+(no IPs, no wildcard-DNS names such as `*.nip.io`), every path placeholder declared, and examples that
+satisfy their own parameter rules. A parameter `pattern` may only use literals, character classes and
+`?` `*` `+` `{n,m}` on single atoms (for example `^[A-Z]{3}$`); groups and alternation are rejected on
+purpose.
 
 Be honest in the metadata:
 

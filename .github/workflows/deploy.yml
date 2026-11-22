@@ -2,6 +2,7 @@ name: Deploy
 
 # Needs repository variables DEPLOY_ENABLED=true, PUBLIC_SITE_URL, PUBLIC_PLAYGROUND_URL,
 # CF_PAGES_PROJECT and secrets CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+# Store the secrets on the `production` environment and restrict it to the main branch.
 on:
   push:
     branches: [main]
@@ -26,30 +27,46 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          persist-credentials: false
       - name: Fetch latest health data
+        uses: actions/checkout@v4
+        continue-on-error: true # the branch does not exist before the first health run
+        with:
+          ref: status-data
+          path: .status-prev
+          persist-credentials: false
+      - name: Seed health data
         run: |
-          if git ls-remote --exit-code --heads origin status-data >/dev/null 2>&1; then
-            git fetch --depth=1 origin status-data
+          if [ -f .status-prev/status.json ]; then
             mkdir -p data
-            git show FETCH_HEAD:status.json > data/status.json
+            cp .status-prev/status.json data/status.json
           fi
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # Variables go through env, never straight into a shell line, and the site URL is reduced to
+      # a bare origin (no trailing slash or path) so the Worker's allowlist matches the browser's Origin.
+      - name: Normalise the site origin
+        id: origin
+        env:
+          SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+        run: echo "value=$(node -p 'new URL(process.env.SITE_URL).origin')" >> "$GITHUB_OUTPUT"
       - run: npm run build
         env:
-          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SITE_URL: ${{ steps.origin.outputs.value }}
           PUBLIC_PLAYGROUND_URL: ${{ vars.PUBLIC_PLAYGROUND_URL }}
       - name: Deploy the playground Worker
-        run: npx wrangler deploy --var "ALLOWED_ORIGINS:${{ vars.PUBLIC_SITE_URL }}"
+        run: npx wrangler deploy --var "ALLOWED_ORIGINS:${ALLOWED_ORIGIN}"
         working-directory: apps/worker
         env:
+          ALLOWED_ORIGIN: ${{ steps.origin.outputs.value }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Deploy the site
-        run: npx wrangler pages deploy apps/web/dist --project-name "${{ vars.CF_PAGES_PROJECT }}" --branch main
+        run: npx wrangler pages deploy apps/web/dist --project-name "${PAGES_PROJECT}" --branch main
         env:
+          PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
