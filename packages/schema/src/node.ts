@@ -4,14 +4,31 @@ import { parse } from "yaml";
 import { ApiEntrySchema, type ApiEntry } from "./entry.ts";
 import type { StatusFile } from "./health.ts";
 
+const ROOT_ENV = "THAI_OPEN_API_ROOT";
+const PACKAGE_NAME = "thai-open-api";
+
+const isRepoRoot = (dir: string): boolean => {
+  try {
+    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8")) as { name?: string };
+    return pkg.name === PACKAGE_NAME && existsSync(join(dir, "catalog"));
+  } catch {
+    return false;
+  }
+};
+
 /**
- * Repo root, found by walking up from the working directory. Not derived from import.meta.url,
- * because bundlers (Astro/Vite) move this module into a build output directory.
+ * Repo root, found by walking up from `start` to the first directory whose package.json is this
+ * repository's. Not derived from import.meta.url (bundlers move this module), and not accepted
+ * from any directory that merely happens to contain a catalog/ folder. THAI_OPEN_API_ROOT can pin it.
  */
-function findRoot(start: string): string {
+export function findRoot(start: string, pinned: string | undefined = process.env[ROOT_ENV]): string {
+  if (pinned) {
+    if (!isRepoRoot(pinned)) throw new Error(`${ROOT_ENV}=${pinned} is not a ${PACKAGE_NAME} checkout`);
+    return pinned;
+  }
   for (let dir = start; ; dir = dirname(dir)) {
-    if (existsSync(join(dir, "catalog")) && existsSync(join(dir, "packages", "schema"))) return dir;
-    if (dir === parsePath(dir).root) throw new Error(`Could not find the repository root above ${start}`);
+    if (isRepoRoot(dir)) return dir;
+    if (dir === parsePath(dir).root) throw new Error(`Could not find the ${PACKAGE_NAME} repository root above ${start}`);
   }
 }
 
