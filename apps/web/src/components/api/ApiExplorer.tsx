@@ -1,5 +1,5 @@
-import { AUTH_TYPES, CATEGORIES, SOURCES, STATUSES, type Category, type Locale } from "@thai-open-api/schema";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { AUTH_TYPES, CATEGORIES, SOURCES, STATUSES, type AuthType, type Category, type Locale, type Source, type Status } from "@thai-open-api/schema";
+import { KeyRound, LockOpen, Search, SlidersHorizontal, X, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { SORTS, UI } from "../../config/site.ts";
 import { createT } from "../../i18n/index.ts";
@@ -8,10 +8,21 @@ import type { ApiSummary } from "../../lib/summary.ts";
 import { Button } from "../ui/Button.tsx";
 import { EmptyState } from "../ui/EmptyState.tsx";
 import { Field, Input, Select } from "../ui/Field.tsx";
-import { ApiCard } from "./ApiCard.tsx";
-import { CategoryChip } from "./CategoryChip.tsx";
+import { ApiRow } from "./ApiRow.tsx";
+import { CATEGORY_ICON } from "./categoryIcon.ts";
+import { FacetOption } from "./FacetOption.tsx";
+import { STATUS_ICON, STATUS_ICON_CLASS } from "./status.ts";
+import { SOURCE_ICON } from "./TrustBadge.tsx";
 
 const FACET_VALUES: Record<Facet, readonly string[]> = { category: CATEGORIES, source: SOURCES, auth: AUTH_TYPES, status: STATUSES };
+
+/** The icon (and colour) that stands for a filter value, so the list reads without relying on words alone. */
+function facetIcon(facet: Facet, value: string): { icon: LucideIcon; className?: string } {
+  if (facet === "category") return { icon: CATEGORY_ICON[value as Category] };
+  if (facet === "source") return { icon: SOURCE_ICON[value as Source] };
+  if (facet === "auth") return { icon: (value as AuthType) === "apiKey" ? KeyRound : LockOpen };
+  return { icon: STATUS_ICON[value as Status], className: STATUS_ICON_CLASS[value as Status] };
+}
 
 export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Locale }) {
   const t = createT(locale);
@@ -53,13 +64,12 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
       {(Object.keys(FACET_VALUES) as Facet[]).map((facet) => {
         const counts = facetCounts(apis, filters, facet);
         return (
-          <fieldset key={facet} className="flex flex-col gap-2">
-            <legend className="mb-1 text-small font-semibold">{t(`explorer.facets.${facet}`)}</legend>
-            <div className="flex flex-wrap gap-2">
-              {FACET_VALUES[facet].map((value) => (
-                <CategoryChip key={value} label={labelOf(facet, value)} count={counts[value] ?? 0} selected={filters[facet] === value} onToggle={() => setFacet(facet, value)} category={facet === "category" ? (value as Category) : undefined} />
-              ))}
-            </div>
+          <fieldset key={facet} className="flex flex-col gap-0.5">
+            <legend className="mb-1.5 px-2.5 text-caption font-semibold uppercase tracking-wide text-ink-2">{t(`explorer.facets.${facet}`)}</legend>
+            {FACET_VALUES[facet].map((value) => {
+              const { icon, className } = facetIcon(facet, value);
+              return <FacetOption key={value} label={labelOf(facet, value)} count={counts[value] ?? 0} selected={filters[facet] === value} onToggle={() => setFacet(facet, value)} icon={icon} iconClass={className} />;
+            })}
           </fieldset>
         );
       })}
@@ -103,7 +113,7 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
               type="button"
               onClick={() => setFacet(facet, filters[facet])}
               aria-label={t("explorer.clearOne", { name: labelOf(facet, filters[facet] as string) })}
-              className="inline-flex h-8 items-center gap-1 rounded-full bg-brand-100 px-3 text-caption font-medium text-brand-800 transition-colors duration-150 hover:bg-line"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 text-caption font-medium text-ink transition-colors duration-150 hover:border-line-strong hover:bg-subtle"
             >
               {labelOf(facet, filters[facet] as string)}
               <X aria-hidden size={13} />
@@ -131,12 +141,10 @@ export function ApiExplorer({ apis, locale }: { apis: ApiSummary[]; locale: Loca
             {active.length > 0 ? t("explorer.emptyWithFilters", { filters: active.map((f) => labelOf(f, filters[f] as string)).join(", ") }) : t("explorer.emptyBody")}
           </EmptyState>
         ) : (
-          <ul className="grid gap-4 md:grid-cols-2">
-            {results.map((api) => (
-              <li key={api.id} className="flex">
-                <div className="flex w-full flex-col">
-                  <ApiCard api={api} locale={locale} />
-                </div>
+          <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+            {results.map((api, i) => (
+              <li key={api.id}>
+                <ApiRow api={api} locale={locale} index={i} />
               </li>
             ))}
           </ul>

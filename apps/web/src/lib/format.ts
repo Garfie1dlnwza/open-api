@@ -6,9 +6,9 @@ const BYTES_PER_MB = BYTES_PER_KB * 1_024;
 const ONE_DECIMAL = 10;
 
 /** "2 days ago" / "เมื่อ 2 วันที่แล้ว", computed at build time so server and client agree. */
-export function formatRelative(iso: string, now: Date, locale: Locale): string {
+export function formatRelative(iso: string, now: Date, locale: Locale, style: "long" | "narrow" = "long"): string {
   const elapsed = now.getTime() - Date.parse(iso);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style });
   if (elapsed < MS_PER_DAY) return rtf.format(-Math.max(1, Math.round(elapsed / MS_PER_HOUR)), "hour");
   return rtf.format(-Math.round(elapsed / MS_PER_DAY), "day");
 }

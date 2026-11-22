@@ -56,6 +56,7 @@ export function toSummary(entry: ApiEntry, locale: Locale): ApiSummary {
     status: effectiveStatus(getHealth(entry.id), now),
     reviewedAt: entry.reviewedAt,
     verifiedLabel: formatRelative(entry.reviewedAt, now, locale),
+    verifiedShort: formatRelative(entry.reviewedAt, now, locale, "narrow"),
     trustScore: trust.score,
     trustLevel: trust.level,
     endpoints: entry.endpoints.map((e) => ({ title: localize(e.title, locale), path: e.path })),

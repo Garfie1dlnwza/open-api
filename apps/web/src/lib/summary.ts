@@ -15,6 +15,8 @@ export interface ApiSummary {
   status: Status;
   reviewedAt: string;
   verifiedLabel: string;
+  /** Compact relative time for dense rows ("12h ago"). */
+  verifiedShort: string;
   trustScore: number;
   trustLevel: TrustLevel;
   endpoints: { title: string; path: string }[];

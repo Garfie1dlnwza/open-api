@@ -28,7 +28,7 @@ const textPairs: [string, string][] = [
   ["accent-800", "surface"], ["accent-800", "accent-50"], ["accent-800", "accent-100"],
   ["red-fg", "surface"], ["red-fg", "canvas"],
   ["chart-label", "surface"], ["chart-label", "canvas"],
-  ["on-series", "series-1"], ["on-dark", "series-2"], ["on-dark", "series-3"], ["on-dark", "series-other"],
+  ["on-series", "series-1"], ["on-dark", "series-2"], ["on-dark", "series-3"], ["on-dark", "series-other"], ["on-dark", "series-1-light"],
   ["on-dark", "status-warning"], ["on-dark", "status-good"], ["on-series", "status-critical"], ["on-series", "status-info"], ["on-dark", "status-unknown"],
   ["success-fg", "success-bg"], ["warning-fg", "warning-bg"], ["error-fg", "error-bg"],
   ["info-fg", "info-bg"], ["quiet-fg", "quiet-bg"],

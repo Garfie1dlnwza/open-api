@@ -5,7 +5,7 @@ import type { ApiSummary } from "./summary.ts";
 
 const api = (over: Partial<ApiSummary>): ApiSummary => ({
   id: "x", name: "X", provider: "P", description: "D", category: "finance", categoryLabel: "การเงิน", source: "official", auth: "none",
-  license: { type: "unknown", verified: false }, tags: [], status: "operational", reviewedAt: "2026-11-01", verifiedLabel: "",
+  license: { type: "unknown", verified: false }, tags: [], status: "operational", reviewedAt: "2026-11-01", verifiedLabel: "", verifiedShort: "",
   trustScore: 50, trustLevel: "medium", endpoints: [], ...over,
 });
 const fx = api({ id: "bot-fx", name: "อัตราแลกเปลี่ยน", provider: "ธนาคารแห่งประเทศไทย", tags: ["fx"], auth: "apiKey", status: "auth_required", trustScore: 70, endpoints: [{ title: "รายวัน", path: "/DAILY_AVG" }] });

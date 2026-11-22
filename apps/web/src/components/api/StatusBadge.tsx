@@ -1,24 +1,28 @@
-import type { Status } from "@thai-open-api/schema";
-import type { Locale } from "@thai-open-api/schema";
-import { CircleCheck, CircleHelp, CircleX, KeyRound, TriangleAlert, type LucideIcon } from "lucide-react";
+import type { Locale, Status } from "@thai-open-api/schema";
 import { createT } from "../../i18n/index.ts";
 import { cx } from "../ui/cx.ts";
+import { STATUS_ICON, STATUS_ICON_CLASS, STATUS_PILL_CLASS } from "./status.ts";
 
-const STYLE: Record<Status, { icon: LucideIcon; classes: string }> = {
-  operational: { icon: CircleCheck, classes: "bg-success-bg text-success-fg" },
-  degraded: { icon: TriangleAlert, classes: "bg-warning-bg text-warning-fg" },
-  outage: { icon: CircleX, classes: "bg-error-bg text-error-fg" },
-  unknown: { icon: CircleHelp, classes: "bg-quiet-bg text-quiet-fg" },
-  auth_required: { icon: KeyRound, classes: "bg-info-bg text-info-fg" },
-};
+type Variant = "icon" | "pill";
 
-/** Always icon + text: colour alone never carries the status. */
-export function StatusBadge({ status, locale, className }: { status: Status; locale: Locale; className?: string }) {
-  const { icon: Icon, classes } = STYLE[status];
+/**
+ * `icon` (default): just the shape and colour, with the meaning in aria-label and a tooltip, for dense
+ * lists. `pill`: icon and word, for the one place a page leads with the status.
+ */
+export function StatusBadge({ status, locale, variant = "icon", className, size = 18 }: { status: Status; locale: Locale; variant?: Variant; className?: string; size?: number }) {
+  const Icon = STATUS_ICON[status];
+  const label = createT(locale)(`status.${status}`);
+  if (variant === "pill") {
+    return (
+      <span className={cx("inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-medium", STATUS_PILL_CLASS[status], className)}>
+        <Icon aria-hidden size={14} />
+        {label}
+      </span>
+    );
+  }
   return (
-    <span className={cx("inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-medium", classes, className)}>
-      <Icon aria-hidden size={14} />
-      {createT(locale)(`status.${status}`)}
+    <span role="img" aria-label={label} title={label} className={cx("inline-flex shrink-0", STATUS_ICON_CLASS[status], className)}>
+      <Icon aria-hidden size={size} />
     </span>
   );
 }
