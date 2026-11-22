@@ -21,12 +21,12 @@ jobs:
     timeout-minutes: 15
     steps:
       # No credentials stay on disk: npm install scripts and the probe run without a write token.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: main
           persist-credentials: false
       - name: Restore previous results (for history)
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         continue-on-error: true # the branch does not exist before the first run
         with:
           ref: status-data
@@ -38,7 +38,7 @@ jobs:
             mkdir -p data
             cp .status-prev/status.json data/status.json
           fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
