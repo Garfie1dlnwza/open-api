@@ -1,0 +1,49 @@
+---
+/** One chart-shaped placeholder for DashboardSkeleton: a title, a question, and the silhouette of the chart. */
+interface Props {
+  kind: "line" | "segment" | "donut" | "bars";
+}
+const { kind } = Astro.props;
+const bars = [92, 64, 48, 30, 18];
+---
+
+<div class="flex flex-col gap-4 border-t border-line pt-5">
+  <div class="flex flex-col gap-2">
+    <div class="skeleton h-4 w-40"></div>
+    <div class="skeleton h-3 w-64 max-w-full"></div>
+  </div>
+  {kind === "bars" && (
+    <div class="flex flex-col gap-3.5 pt-1">
+      {bars.map((w) => <div class="skeleton h-2.5" style={`width:${w}%`}></div>)}
+    </div>
+  )}
+  {kind === "line" && (
+    <svg viewBox="0 0 400 140" class="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((i) => <line x1="0" x2="400" y1={i * 34 + 2} y2={i * 34 + 2} stroke="var(--gridline)" />)}
+      <path d="M0,100 C40,90 70,110 110,80 C150,50 190,86 230,60 C270,36 320,70 400,30" fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round" class="skeleton-stroke" />
+    </svg>
+  )}
+  {kind === "donut" && (
+    <div class="flex items-center gap-8">
+      <div class="size-32 shrink-0 rounded-full border-[12px] border-subtle"></div>
+      <div class="flex flex-1 flex-col gap-3">
+        {[0, 1, 2].map(() => <div class="skeleton h-3 w-full"></div>)}
+      </div>
+    </div>
+  )}
+  {kind === "segment" && (
+    <div class="flex flex-col gap-4">
+      <div class="skeleton h-7 w-full"></div>
+      <div class="skeleton h-3 w-3/4"></div>
+    </div>
+  )}
+</div>
+
+<style>
+  @keyframes skeleton-pulse {
+    50% { opacity: 0.45; }
+  }
+  .skeleton-stroke {
+    animation: skeleton-pulse var(--shimmer) ease-in-out infinite;
+  }
+</style>

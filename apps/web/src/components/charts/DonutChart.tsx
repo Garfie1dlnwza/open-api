@@ -1,6 +1,7 @@
 import type { Locale } from "@thai-open-api/schema";
 import { useRef, useState } from "react";
 import { createT } from "../../i18n/index.ts";
+import { sharePercents } from "../../lib/shares.ts";
 import { ChartTooltip, type TipState } from "./ChartTooltip.tsx";
 import { useInView, useWidth } from "./useChart.ts";
 
@@ -25,7 +26,9 @@ export function DonutChart({ slices, locale, centerLabel, format }: { slices: Sl
   const [active, setActive] = useState<string | null>(null);
   const [tip, setTip] = useState<TipState | null>(null);
   const total = slices.reduce((n, s) => n + s.value, 0);
-  const share = (s: Slice) => Math.round((s.value / total) * PERCENT);
+  // Largest-remainder rounding, so the legend adds up to 100% instead of 99 or 101.
+  const shares = sharePercents(slices.map((s) => s.value));
+  const share = (s: Slice) => shares[slices.indexOf(s)];
 
   let cursor = 0;
   const arcs = slices.map((slice) => {

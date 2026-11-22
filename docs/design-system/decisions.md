@@ -34,3 +34,7 @@ portal, and not a gradient-heavy SaaS dashboard.
 | A real `<table>` for the explorer | The data has several dimensions to compare, and a table gives column headers, sorting and correct screen-reader semantics that a styled list cannot. The first version only imitated one, with a faint header nobody could read | More markup than a list, and rows need their own click handler because a `<tr>` cannot be a link |
 | A header that looks like a header | Tinted background, bold ink text, a 2 px rule below, sort arrows. The active sort column is blue and shows its direction | A heavier look than the rest of the page, on purpose |
 | Our own select | The native popup is drawn by the OS (a grey panel with a purple bar on macOS) and cannot follow the theme, the radius or the focus style | We own the keyboard behaviour (arrows, Home/End, type-ahead, Escape) and must keep it tested |
+
+### Dashboard: dark "declared licence" step
+
+The middle step of the licence bar (stated, not yet verified) was `#184f95` in the dark theme: 2.1:1 on the surface, nearly invisible. It is now `#9cc3f5` (9.5:1) with near-black ink. The ordinal reading verified (saturated) > declared (pale) > unknown (grey) holds in both themes through chroma, not lightness.

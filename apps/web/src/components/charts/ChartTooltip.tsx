@@ -15,7 +15,7 @@ export function ChartTooltip({ tip, width }: { tip: TipState | null; width: numb
   if (!tip) return null;
   const left = Math.min(Math.max(tip.x, EDGE), Math.max(width - EDGE, EDGE));
   return (
-    <div role="tooltip" className="chart-tip pointer-events-none absolute z-10 min-w-32 rounded-md bg-ink px-3 py-2 text-on-brand shadow-pop" style={{ left, top: tip.y, transform: "translate(-50%, calc(-100% - 10px))" }}>
+    <div role="tooltip" className="chart-tip pointer-events-none absolute z-10 w-max min-w-32 max-w-[calc(100vw-2rem)] whitespace-nowrap rounded-md bg-ink px-3 py-2 text-on-brand shadow-pop" style={{ left, top: tip.y, transform: "translate(-50%, calc(-100% - 10px))" }}>
       {tip.content.title && <p className="mb-1 text-caption opacity-80">{tip.content.title}</p>}
       <ul className="flex flex-col gap-1">
         {tip.content.rows.map((row) => (

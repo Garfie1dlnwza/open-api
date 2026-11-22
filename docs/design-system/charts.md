@@ -33,3 +33,15 @@ nothing is sample data.
 The dashboard islands are `client:only`, so the real loading state is a chart-shaped skeleton
 (`DashboardSkeleton.astro`) with the same layout and heights, which prevents layout shift. Charts
 animate in when they scroll into view (bars grow, lines draw, donut arcs sweep, numbers count up).
+
+## Dashboard clarity rules
+
+- **Failed probes never enter latency.** A timeout is not a response time, so the median, its trend and its delta use only probes that answered. Availability and latency state their denominator ("5 of 6 checkable APIs", "median of 5 APIs").
+- **Health is not access.** Endpoint health shows operational, degraded, outage and "not checked" (key-gated or never probed). Whether a key is needed is a separate Authentication bar in neutral colours.
+- **Percentages add up.** Legends, tooltips and tables use largest-remainder rounding (`lib/shares.ts`), so parts always sum to 100%.
+- **A flat series says so.** When every point is equal the chart shrinks (`CHART_HEIGHT.compact`) and a line states "steady at X across N checks". Nothing is invented to make a line move. A trend needs `UI.minTrendRuns` runs.
+- **Honest freshness.** The header shows the last run with its time zone, the run count and the probe cadence (`UI.probeEveryHours`), so nobody reads it as real-time.
+- **Keyboard.** Line charts take Left/Right, Home/End and Esc (`lib/chartKeys.ts`), describe themselves with a hint, and announce the selected point in a polite live region. Tooltips never wrap.
+- **Tables.** Row keys come from `lib/tableKeys.ts` (two checks in one minute print the same cells) and time columns include seconds.
+- **Layout.** Three labelled sections: overview, health and speed (two trend charts beside three status charts), and catalog statistics.
+- **Wording.** "License" in both languages; availability is "Availability" in English.

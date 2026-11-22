@@ -48,6 +48,46 @@ describe("computeDashboard", () => {
     expect(data.latestCheck).toBe(iso(11));
   });
 
+  it("never lets a failed probe's elapsed time into the latency figures", () => {
+    const status: StatusFile = {
+      generatedAt: iso(11),
+      apis: {
+        alpha: health([point(9, "operational", 100), point(10, "outage", 30_000), point(11, "operational", 200)]),
+        beta: health([point(9, "operational", 300), point(10, "operational", 100), point(11, "operational", 400)]),
+        gamma: health([point(9, "auth_required", 50), point(10, "auth_required", 50), point(11, "auth_required", 50)], "auth_required"),
+      },
+    };
+    const data = computeDashboard([a, b, c], status, NOW);
+    // Run 10 would be 15,050 ms if alpha's 30 s timeout counted; with only beta's answer it is 100.
+    expect(data.latencyTrend.map((p) => p.value)).toEqual([200, 100, 300]);
+    expect(data.kpis.latencyDelta).toBe(200);
+    expect(data.kpis.latencySamples).toBe(2);
+    expect(data.kpis.availabilityOf).toEqual({ up: 2, total: 2 });
+  });
+
+  it("reports how many APIs the availability figure is over, and the access split", () => {
+    const keyed = makeEntry({ id: "delta", auth: { type: "apiKey", in: "header", name: "api-key", signupUrl: "https://example.go.th/signup" } });
+    const status: StatusFile = {
+      generatedAt: iso(11),
+      apis: {
+        alpha: health([point(11, "outage")]),
+        beta: health([point(11, "operational", 100)]),
+        delta: health([point(11, "auth_required")], "auth_required"),
+      },
+    };
+    const data = computeDashboard([a, b, keyed], status, NOW);
+    expect(data.kpis.availabilityOf).toEqual({ up: 1, total: 2 });
+    expect(data.access).toEqual({ open: 2, apiKey: 1 });
+  });
+
+  it("splits incidents into outages and slow responses", () => {
+    const status: StatusFile = {
+      generatedAt: iso(11),
+      apis: { alpha: health([point(9, "outage"), point(10, "degraded", 9000), point(11, "outage")]) },
+    };
+    expect(computeDashboard([a], status, NOW).incidents).toMatchObject([{ id: "alpha", outage: 2, degraded: 1, bad: 3, of: 3 }]);
+  });
+
   it("ranks incidents by how often an API failed or was slow", () => {
     const status: StatusFile = {
       generatedAt: iso(11),
